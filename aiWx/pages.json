@@ -6,7 +6,25 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "智趣学坊"
+				"navigationBarTitleText": "课堂"
+			}
+		},
+		{
+			"path": "pages/index/selfStudy",
+			"style": {
+				"navigationBarTitleText": "自习空间"
+			}
+		},
+		{
+			"path": "pages/index/square",
+			"style": {
+				"navigationBarTitleText": "广场"
+			}
+		},
+		{
+			"path": "pages/index/my",
+			"style": {
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
@@ -16,5 +34,38 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
-	"uniIdRouter": {}
+	"uniIdRouter": {},
+	"tabBar": {
+		"color": "#ccc",
+		"selectedColor": "#b50e03",
+		"backgroundColor": "",
+		"position": "bottom",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "课堂",
+				"iconPath": "static/class/class.png",
+				"selectedIconPath": "static/class/classSelected.png"
+			},
+			{
+				"pagePath": "pages/index/selfStudy",
+				"text": "自习空间",
+				"iconPath": "static/selfStudy/selfStudy.png",
+				"selectedIconPath": "static/selfStudy/selfStudySelected.png"
+			},
+			{
+				"pagePath": "pages/index/square",
+				"text": "广场",
+				"iconPath": "static/square/square.png",
+				"selectedIconPath": "static/square/squareSelected.png"
+			},
+			{
+				"pagePath": "pages/index/my",
+				"text": "我的",
+				"iconPath": "static/my/avatar.png",
+				"selectedIconPath": "static/my/avatarSelected.png"
+			}
+		]
+	}
 }

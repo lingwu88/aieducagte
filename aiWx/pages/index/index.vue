@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-
+		课堂
 	</view>
 </template>
 

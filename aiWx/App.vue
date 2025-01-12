@@ -20,8 +20,8 @@ export default {
 <style>
 /*每个页面公共css */
 .container{
-	height: 100rpx;
-	background-color: #e9e9e9;
+	height: 100vh;
+	background-color: #ffffff;
 	font-size:30rpx;
 }
 </style>
