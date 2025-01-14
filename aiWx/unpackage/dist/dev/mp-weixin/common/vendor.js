@@ -364,7 +364,7 @@ var promiseInterceptor = {
     });
   }
 };
-var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting|initUTS|requireUTS|registerUTS/;
+var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|rpx2px|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting|initUTS|requireUTS|registerUTS/;
 var CONTEXT_API_RE = /^create|Manager$/;
 
 // Context例外情况
@@ -437,10 +437,12 @@ var isIOS = false;
 var deviceWidth = 0;
 var deviceDPR = 0;
 function checkDeviceWidth() {
-  var _wx$getSystemInfoSync = wx.getSystemInfoSync(),
-    platform = _wx$getSystemInfoSync.platform,
-    pixelRatio = _wx$getSystemInfoSync.pixelRatio,
-    windowWidth = _wx$getSystemInfoSync.windowWidth; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
+  var _Object$assign = Object.assign({}, wx.getWindowInfo(), {
+      platform: wx.getDeviceInfo().platform
+    }),
+    windowWidth = _Object$assign.windowWidth,
+    pixelRatio = _Object$assign.pixelRatio,
+    platform = _Object$assign.platform; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
 
   deviceWidth = windowWidth;
   deviceDPR = pixelRatio;
@@ -476,7 +478,7 @@ var LOCALE_ES = 'es';
 var messages = {};
 var locale;
 {
-  locale = normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN;
+  locale = normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN;
 }
 function initI18nMessages() {
   if (!isEnableLocale()) {
@@ -598,7 +600,7 @@ function getLocale$1() {
       return app.$vm.$locale;
     }
   }
-  return normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN;
+  return normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN;
 }
 function setLocale$1(locale) {
   var app = isFn(getApp) ? getApp() : false;
@@ -632,6 +634,7 @@ var interceptors = {
 var baseApi = /*#__PURE__*/Object.freeze({
   __proto__: null,
   upx2px: upx2px,
+  rpx2px: upx2px,
   getLocale: getLocale$1,
   setLocale: setLocale$1,
   onLocaleChange: onLocaleChange,
@@ -774,7 +777,7 @@ function populateParameters(result) {
   var _SDKVersion = SDKVersion;
 
   // hostLanguage
-  var hostLanguage = language.replace(/_/g, '-');
+  var hostLanguage = (language || '').replace(/_/g, '-');
 
   // wx.getAccountInfoSync
 
@@ -784,9 +787,9 @@ function populateParameters(result) {
     appVersion: "1.0.0",
     appVersionCode: "100",
     appLanguage: getAppLanguage(hostLanguage),
-    uniCompileVersion: "4.36",
-    uniCompilerVersion: "4.36",
-    uniRuntimeVersion: "4.36",
+    uniCompileVersion: "4.45",
+    uniCompilerVersion: "4.45",
+    uniRuntimeVersion: "4.45",
     uniPlatform: undefined || "mp-weixin",
     deviceBrand: deviceBrand,
     deviceModel: model,
@@ -878,7 +881,7 @@ var getAppBaseInfo = {
       SDKVersion = _result.SDKVersion,
       theme = _result.theme;
     var _hostName = getHostName(result);
-    var hostLanguage = language.replace('_', '-');
+    var hostLanguage = (language || '').replace('_', '-');
     result = sortObject(Object.assign(result, {
       appId: "",
       appName: "aiWx",
@@ -892,8 +895,9 @@ var getAppBaseInfo = {
       hostTheme: theme,
       isUniAppX: false,
       uniPlatform: undefined || "mp-weixin",
-      uniCompileVersion: "4.36",
-      uniCompilerVersion: "4.36"
+      uniCompileVersion: "4.45",
+      uniCompilerVersion: "4.45",
+      uniRuntimeVersion: "4.45"
     }));
   }
 };
@@ -1567,7 +1571,7 @@ function initData(vueOptions, context) {
     try {
       data = data.call(context); // 支持 Vue.prototype 上挂的数据
     } catch (e) {
-      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
       }
     }
@@ -2120,7 +2124,7 @@ function parseBaseApp(vm, _ref4) {
       appOptions[name] = methods[name];
     });
   }
-  initAppLocale(_vue.default, vm, normalizeLocale(wx.getSystemInfoSync().language) || LOCALE_EN);
+  initAppLocale(_vue.default, vm, normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN);
   initHooks(appOptions, hooks);
   initUnknownHooks(appOptions, vm.$options);
   return appOptions;
@@ -8933,7 +8937,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -8954,14 +8958,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -9057,7 +9061,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = this.$shouldDiffData === false ? data : diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"aiWx","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -9476,9 +9480,9 @@ internalMixin(Vue);
 
 /***/ }),
 /* 26 */
-/*!********************************************!*\
-  !*** E:/project/AiEducate/aiWx/pages.json ***!
-  \********************************************/
+/*!************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/pages.json ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9624,9 +9628,9 @@ function normalizeComponent (
 
 /***/ }),
 /* 35 */
-/*!****************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/index.js ***!
-  \****************************************************************/
+/*!********************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/index.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9713,9 +9717,9 @@ exports.default = _default;
 
 /***/ }),
 /* 36 */
-/*!***************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/mixin/mixin.js ***!
-  \***************************************************************************/
+/*!*******************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/mixin/mixin.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9881,9 +9885,9 @@ exports.default = _default;
 
 /***/ }),
 /* 37 */
-/*!*****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/mixin/mpMixin.js ***!
-  \*****************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/mixin/mpMixin.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9904,9 +9908,9 @@ exports.default = _default;
 
 /***/ }),
 /* 38 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/index.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/index.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9924,9 +9928,9 @@ exports.default = _default;
 
 /***/ }),
 /* 39 */
-/*!*****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/Request.js ***!
-  \*****************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/Request.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10130,9 +10134,9 @@ exports.default = Request;
 
 /***/ }),
 /* 40 */
-/*!*************************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/dispatchRequest.js ***!
-  \*************************************************************************************************/
+/*!*****************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/dispatchRequest.js ***!
+  \*****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10152,9 +10156,9 @@ exports.default = _default;
 
 /***/ }),
 /* 41 */
-/*!*******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/adapters/index.js ***!
-  \*******************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/adapters/index.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10233,9 +10237,9 @@ exports.default = _default;
 
 /***/ }),
 /* 42 */
-/*!*********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/helpers/buildURL.js ***!
-  \*********************************************************************************************/
+/*!*************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/helpers/buildURL.js ***!
+  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10303,9 +10307,9 @@ function buildURL(url, params) {
 
 /***/ }),
 /* 43 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/utils.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/utils.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10456,9 +10460,9 @@ function isUndefined(val) {
 
 /***/ }),
 /* 44 */
-/*!***********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/buildFullPath.js ***!
-  \***********************************************************************************************/
+/*!***************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/buildFullPath.js ***!
+  \***************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10490,9 +10494,9 @@ function buildFullPath(baseURL, requestedURL) {
 
 /***/ }),
 /* 45 */
-/*!**************************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
-  \**************************************************************************************************/
+/*!******************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10518,9 +10522,9 @@ function isAbsoluteURL(url) {
 
 /***/ }),
 /* 46 */
-/*!************************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/helpers/combineURLs.js ***!
-  \************************************************************************************************/
+/*!****************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/helpers/combineURLs.js ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10544,9 +10548,9 @@ function combineURLs(baseURL, relativeURL) {
 
 /***/ }),
 /* 47 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/settle.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/settle.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10576,9 +10580,9 @@ function settle(resolve, reject, response) {
 
 /***/ }),
 /* 48 */
-/*!****************************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/InterceptorManager.js ***!
-  \****************************************************************************************************/
+/*!********************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/InterceptorManager.js ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10640,9 +10644,9 @@ exports.default = _default;
 
 /***/ }),
 /* 49 */
-/*!*********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/mergeConfig.js ***!
-  \*********************************************************************************************/
+/*!*************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/mergeConfig.js ***!
+  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10716,9 +10720,9 @@ exports.default = _default;
 
 /***/ }),
 /* 50 */
-/*!******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/core/defaults.js ***!
-  \******************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/core/defaults.js ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10748,9 +10752,9 @@ exports.default = _default;
 
 /***/ }),
 /* 51 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/luch-request/utils/clone.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/luch-request/utils/clone.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10996,7 +11000,7 @@ var clone = function () {
 }();
 var _default = clone;
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../../HBuilderX/plugins/uniapp-cli/node_modules/buffer/index.js */ 52).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/buffer/index.js */ 52).Buffer))
 
 /***/ }),
 /* 52 */
@@ -13072,9 +13076,9 @@ module.exports = Array.isArray || function (arr) {
 
 /***/ }),
 /* 56 */
-/*!**************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/util/route.js ***!
-  \**************************************************************************/
+/*!******************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/util/route.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13634,9 +13638,9 @@ module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exp
 
 /***/ }),
 /* 60 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/colorGradient.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/colorGradient.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13789,9 +13793,9 @@ exports.default = _default;
 
 /***/ }),
 /* 61 */
-/*!*****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/test.js ***!
-  \*****************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/test.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14094,9 +14098,9 @@ exports.default = _default;
 
 /***/ }),
 /* 62 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/debounce.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/debounce.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14141,9 +14145,9 @@ exports.default = _default;
 
 /***/ }),
 /* 63 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/throttle.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/throttle.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14190,9 +14194,9 @@ exports.default = _default;
 
 /***/ }),
 /* 64 */
-/*!******************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/index.js ***!
-  \******************************************************************************/
+/*!**********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/index.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14991,9 +14995,9 @@ exports.default = _default;
 
 /***/ }),
 /* 65 */
-/*!******************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/digit.js ***!
-  \******************************************************************************/
+/*!**********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/digit.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15210,9 +15214,9 @@ module.exports = _toArray, module.exports.__esModule = true, module.exports["def
 
 /***/ }),
 /* 67 */
-/*!*****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/config.js ***!
-  \*****************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/config.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15254,9 +15258,9 @@ exports.default = _default;
 
 /***/ }),
 /* 68 */
-/*!****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props.js ***!
-  \****************************************************************************/
+/*!********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15366,9 +15370,9 @@ exports.default = _default;
 
 /***/ }),
 /* 69 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/actionSheet.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/actionSheet.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15410,9 +15414,9 @@ exports.default = _default;
 
 /***/ }),
 /* 70 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/album.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/album.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15454,9 +15458,9 @@ exports.default = _default;
 
 /***/ }),
 /* 71 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/alert.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/alert.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15493,9 +15497,9 @@ exports.default = _default;
 
 /***/ }),
 /* 72 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/avatar.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/avatar.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15538,9 +15542,9 @@ exports.default = _default;
 
 /***/ }),
 /* 73 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/avatarGroup.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/avatarGroup.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15580,9 +15584,9 @@ exports.default = _default;
 
 /***/ }),
 /* 74 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/backtop.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/backtop.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15626,9 +15630,9 @@ exports.default = _default;
 
 /***/ }),
 /* 75 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/badge.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/badge.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15672,9 +15676,9 @@ exports.default = _default;
 
 /***/ }),
 /* 76 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/button.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/button.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15731,9 +15735,9 @@ exports.default = _default;
 
 /***/ }),
 /* 77 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/calendar.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/calendar.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15794,9 +15798,9 @@ exports.default = _default;
 
 /***/ }),
 /* 78 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/carKeyboard.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/carKeyboard.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15826,9 +15830,9 @@ exports.default = _default;
 
 /***/ }),
 /* 79 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/cell.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/cell.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15878,9 +15882,9 @@ exports.default = _default;
 
 /***/ }),
 /* 80 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/cellGroup.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/cellGroup.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15912,9 +15916,9 @@ exports.default = _default;
 
 /***/ }),
 /* 81 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/checkbox.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/checkbox.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15956,9 +15960,9 @@ exports.default = _default;
 
 /***/ }),
 /* 82 */
-/*!******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/checkboxGroup.js ***!
-  \******************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/checkboxGroup.js ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16004,9 +16008,9 @@ exports.default = _default;
 
 /***/ }),
 /* 83 */
-/*!*******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/circleProgress.js ***!
-  \*******************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/circleProgress.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16036,9 +16040,9 @@ exports.default = _default;
 
 /***/ }),
 /* 84 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/code.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/code.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16073,9 +16077,9 @@ exports.default = _default;
 
 /***/ }),
 /* 85 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/codeInput.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/codeInput.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16119,9 +16123,9 @@ exports.default = _default;
 
 /***/ }),
 /* 86 */
-/*!********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/col.js ***!
-  \********************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/col.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16155,9 +16159,9 @@ exports.default = _default;
 
 /***/ }),
 /* 87 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/collapse.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/collapse.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16189,9 +16193,9 @@ exports.default = _default;
 
 /***/ }),
 /* 88 */
-/*!*****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/collapseItem.js ***!
-  \*****************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/collapseItem.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16231,9 +16235,9 @@ exports.default = _default;
 
 /***/ }),
 /* 89 */
-/*!*****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/columnNotice.js ***!
-  \*****************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/columnNotice.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16272,9 +16276,9 @@ exports.default = _default;
 
 /***/ }),
 /* 90 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/countDown.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/countDown.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16307,9 +16311,9 @@ exports.default = _default;
 
 /***/ }),
 /* 91 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/countTo.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/countTo.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16349,9 +16353,9 @@ exports.default = _default;
 
 /***/ }),
 /* 92 */
-/*!*******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/datetimePicker.js ***!
-  \*******************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/datetimePicker.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16405,9 +16409,9 @@ exports.default = _default;
 
 /***/ }),
 /* 93 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/divider.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/divider.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16444,9 +16448,9 @@ exports.default = _default;
 
 /***/ }),
 /* 94 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/empty.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/empty.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16486,9 +16490,9 @@ exports.default = _default;
 
 /***/ }),
 /* 95 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/form.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/form.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16531,9 +16535,9 @@ exports.default = _default;
 
 /***/ }),
 /* 96 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/formItem.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/formItem.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16571,9 +16575,9 @@ exports.default = _default;
 
 /***/ }),
 /* 97 */
-/*!********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/gap.js ***!
-  \********************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/gap.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16607,9 +16611,9 @@ exports.default = _default;
 
 /***/ }),
 /* 98 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/grid.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/grid.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16641,9 +16645,9 @@ exports.default = _default;
 
 /***/ }),
 /* 99 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/gridItem.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/gridItem.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16674,9 +16678,9 @@ exports.default = _default;
 
 /***/ }),
 /* 100 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/icon.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/icon.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16726,9 +16730,9 @@ exports.default = _default;
 
 /***/ }),
 /* 101 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/image.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/image.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16773,9 +16777,9 @@ exports.default = _default;
 
 /***/ }),
 /* 102 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/indexAnchor.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/indexAnchor.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16809,9 +16813,9 @@ exports.default = _default;
 
 /***/ }),
 /* 103 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/indexList.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/indexList.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16847,9 +16851,9 @@ exports.default = _default;
 
 /***/ }),
 /* 104 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/input.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/input.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16912,9 +16916,9 @@ exports.default = _default;
 
 /***/ }),
 /* 105 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/keyboard.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/keyboard.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16959,9 +16963,9 @@ exports.default = _default;
 
 /***/ }),
 /* 106 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/line.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/line.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16996,9 +17000,9 @@ exports.default = _default;
 
 /***/ }),
 /* 107 */
-/*!*****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/lineProgress.js ***!
-  \*****************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/lineProgress.js ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17032,9 +17036,9 @@ exports.default = _default;
 
 /***/ }),
 /* 108 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/link.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/link.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17074,9 +17078,9 @@ exports.default = _default;
 
 /***/ }),
 /* 109 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/list.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/list.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17119,9 +17123,9 @@ exports.default = _default;
 
 /***/ }),
 /* 110 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/listItem.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/listItem.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17151,9 +17155,9 @@ exports.default = _default;
 
 /***/ }),
 /* 111 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/loadingIcon.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/loadingIcon.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17197,9 +17201,9 @@ exports.default = _default;
 
 /***/ }),
 /* 112 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/loadingPage.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/loadingPage.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17237,9 +17241,9 @@ exports.default = _default;
 
 /***/ }),
 /* 113 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/loadmore.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/loadmore.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17286,9 +17290,9 @@ exports.default = _default;
 
 /***/ }),
 /* 114 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/modal.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/modal.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17334,9 +17338,9 @@ exports.default = _default;
 
 /***/ }),
 /* 115 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/navbar.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/navbar.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17383,9 +17387,9 @@ exports.default = _default;
 
 /***/ }),
 /* 116 */
-/*!****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/color.js ***!
-  \****************************************************************************/
+/*!********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/color.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17416,9 +17420,9 @@ exports.default = _default;
 
 /***/ }),
 /* 117 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/noNetwork.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/noNetwork.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17450,9 +17454,9 @@ exports.default = _default;
 
 /***/ }),
 /* 118 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/noticeBar.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/noticeBar.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17496,9 +17500,9 @@ exports.default = _default;
 
 /***/ }),
 /* 119 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/notify.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/notify.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17535,9 +17539,9 @@ exports.default = _default;
 
 /***/ }),
 /* 120 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/numberBox.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/numberBox.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17587,9 +17591,9 @@ exports.default = _default;
 
 /***/ }),
 /* 121 */
-/*!*******************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/numberKeyboard.js ***!
-  \*******************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/numberKeyboard.js ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17621,9 +17625,9 @@ exports.default = _default;
 
 /***/ }),
 /* 122 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/overlay.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/overlay.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17656,9 +17660,9 @@ exports.default = _default;
 
 /***/ }),
 /* 123 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/parse.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/parse.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17695,9 +17699,9 @@ exports.default = _default;
 
 /***/ }),
 /* 124 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/picker.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/picker.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17745,9 +17749,9 @@ exports.default = _default;
 
 /***/ }),
 /* 125 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/popup.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/popup.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17791,9 +17795,9 @@ exports.default = _default;
 
 /***/ }),
 /* 126 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/radio.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/radio.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17835,9 +17839,9 @@ exports.default = _default;
 
 /***/ }),
 /* 127 */
-/*!***************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/radioGroup.js ***!
-  \***************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/radioGroup.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17882,9 +17886,9 @@ exports.default = _default;
 
 /***/ }),
 /* 128 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/rate.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/rate.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17925,9 +17929,9 @@ exports.default = _default;
 
 /***/ }),
 /* 129 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/readMore.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/readMore.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17964,9 +17968,9 @@ exports.default = _default;
 
 /***/ }),
 /* 130 */
-/*!********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/row.js ***!
-  \********************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/row.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17998,9 +18002,9 @@ exports.default = _default;
 
 /***/ }),
 /* 131 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/rowNotice.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/rowNotice.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18036,9 +18040,9 @@ exports.default = _default;
 
 /***/ }),
 /* 132 */
-/*!***************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/scrollList.js ***!
-  \***************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/scrollList.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18073,9 +18077,9 @@ exports.default = _default;
 
 /***/ }),
 /* 133 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/search.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/search.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18131,9 +18135,9 @@ exports.default = _default;
 
 /***/ }),
 /* 134 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/section.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/section.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18172,9 +18176,9 @@ exports.default = _default;
 
 /***/ }),
 /* 135 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/skeleton.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/skeleton.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18214,9 +18218,9 @@ exports.default = _default;
 
 /***/ }),
 /* 136 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/slider.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/slider.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18256,9 +18260,9 @@ exports.default = _default;
 
 /***/ }),
 /* 137 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/statusBar.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/statusBar.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18288,9 +18292,9 @@ exports.default = _default;
 
 /***/ }),
 /* 138 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/steps.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/steps.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18326,9 +18330,9 @@ exports.default = _default;
 
 /***/ }),
 /* 139 */
-/*!**************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/stepsItem.js ***!
-  \**************************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/stepsItem.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18361,9 +18365,9 @@ exports.default = _default;
 
 /***/ }),
 /* 140 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/sticky.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/sticky.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18398,9 +18402,9 @@ exports.default = _default;
 
 /***/ }),
 /* 141 */
-/*!***************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/subsection.js ***!
-  \***************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/subsection.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18438,9 +18442,9 @@ exports.default = _default;
 
 /***/ }),
 /* 142 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/swipeAction.js ***!
-  \****************************************************************************************/
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/swipeAction.js ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18470,9 +18474,9 @@ exports.default = _default;
 
 /***/ }),
 /* 143 */
-/*!********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/swipeActionItem.js ***!
-  \********************************************************************************************/
+/*!************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/swipeActionItem.js ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18508,9 +18512,9 @@ exports.default = _default;
 
 /***/ }),
 /* 144 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/swiper.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/swiper.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18565,9 +18569,9 @@ exports.default = _default;
 
 /***/ }),
 /* 145 */
-/*!*********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/swipterIndicator.js ***!
-  \*********************************************************************************************/
+/*!*************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/swipterIndicator.js ***!
+  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18601,9 +18605,9 @@ exports.default = _default;
 
 /***/ }),
 /* 146 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/switch.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/switch.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18642,9 +18646,9 @@ exports.default = _default;
 
 /***/ }),
 /* 147 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/tabbar.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/tabbar.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18681,9 +18685,9 @@ exports.default = _default;
 
 /***/ }),
 /* 148 */
-/*!***************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/tabbarItem.js ***!
-  \***************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/tabbarItem.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18718,9 +18722,9 @@ exports.default = _default;
 
 /***/ }),
 /* 149 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/tabs.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/tabs.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18775,9 +18779,9 @@ exports.default = _default;
 
 /***/ }),
 /* 150 */
-/*!********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/tag.js ***!
-  \********************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/tag.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18821,9 +18825,9 @@ exports.default = _default;
 
 /***/ }),
 /* 151 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/text.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/text.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18877,9 +18881,9 @@ exports.default = _default;
 
 /***/ }),
 /* 152 */
-/*!*************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/textarea.js ***!
-  \*************************************************************************************/
+/*!*****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/textarea.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18930,9 +18934,9 @@ exports.default = _default;
 
 /***/ }),
 /* 153 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/toast.js ***!
-  \**********************************************************************************/
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/toast.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18976,9 +18980,9 @@ exports.default = _default;
 
 /***/ }),
 /* 154 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/toolbar.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/toolbar.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19013,9 +19017,9 @@ exports.default = _default;
 
 /***/ }),
 /* 155 */
-/*!************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/tooltip.js ***!
-  \************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/tooltip.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19057,9 +19061,9 @@ exports.default = _default;
 
 /***/ }),
 /* 156 */
-/*!***************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/transition.js ***!
-  \***************************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/transition.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19092,9 +19096,9 @@ exports.default = _default;
 
 /***/ }),
 /* 157 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/props/upload.js ***!
-  \***********************************************************************************/
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/props/upload.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19151,9 +19155,9 @@ exports.default = _default;
 
 /***/ }),
 /* 158 */
-/*!*****************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/config/zIndex.js ***!
-  \*****************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/config/zIndex.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19187,9 +19191,9 @@ exports.default = _default;
 
 /***/ }),
 /* 159 */
-/*!*********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/libs/function/platform.js ***!
-  \*********************************************************************************/
+/*!*************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/libs/function/platform.js ***!
+  \*************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19217,9 +19221,9 @@ exports.default = _default;
 
 /***/ }),
 /* 160 */
-/*!**********************************************************!*\
-  !*** E:/project/AiEducate/aiWx/uni.promisify.adaptor.js ***!
-  \**********************************************************/
+/*!**************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/uni.promisify.adaptor.js ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19277,7 +19281,142 @@ uni.addInterceptor({
 /* 195 */,
 /* 196 */,
 /* 197 */,
-/* 198 */,
+/* 198 */
+/*!****************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-search/props.js ***!
+  \****************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 搜索框形状，round-圆形，square-方形
+    shape: {
+      type: String,
+      default: uni.$u.props.search.shape
+    },
+    // 搜索框背景色，默认值#f2f2f2
+    bgColor: {
+      type: String,
+      default: uni.$u.props.search.bgColor
+    },
+    // 占位提示文字
+    placeholder: {
+      type: String,
+      default: uni.$u.props.search.placeholder
+    },
+    // 是否启用清除控件
+    clearabled: {
+      type: Boolean,
+      default: uni.$u.props.search.clearabled
+    },
+    // 是否自动聚焦
+    focus: {
+      type: Boolean,
+      default: uni.$u.props.search.focus
+    },
+    // 是否在搜索框右侧显示取消按钮
+    showAction: {
+      type: Boolean,
+      default: uni.$u.props.search.showAction
+    },
+    // 右边控件的样式
+    actionStyle: {
+      type: Object,
+      default: uni.$u.props.search.actionStyle
+    },
+    // 取消按钮文字
+    actionText: {
+      type: String,
+      default: uni.$u.props.search.actionText
+    },
+    // 输入框内容对齐方式，可选值为 left|center|right
+    inputAlign: {
+      type: String,
+      default: uni.$u.props.search.inputAlign
+    },
+    // input输入框的样式，可以定义文字颜色，大小等，对象形式
+    inputStyle: {
+      type: Object,
+      default: uni.$u.props.search.inputStyle
+    },
+    // 是否启用输入框
+    disabled: {
+      type: Boolean,
+      default: uni.$u.props.search.disabled
+    },
+    // 边框颜色
+    borderColor: {
+      type: String,
+      default: uni.$u.props.search.borderColor
+    },
+    // 搜索图标的颜色，默认同输入框字体颜色
+    searchIconColor: {
+      type: String,
+      default: uni.$u.props.search.searchIconColor
+    },
+    // 输入框字体颜色
+    color: {
+      type: String,
+      default: uni.$u.props.search.color
+    },
+    // placeholder的颜色
+    placeholderColor: {
+      type: String,
+      default: uni.$u.props.search.placeholderColor
+    },
+    // 左边输入框的图标，可以为uView图标名称或图片路径
+    searchIcon: {
+      type: String,
+      default: uni.$u.props.search.searchIcon
+    },
+    searchIconSize: {
+      type: [Number, String],
+      default: uni.$u.props.search.searchIconSize
+    },
+    // 组件与其他上下左右元素之间的距离，带单位的字符串形式，如"30px"、"30px 20px"等写法
+    margin: {
+      type: String,
+      default: uni.$u.props.search.margin
+    },
+    // 开启showAction时，是否在input获取焦点时才显示
+    animation: {
+      type: Boolean,
+      default: uni.$u.props.search.animation
+    },
+    // 输入框的初始化内容
+    value: {
+      type: String,
+      default: uni.$u.props.search.value
+    },
+    // 输入框最大能输入的长度，-1为不限制长度(来自uniapp文档)
+    maxlength: {
+      type: [String, Number],
+      default: uni.$u.props.search.maxlength
+    },
+    // 搜索框高度，单位px
+    height: {
+      type: [String, Number],
+      default: uni.$u.props.search.height
+    },
+    // 搜索框左侧文本
+    label: {
+      type: [String, Number, null],
+      default: uni.$u.props.search.label
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
 /* 199 */,
 /* 200 */,
 /* 201 */,
@@ -19305,10 +19444,842 @@ uni.addInterceptor({
 /* 223 */,
 /* 224 */,
 /* 225 */,
-/* 226 */
+/* 226 */,
+/* 227 */,
+/* 228 */,
+/* 229 */,
+/* 230 */,
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-icon/icons.js ***!
+  \**************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  'uicon-level': "\uE693",
+  'uicon-column-line': "\uE68E",
+  'uicon-checkbox-mark': "\uE807",
+  'uicon-folder': "\uE7F5",
+  'uicon-movie': "\uE7F6",
+  'uicon-star-fill': "\uE669",
+  'uicon-star': "\uE65F",
+  'uicon-phone-fill': "\uE64F",
+  'uicon-phone': "\uE622",
+  'uicon-apple-fill': "\uE881",
+  'uicon-chrome-circle-fill': "\uE885",
+  'uicon-backspace': "\uE67B",
+  'uicon-attach': "\uE632",
+  'uicon-cut': "\uE948",
+  'uicon-empty-car': "\uE602",
+  'uicon-empty-coupon': "\uE682",
+  'uicon-empty-address': "\uE646",
+  'uicon-empty-favor': "\uE67C",
+  'uicon-empty-permission': "\uE686",
+  'uicon-empty-news': "\uE687",
+  'uicon-empty-search': "\uE664",
+  'uicon-github-circle-fill': "\uE887",
+  'uicon-rmb': "\uE608",
+  'uicon-person-delete-fill': "\uE66A",
+  'uicon-reload': "\uE788",
+  'uicon-order': "\uE68F",
+  'uicon-server-man': "\uE6BC",
+  'uicon-search': "\uE62A",
+  'uicon-fingerprint': "\uE955",
+  'uicon-more-dot-fill': "\uE630",
+  'uicon-scan': "\uE662",
+  'uicon-share-square': "\uE60B",
+  'uicon-map': "\uE61D",
+  'uicon-map-fill': "\uE64E",
+  'uicon-tags': "\uE629",
+  'uicon-tags-fill': "\uE651",
+  'uicon-bookmark-fill': "\uE63B",
+  'uicon-bookmark': "\uE60A",
+  'uicon-eye': "\uE613",
+  'uicon-eye-fill': "\uE641",
+  'uicon-mic': "\uE64A",
+  'uicon-mic-off': "\uE649",
+  'uicon-calendar': "\uE66E",
+  'uicon-calendar-fill': "\uE634",
+  'uicon-trash': "\uE623",
+  'uicon-trash-fill': "\uE658",
+  'uicon-play-left': "\uE66D",
+  'uicon-play-right': "\uE610",
+  'uicon-minus': "\uE618",
+  'uicon-plus': "\uE62D",
+  'uicon-info': "\uE653",
+  'uicon-info-circle': "\uE7D2",
+  'uicon-info-circle-fill': "\uE64B",
+  'uicon-question': "\uE715",
+  'uicon-error': "\uE6D3",
+  'uicon-close': "\uE685",
+  'uicon-checkmark': "\uE6A8",
+  'uicon-android-circle-fill': "\uE67E",
+  'uicon-android-fill': "\uE67D",
+  'uicon-ie': "\uE87B",
+  'uicon-IE-circle-fill': "\uE889",
+  'uicon-google': "\uE87A",
+  'uicon-google-circle-fill': "\uE88A",
+  'uicon-setting-fill': "\uE872",
+  'uicon-setting': "\uE61F",
+  'uicon-minus-square-fill': "\uE855",
+  'uicon-plus-square-fill': "\uE856",
+  'uicon-heart': "\uE7DF",
+  'uicon-heart-fill': "\uE851",
+  'uicon-camera': "\uE7D7",
+  'uicon-camera-fill': "\uE870",
+  'uicon-more-circle': "\uE63E",
+  'uicon-more-circle-fill': "\uE645",
+  'uicon-chat': "\uE620",
+  'uicon-chat-fill': "\uE61E",
+  'uicon-bag-fill': "\uE617",
+  'uicon-bag': "\uE619",
+  'uicon-error-circle-fill': "\uE62C",
+  'uicon-error-circle': "\uE624",
+  'uicon-close-circle': "\uE63F",
+  'uicon-close-circle-fill': "\uE637",
+  'uicon-checkmark-circle': "\uE63D",
+  'uicon-checkmark-circle-fill': "\uE635",
+  'uicon-question-circle-fill': "\uE666",
+  'uicon-question-circle': "\uE625",
+  'uicon-share': "\uE631",
+  'uicon-share-fill': "\uE65E",
+  'uicon-shopping-cart': "\uE621",
+  'uicon-shopping-cart-fill': "\uE65D",
+  'uicon-bell': "\uE609",
+  'uicon-bell-fill': "\uE640",
+  'uicon-list': "\uE650",
+  'uicon-list-dot': "\uE616",
+  'uicon-zhihu': "\uE6BA",
+  'uicon-zhihu-circle-fill': "\uE709",
+  'uicon-zhifubao': "\uE6B9",
+  'uicon-zhifubao-circle-fill': "\uE6B8",
+  'uicon-weixin-circle-fill': "\uE6B1",
+  'uicon-weixin-fill': "\uE6B2",
+  'uicon-twitter-circle-fill': "\uE6AB",
+  'uicon-twitter': "\uE6AA",
+  'uicon-taobao-circle-fill': "\uE6A7",
+  'uicon-taobao': "\uE6A6",
+  'uicon-weibo-circle-fill': "\uE6A5",
+  'uicon-weibo': "\uE6A4",
+  'uicon-qq-fill': "\uE6A1",
+  'uicon-qq-circle-fill': "\uE6A0",
+  'uicon-moments-circel-fill': "\uE69A",
+  'uicon-moments': "\uE69B",
+  'uicon-qzone': "\uE695",
+  'uicon-qzone-circle-fill': "\uE696",
+  'uicon-baidu-circle-fill': "\uE680",
+  'uicon-baidu': "\uE681",
+  'uicon-facebook-circle-fill': "\uE68A",
+  'uicon-facebook': "\uE689",
+  'uicon-car': "\uE60C",
+  'uicon-car-fill': "\uE636",
+  'uicon-warning-fill': "\uE64D",
+  'uicon-warning': "\uE694",
+  'uicon-clock-fill': "\uE638",
+  'uicon-clock': "\uE60F",
+  'uicon-edit-pen': "\uE612",
+  'uicon-edit-pen-fill': "\uE66B",
+  'uicon-email': "\uE611",
+  'uicon-email-fill': "\uE642",
+  'uicon-minus-circle': "\uE61B",
+  'uicon-minus-circle-fill': "\uE652",
+  'uicon-plus-circle': "\uE62E",
+  'uicon-plus-circle-fill': "\uE661",
+  'uicon-file-text': "\uE663",
+  'uicon-file-text-fill': "\uE665",
+  'uicon-pushpin': "\uE7E3",
+  'uicon-pushpin-fill': "\uE86E",
+  'uicon-grid': "\uE673",
+  'uicon-grid-fill': "\uE678",
+  'uicon-play-circle': "\uE647",
+  'uicon-play-circle-fill': "\uE655",
+  'uicon-pause-circle-fill': "\uE654",
+  'uicon-pause': "\uE8FA",
+  'uicon-pause-circle': "\uE643",
+  'uicon-eye-off': "\uE648",
+  'uicon-eye-off-outline': "\uE62B",
+  'uicon-gift-fill': "\uE65C",
+  'uicon-gift': "\uE65B",
+  'uicon-rmb-circle-fill': "\uE657",
+  'uicon-rmb-circle': "\uE677",
+  'uicon-kefu-ermai': "\uE656",
+  'uicon-server-fill': "\uE751",
+  'uicon-coupon-fill': "\uE8C4",
+  'uicon-coupon': "\uE8AE",
+  'uicon-integral': "\uE704",
+  'uicon-integral-fill': "\uE703",
+  'uicon-home-fill': "\uE964",
+  'uicon-home': "\uE965",
+  'uicon-hourglass-half-fill': "\uE966",
+  'uicon-hourglass': "\uE967",
+  'uicon-account': "\uE628",
+  'uicon-plus-people-fill': "\uE626",
+  'uicon-minus-people-fill': "\uE615",
+  'uicon-account-fill': "\uE614",
+  'uicon-thumb-down-fill': "\uE726",
+  'uicon-thumb-down': "\uE727",
+  'uicon-thumb-up': "\uE733",
+  'uicon-thumb-up-fill': "\uE72F",
+  'uicon-lock-fill': "\uE979",
+  'uicon-lock-open': "\uE973",
+  'uicon-lock-opened-fill': "\uE974",
+  'uicon-lock': "\uE97A",
+  'uicon-red-packet-fill': "\uE690",
+  'uicon-photo-fill': "\uE98B",
+  'uicon-photo': "\uE98D",
+  'uicon-volume-off-fill': "\uE659",
+  'uicon-volume-off': "\uE644",
+  'uicon-volume-fill': "\uE670",
+  'uicon-volume': "\uE633",
+  'uicon-red-packet': "\uE691",
+  'uicon-download': "\uE63C",
+  'uicon-arrow-up-fill': "\uE6B0",
+  'uicon-arrow-down-fill': "\uE600",
+  'uicon-play-left-fill': "\uE675",
+  'uicon-play-right-fill': "\uE676",
+  'uicon-rewind-left-fill': "\uE679",
+  'uicon-rewind-right-fill': "\uE67A",
+  'uicon-arrow-downward': "\uE604",
+  'uicon-arrow-leftward': "\uE601",
+  'uicon-arrow-rightward': "\uE603",
+  'uicon-arrow-upward': "\uE607",
+  'uicon-arrow-down': "\uE60D",
+  'uicon-arrow-right': "\uE605",
+  'uicon-arrow-left': "\uE60E",
+  'uicon-arrow-up': "\uE606",
+  'uicon-skip-back-left': "\uE674",
+  'uicon-skip-forward-right': "\uE672",
+  'uicon-rewind-right': "\uE66F",
+  'uicon-rewind-left': "\uE671",
+  'uicon-arrow-right-double': "\uE68D",
+  'uicon-arrow-left-double': "\uE68C",
+  'uicon-wifi-off': "\uE668",
+  'uicon-wifi': "\uE667",
+  'uicon-empty-data': "\uE62F",
+  'uicon-empty-history': "\uE684",
+  'uicon-empty-list': "\uE68B",
+  'uicon-empty-page': "\uE627",
+  'uicon-empty-order': "\uE639",
+  'uicon-man': "\uE697",
+  'uicon-woman': "\uE69C",
+  'uicon-man-add': "\uE61C",
+  'uicon-man-add-fill': "\uE64C",
+  'uicon-man-delete': "\uE61A",
+  'uicon-man-delete-fill': "\uE66A",
+  'uicon-zh': "\uE70A",
+  'uicon-en': "\uE692"
+};
+exports.default = _default;
+
+/***/ }),
+/* 235 */
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-icon/props.js ***!
+  \**************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 图标类名
+    name: {
+      type: String,
+      default: uni.$u.props.icon.name
+    },
+    // 图标颜色，可接受主题色
+    color: {
+      type: String,
+      default: uni.$u.props.icon.color
+    },
+    // 字体大小，单位px
+    size: {
+      type: [String, Number],
+      default: uni.$u.props.icon.size
+    },
+    // 是否显示粗体
+    bold: {
+      type: Boolean,
+      default: uni.$u.props.icon.bold
+    },
+    // 点击图标的时候传递事件出去的index（用于区分点击了哪一个）
+    index: {
+      type: [String, Number],
+      default: uni.$u.props.icon.index
+    },
+    // 触摸图标时的类名
+    hoverClass: {
+      type: String,
+      default: uni.$u.props.icon.hoverClass
+    },
+    // 自定义扩展前缀，方便用户扩展自己的图标库
+    customPrefix: {
+      type: String,
+      default: uni.$u.props.icon.customPrefix
+    },
+    // 图标右边或者下面的文字
+    label: {
+      type: [String, Number],
+      default: uni.$u.props.icon.label
+    },
+    // label的位置，只能右边或者下边
+    labelPos: {
+      type: String,
+      default: uni.$u.props.icon.labelPos
+    },
+    // label的大小
+    labelSize: {
+      type: [String, Number],
+      default: uni.$u.props.icon.labelSize
+    },
+    // label的颜色
+    labelColor: {
+      type: String,
+      default: uni.$u.props.icon.labelColor
+    },
+    // label与图标的距离
+    space: {
+      type: [String, Number],
+      default: uni.$u.props.icon.space
+    },
+    // 图片的mode
+    imgMode: {
+      type: String,
+      default: uni.$u.props.icon.imgMode
+    },
+    // 用于显示图片小图标时，图片的宽度
+    width: {
+      type: [String, Number],
+      default: uni.$u.props.icon.width
+    },
+    // 用于显示图片小图标时，图片的高度
+    height: {
+      type: [String, Number],
+      default: uni.$u.props.icon.height
+    },
+    // 用于解决某些情况下，让图标垂直居中的用途
+    top: {
+      type: [String, Number],
+      default: uni.$u.props.icon.top
+    },
+    // 是否阻止事件传播
+    stop: {
+      type: Boolean,
+      default: uni.$u.props.icon.stop
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */
+/*!***************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-image/props.js ***!
+  \***************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 图片地址
+    src: {
+      type: String,
+      default: uni.$u.props.image.src
+    },
+    // 裁剪模式
+    mode: {
+      type: String,
+      default: uni.$u.props.image.mode
+    },
+    // 宽度，单位任意
+    width: {
+      type: [String, Number],
+      default: uni.$u.props.image.width
+    },
+    // 高度，单位任意
+    height: {
+      type: [String, Number],
+      default: uni.$u.props.image.height
+    },
+    // 图片形状，circle-圆形，square-方形
+    shape: {
+      type: String,
+      default: uni.$u.props.image.shape
+    },
+    // 圆角，单位任意
+    radius: {
+      type: [String, Number],
+      default: uni.$u.props.image.radius
+    },
+    // 是否懒加载，微信小程序、App、百度小程序、字节跳动小程序
+    lazyLoad: {
+      type: Boolean,
+      default: uni.$u.props.image.lazyLoad
+    },
+    // 开启长按图片显示识别微信小程序码菜单
+    showMenuByLongpress: {
+      type: Boolean,
+      default: uni.$u.props.image.showMenuByLongpress
+    },
+    // 加载中的图标，或者小图片
+    loadingIcon: {
+      type: String,
+      default: uni.$u.props.image.loadingIcon
+    },
+    // 加载失败的图标，或者小图片
+    errorIcon: {
+      type: String,
+      default: uni.$u.props.image.errorIcon
+    },
+    // 是否显示加载中的图标或者自定义的slot
+    showLoading: {
+      type: Boolean,
+      default: uni.$u.props.image.showLoading
+    },
+    // 是否显示加载错误的图标或者自定义的slot
+    showError: {
+      type: Boolean,
+      default: uni.$u.props.image.showError
+    },
+    // 是否需要淡入效果
+    fade: {
+      type: Boolean,
+      default: uni.$u.props.image.fade
+    },
+    // 只支持网络资源，只对微信小程序有效
+    webp: {
+      type: Boolean,
+      default: uni.$u.props.image.webp
+    },
+    // 过渡时间，单位ms
+    duration: {
+      type: [String, Number],
+      default: uni.$u.props.image.duration
+    },
+    // 背景颜色，用于深色页面加载图片时，为了和背景色融合
+    bgColor: {
+      type: String,
+      default: uni.$u.props.image.bgColor
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */
+/*!********************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/props.js ***!
+  \********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 是否展示组件
+    show: {
+      type: Boolean,
+      default: uni.$u.props.transition.show
+    },
+    // 使用的动画模式
+    mode: {
+      type: String,
+      default: uni.$u.props.transition.mode
+    },
+    // 动画的执行时间，单位ms
+    duration: {
+      type: [String, Number],
+      default: uni.$u.props.transition.duration
+    },
+    // 使用的动画过渡函数
+    timingFunction: {
+      type: String,
+      default: uni.$u.props.transition.timingFunction
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+/* 271 */
 /*!*************************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/uni_modules/uni-icons/components/uni-icons/uniicons_file_vue.js ***!
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/transition.js ***!
   \*************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 57));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 59));
+var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 272));
+// 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
+var nextTick = function nextTick() {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, 1000 / 50);
+  });
+};
+// nvue动画模块实现细节抽离在外部文件
+
+// 定义类名，通过给元素动态切换类名，赋予元素一定的css动画样式
+var getClassNames = function getClassNames(name) {
+  return {
+    enter: "u-".concat(name, "-enter u-").concat(name, "-enter-active"),
+    'enter-to': "u-".concat(name, "-enter-to u-").concat(name, "-enter-active"),
+    leave: "u-".concat(name, "-leave u-").concat(name, "-leave-active"),
+    'leave-to': "u-".concat(name, "-leave-to u-").concat(name, "-leave-active")
+  };
+};
+var _default = {
+  methods: {
+    // 组件被点击发出事件
+    clickHandler: function clickHandler() {
+      this.$emit('click');
+    },
+    // vue版本的组件进场处理
+    vueEnter: function vueEnter() {
+      var _this = this;
+      // 动画进入时的类名
+      var classNames = getClassNames(this.mode);
+      // 定义状态和发出动画进入前事件
+      this.status = 'enter';
+      this.$emit('beforeEnter');
+      this.inited = true;
+      this.display = true;
+      this.classes = classNames.enter;
+      this.$nextTick( /*#__PURE__*/(0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+        return _regenerator.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // 标识动画尚未结束
+                _this.$emit('enter');
+                _this.transitionEnded = false;
+                // 组件动画进入后触发的事件
+                _this.$emit('afterEnter');
+                // 赋予组件enter-to类名
+                _this.classes = classNames['enter-to'];
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      })));
+    },
+    // 动画离场处理
+    vueLeave: function vueLeave() {
+      var _this2 = this;
+      // 如果不是展示状态，无需执行逻辑
+      if (!this.display) return;
+      var classNames = getClassNames(this.mode);
+      // 标记离开状态和发出事件
+      this.status = 'leave';
+      this.$emit('beforeLeave');
+      // 获得类名
+      this.classes = classNames.leave;
+      this.$nextTick(function () {
+        // 动画正在离场的状态
+        _this2.transitionEnded = false;
+        _this2.$emit('leave');
+        // 组件执行动画，到了执行的执行时间后，执行一些额外处理
+        setTimeout(_this2.onTransitionEnd, _this2.duration);
+        _this2.classes = classNames['leave-to'];
+      });
+    },
+    // 完成过渡后触发
+    onTransitionEnd: function onTransitionEnd() {
+      // 如果已经是结束的状态，无需再处理
+      if (this.transitionEnded) return;
+      this.transitionEnded = true;
+      // 发出组件动画执行后的事件
+      this.$emit(this.status === 'leave' ? 'afterLeave' : 'afterEnter');
+      if (!this.show && this.display) {
+        this.display = false;
+        this.inited = false;
+      }
+    }
+  }
+};
+exports.default = _default;
+
+/***/ }),
+/* 272 */
+/*!***************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/nvue.ani-map.js ***!
+  \***************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  fade: {
+    enter: {
+      opacity: 0
+    },
+    'enter-to': {
+      opacity: 1
+    },
+    leave: {
+      opacity: 1
+    },
+    'leave-to': {
+      opacity: 0
+    }
+  },
+  'fade-up': {
+    enter: {
+      opacity: 0,
+      transform: 'translateY(100%)'
+    },
+    'enter-to': {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    leave: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      opacity: 0,
+      transform: 'translateY(100%)'
+    }
+  },
+  'fade-down': {
+    enter: {
+      opacity: 0,
+      transform: 'translateY(-100%)'
+    },
+    'enter-to': {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    leave: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      opacity: 0,
+      transform: 'translateY(-100%)'
+    }
+  },
+  'fade-left': {
+    enter: {
+      opacity: 0,
+      transform: 'translateX(-100%)'
+    },
+    'enter-to': {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    leave: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      opacity: 0,
+      transform: 'translateX(-100%)'
+    }
+  },
+  'fade-right': {
+    enter: {
+      opacity: 0,
+      transform: 'translateX(100%)'
+    },
+    'enter-to': {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    leave: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      opacity: 0,
+      transform: 'translateX(100%)'
+    }
+  },
+  'slide-up': {
+    enter: {
+      transform: 'translateY(100%)'
+    },
+    'enter-to': {
+      transform: 'translateY(0)'
+    },
+    leave: {
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      transform: 'translateY(100%)'
+    }
+  },
+  'slide-down': {
+    enter: {
+      transform: 'translateY(-100%)'
+    },
+    'enter-to': {
+      transform: 'translateY(0)'
+    },
+    leave: {
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      transform: 'translateY(-100%)'
+    }
+  },
+  'slide-left': {
+    enter: {
+      transform: 'translateX(-100%)'
+    },
+    'enter-to': {
+      transform: 'translateY(0)'
+    },
+    leave: {
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      transform: 'translateX(-100%)'
+    }
+  },
+  'slide-right': {
+    enter: {
+      transform: 'translateX(100%)'
+    },
+    'enter-to': {
+      transform: 'translateY(0)'
+    },
+    leave: {
+      transform: 'translateY(0)'
+    },
+    'leave-to': {
+      transform: 'translateX(100%)'
+    }
+  },
+  zoom: {
+    enter: {
+      transform: 'scale(0.95)'
+    },
+    'enter-to': {
+      transform: 'scale(1)'
+    },
+    leave: {
+      transform: 'scale(1)'
+    },
+    'leave-to': {
+      transform: 'scale(0.95)'
+    }
+  },
+  'fade-zoom': {
+    enter: {
+      opacity: 0,
+      transform: 'scale(0.95)'
+    },
+    'enter-to': {
+      opacity: 1,
+      transform: 'scale(1)'
+    },
+    leave: {
+      opacity: 1,
+      transform: 'scale(1)'
+    },
+    'leave-to': {
+      opacity: 0,
+      transform: 'scale(0.95)'
+    }
+  }
+};
+exports.default = _default;
+
+/***/ }),
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */,
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */
+/*!*****************************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/uni_modules/uni-icons/components/uni-icons/uniicons_file_vue.js ***!
+  \*****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19806,823 +20777,6 @@ var fontData = [{
 
 // export const fontData = JSON.parse<IconsDataItem>(fontDataJson)
 exports.fontData = fontData;
-
-/***/ }),
-/* 227 */,
-/* 228 */,
-/* 229 */,
-/* 230 */,
-/* 231 */,
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */,
-/* 237 */,
-/* 238 */,
-/* 239 */,
-/* 240 */,
-/* 241 */
-/*!***********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-image/props.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  props: {
-    // 图片地址
-    src: {
-      type: String,
-      default: uni.$u.props.image.src
-    },
-    // 裁剪模式
-    mode: {
-      type: String,
-      default: uni.$u.props.image.mode
-    },
-    // 宽度，单位任意
-    width: {
-      type: [String, Number],
-      default: uni.$u.props.image.width
-    },
-    // 高度，单位任意
-    height: {
-      type: [String, Number],
-      default: uni.$u.props.image.height
-    },
-    // 图片形状，circle-圆形，square-方形
-    shape: {
-      type: String,
-      default: uni.$u.props.image.shape
-    },
-    // 圆角，单位任意
-    radius: {
-      type: [String, Number],
-      default: uni.$u.props.image.radius
-    },
-    // 是否懒加载，微信小程序、App、百度小程序、字节跳动小程序
-    lazyLoad: {
-      type: Boolean,
-      default: uni.$u.props.image.lazyLoad
-    },
-    // 开启长按图片显示识别微信小程序码菜单
-    showMenuByLongpress: {
-      type: Boolean,
-      default: uni.$u.props.image.showMenuByLongpress
-    },
-    // 加载中的图标，或者小图片
-    loadingIcon: {
-      type: String,
-      default: uni.$u.props.image.loadingIcon
-    },
-    // 加载失败的图标，或者小图片
-    errorIcon: {
-      type: String,
-      default: uni.$u.props.image.errorIcon
-    },
-    // 是否显示加载中的图标或者自定义的slot
-    showLoading: {
-      type: Boolean,
-      default: uni.$u.props.image.showLoading
-    },
-    // 是否显示加载错误的图标或者自定义的slot
-    showError: {
-      type: Boolean,
-      default: uni.$u.props.image.showError
-    },
-    // 是否需要淡入效果
-    fade: {
-      type: Boolean,
-      default: uni.$u.props.image.fade
-    },
-    // 只支持网络资源，只对微信小程序有效
-    webp: {
-      type: Boolean,
-      default: uni.$u.props.image.webp
-    },
-    // 过渡时间，单位ms
-    duration: {
-      type: [String, Number],
-      default: uni.$u.props.image.duration
-    },
-    // 背景颜色，用于深色页面加载图片时，为了和背景色融合
-    bgColor: {
-      type: String,
-      default: uni.$u.props.image.bgColor
-    }
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-/* 242 */,
-/* 243 */,
-/* 244 */,
-/* 245 */,
-/* 246 */,
-/* 247 */,
-/* 248 */,
-/* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */,
-/* 254 */
-/*!****************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-transition/props.js ***!
-  \****************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  props: {
-    // 是否展示组件
-    show: {
-      type: Boolean,
-      default: uni.$u.props.transition.show
-    },
-    // 使用的动画模式
-    mode: {
-      type: String,
-      default: uni.$u.props.transition.mode
-    },
-    // 动画的执行时间，单位ms
-    duration: {
-      type: [String, Number],
-      default: uni.$u.props.transition.duration
-    },
-    // 使用的动画过渡函数
-    timingFunction: {
-      type: String,
-      default: uni.$u.props.transition.timingFunction
-    }
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-/* 255 */
-/*!*********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-transition/transition.js ***!
-  \*********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 57));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 59));
-var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 256));
-// 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
-var nextTick = function nextTick() {
-  return new Promise(function (resolve) {
-    return setTimeout(resolve, 1000 / 50);
-  });
-};
-// nvue动画模块实现细节抽离在外部文件
-
-// 定义类名，通过给元素动态切换类名，赋予元素一定的css动画样式
-var getClassNames = function getClassNames(name) {
-  return {
-    enter: "u-".concat(name, "-enter u-").concat(name, "-enter-active"),
-    'enter-to': "u-".concat(name, "-enter-to u-").concat(name, "-enter-active"),
-    leave: "u-".concat(name, "-leave u-").concat(name, "-leave-active"),
-    'leave-to': "u-".concat(name, "-leave-to u-").concat(name, "-leave-active")
-  };
-};
-var _default = {
-  methods: {
-    // 组件被点击发出事件
-    clickHandler: function clickHandler() {
-      this.$emit('click');
-    },
-    // vue版本的组件进场处理
-    vueEnter: function vueEnter() {
-      var _this = this;
-      // 动画进入时的类名
-      var classNames = getClassNames(this.mode);
-      // 定义状态和发出动画进入前事件
-      this.status = 'enter';
-      this.$emit('beforeEnter');
-      this.inited = true;
-      this.display = true;
-      this.classes = classNames.enter;
-      this.$nextTick( /*#__PURE__*/(0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        return _regenerator.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                // 标识动画尚未结束
-                _this.$emit('enter');
-                _this.transitionEnded = false;
-                // 组件动画进入后触发的事件
-                _this.$emit('afterEnter');
-                // 赋予组件enter-to类名
-                _this.classes = classNames['enter-to'];
-              case 4:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee);
-      })));
-    },
-    // 动画离场处理
-    vueLeave: function vueLeave() {
-      var _this2 = this;
-      // 如果不是展示状态，无需执行逻辑
-      if (!this.display) return;
-      var classNames = getClassNames(this.mode);
-      // 标记离开状态和发出事件
-      this.status = 'leave';
-      this.$emit('beforeLeave');
-      // 获得类名
-      this.classes = classNames.leave;
-      this.$nextTick(function () {
-        // 动画正在离场的状态
-        _this2.transitionEnded = false;
-        _this2.$emit('leave');
-        // 组件执行动画，到了执行的执行时间后，执行一些额外处理
-        setTimeout(_this2.onTransitionEnd, _this2.duration);
-        _this2.classes = classNames['leave-to'];
-      });
-    },
-    // 完成过渡后触发
-    onTransitionEnd: function onTransitionEnd() {
-      // 如果已经是结束的状态，无需再处理
-      if (this.transitionEnded) return;
-      this.transitionEnded = true;
-      // 发出组件动画执行后的事件
-      this.$emit(this.status === 'leave' ? 'afterLeave' : 'afterEnter');
-      if (!this.show && this.display) {
-        this.display = false;
-        this.inited = false;
-      }
-    }
-  }
-};
-exports.default = _default;
-
-/***/ }),
-/* 256 */
-/*!***********************************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-transition/nvue.ani-map.js ***!
-  \***********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  fade: {
-    enter: {
-      opacity: 0
-    },
-    'enter-to': {
-      opacity: 1
-    },
-    leave: {
-      opacity: 1
-    },
-    'leave-to': {
-      opacity: 0
-    }
-  },
-  'fade-up': {
-    enter: {
-      opacity: 0,
-      transform: 'translateY(100%)'
-    },
-    'enter-to': {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    leave: {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      opacity: 0,
-      transform: 'translateY(100%)'
-    }
-  },
-  'fade-down': {
-    enter: {
-      opacity: 0,
-      transform: 'translateY(-100%)'
-    },
-    'enter-to': {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    leave: {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      opacity: 0,
-      transform: 'translateY(-100%)'
-    }
-  },
-  'fade-left': {
-    enter: {
-      opacity: 0,
-      transform: 'translateX(-100%)'
-    },
-    'enter-to': {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    leave: {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      opacity: 0,
-      transform: 'translateX(-100%)'
-    }
-  },
-  'fade-right': {
-    enter: {
-      opacity: 0,
-      transform: 'translateX(100%)'
-    },
-    'enter-to': {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    leave: {
-      opacity: 1,
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      opacity: 0,
-      transform: 'translateX(100%)'
-    }
-  },
-  'slide-up': {
-    enter: {
-      transform: 'translateY(100%)'
-    },
-    'enter-to': {
-      transform: 'translateY(0)'
-    },
-    leave: {
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      transform: 'translateY(100%)'
-    }
-  },
-  'slide-down': {
-    enter: {
-      transform: 'translateY(-100%)'
-    },
-    'enter-to': {
-      transform: 'translateY(0)'
-    },
-    leave: {
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      transform: 'translateY(-100%)'
-    }
-  },
-  'slide-left': {
-    enter: {
-      transform: 'translateX(-100%)'
-    },
-    'enter-to': {
-      transform: 'translateY(0)'
-    },
-    leave: {
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      transform: 'translateX(-100%)'
-    }
-  },
-  'slide-right': {
-    enter: {
-      transform: 'translateX(100%)'
-    },
-    'enter-to': {
-      transform: 'translateY(0)'
-    },
-    leave: {
-      transform: 'translateY(0)'
-    },
-    'leave-to': {
-      transform: 'translateX(100%)'
-    }
-  },
-  zoom: {
-    enter: {
-      transform: 'scale(0.95)'
-    },
-    'enter-to': {
-      transform: 'scale(1)'
-    },
-    leave: {
-      transform: 'scale(1)'
-    },
-    'leave-to': {
-      transform: 'scale(0.95)'
-    }
-  },
-  'fade-zoom': {
-    enter: {
-      opacity: 0,
-      transform: 'scale(0.95)'
-    },
-    'enter-to': {
-      opacity: 1,
-      transform: 'scale(1)'
-    },
-    leave: {
-      opacity: 1,
-      transform: 'scale(1)'
-    },
-    'leave-to': {
-      opacity: 0,
-      transform: 'scale(0.95)'
-    }
-  }
-};
-exports.default = _default;
-
-/***/ }),
-/* 257 */,
-/* 258 */,
-/* 259 */,
-/* 260 */,
-/* 261 */,
-/* 262 */,
-/* 263 */,
-/* 264 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-icon/icons.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  'uicon-level': "\uE693",
-  'uicon-column-line': "\uE68E",
-  'uicon-checkbox-mark': "\uE807",
-  'uicon-folder': "\uE7F5",
-  'uicon-movie': "\uE7F6",
-  'uicon-star-fill': "\uE669",
-  'uicon-star': "\uE65F",
-  'uicon-phone-fill': "\uE64F",
-  'uicon-phone': "\uE622",
-  'uicon-apple-fill': "\uE881",
-  'uicon-chrome-circle-fill': "\uE885",
-  'uicon-backspace': "\uE67B",
-  'uicon-attach': "\uE632",
-  'uicon-cut': "\uE948",
-  'uicon-empty-car': "\uE602",
-  'uicon-empty-coupon': "\uE682",
-  'uicon-empty-address': "\uE646",
-  'uicon-empty-favor': "\uE67C",
-  'uicon-empty-permission': "\uE686",
-  'uicon-empty-news': "\uE687",
-  'uicon-empty-search': "\uE664",
-  'uicon-github-circle-fill': "\uE887",
-  'uicon-rmb': "\uE608",
-  'uicon-person-delete-fill': "\uE66A",
-  'uicon-reload': "\uE788",
-  'uicon-order': "\uE68F",
-  'uicon-server-man': "\uE6BC",
-  'uicon-search': "\uE62A",
-  'uicon-fingerprint': "\uE955",
-  'uicon-more-dot-fill': "\uE630",
-  'uicon-scan': "\uE662",
-  'uicon-share-square': "\uE60B",
-  'uicon-map': "\uE61D",
-  'uicon-map-fill': "\uE64E",
-  'uicon-tags': "\uE629",
-  'uicon-tags-fill': "\uE651",
-  'uicon-bookmark-fill': "\uE63B",
-  'uicon-bookmark': "\uE60A",
-  'uicon-eye': "\uE613",
-  'uicon-eye-fill': "\uE641",
-  'uicon-mic': "\uE64A",
-  'uicon-mic-off': "\uE649",
-  'uicon-calendar': "\uE66E",
-  'uicon-calendar-fill': "\uE634",
-  'uicon-trash': "\uE623",
-  'uicon-trash-fill': "\uE658",
-  'uicon-play-left': "\uE66D",
-  'uicon-play-right': "\uE610",
-  'uicon-minus': "\uE618",
-  'uicon-plus': "\uE62D",
-  'uicon-info': "\uE653",
-  'uicon-info-circle': "\uE7D2",
-  'uicon-info-circle-fill': "\uE64B",
-  'uicon-question': "\uE715",
-  'uicon-error': "\uE6D3",
-  'uicon-close': "\uE685",
-  'uicon-checkmark': "\uE6A8",
-  'uicon-android-circle-fill': "\uE67E",
-  'uicon-android-fill': "\uE67D",
-  'uicon-ie': "\uE87B",
-  'uicon-IE-circle-fill': "\uE889",
-  'uicon-google': "\uE87A",
-  'uicon-google-circle-fill': "\uE88A",
-  'uicon-setting-fill': "\uE872",
-  'uicon-setting': "\uE61F",
-  'uicon-minus-square-fill': "\uE855",
-  'uicon-plus-square-fill': "\uE856",
-  'uicon-heart': "\uE7DF",
-  'uicon-heart-fill': "\uE851",
-  'uicon-camera': "\uE7D7",
-  'uicon-camera-fill': "\uE870",
-  'uicon-more-circle': "\uE63E",
-  'uicon-more-circle-fill': "\uE645",
-  'uicon-chat': "\uE620",
-  'uicon-chat-fill': "\uE61E",
-  'uicon-bag-fill': "\uE617",
-  'uicon-bag': "\uE619",
-  'uicon-error-circle-fill': "\uE62C",
-  'uicon-error-circle': "\uE624",
-  'uicon-close-circle': "\uE63F",
-  'uicon-close-circle-fill': "\uE637",
-  'uicon-checkmark-circle': "\uE63D",
-  'uicon-checkmark-circle-fill': "\uE635",
-  'uicon-question-circle-fill': "\uE666",
-  'uicon-question-circle': "\uE625",
-  'uicon-share': "\uE631",
-  'uicon-share-fill': "\uE65E",
-  'uicon-shopping-cart': "\uE621",
-  'uicon-shopping-cart-fill': "\uE65D",
-  'uicon-bell': "\uE609",
-  'uicon-bell-fill': "\uE640",
-  'uicon-list': "\uE650",
-  'uicon-list-dot': "\uE616",
-  'uicon-zhihu': "\uE6BA",
-  'uicon-zhihu-circle-fill': "\uE709",
-  'uicon-zhifubao': "\uE6B9",
-  'uicon-zhifubao-circle-fill': "\uE6B8",
-  'uicon-weixin-circle-fill': "\uE6B1",
-  'uicon-weixin-fill': "\uE6B2",
-  'uicon-twitter-circle-fill': "\uE6AB",
-  'uicon-twitter': "\uE6AA",
-  'uicon-taobao-circle-fill': "\uE6A7",
-  'uicon-taobao': "\uE6A6",
-  'uicon-weibo-circle-fill': "\uE6A5",
-  'uicon-weibo': "\uE6A4",
-  'uicon-qq-fill': "\uE6A1",
-  'uicon-qq-circle-fill': "\uE6A0",
-  'uicon-moments-circel-fill': "\uE69A",
-  'uicon-moments': "\uE69B",
-  'uicon-qzone': "\uE695",
-  'uicon-qzone-circle-fill': "\uE696",
-  'uicon-baidu-circle-fill': "\uE680",
-  'uicon-baidu': "\uE681",
-  'uicon-facebook-circle-fill': "\uE68A",
-  'uicon-facebook': "\uE689",
-  'uicon-car': "\uE60C",
-  'uicon-car-fill': "\uE636",
-  'uicon-warning-fill': "\uE64D",
-  'uicon-warning': "\uE694",
-  'uicon-clock-fill': "\uE638",
-  'uicon-clock': "\uE60F",
-  'uicon-edit-pen': "\uE612",
-  'uicon-edit-pen-fill': "\uE66B",
-  'uicon-email': "\uE611",
-  'uicon-email-fill': "\uE642",
-  'uicon-minus-circle': "\uE61B",
-  'uicon-minus-circle-fill': "\uE652",
-  'uicon-plus-circle': "\uE62E",
-  'uicon-plus-circle-fill': "\uE661",
-  'uicon-file-text': "\uE663",
-  'uicon-file-text-fill': "\uE665",
-  'uicon-pushpin': "\uE7E3",
-  'uicon-pushpin-fill': "\uE86E",
-  'uicon-grid': "\uE673",
-  'uicon-grid-fill': "\uE678",
-  'uicon-play-circle': "\uE647",
-  'uicon-play-circle-fill': "\uE655",
-  'uicon-pause-circle-fill': "\uE654",
-  'uicon-pause': "\uE8FA",
-  'uicon-pause-circle': "\uE643",
-  'uicon-eye-off': "\uE648",
-  'uicon-eye-off-outline': "\uE62B",
-  'uicon-gift-fill': "\uE65C",
-  'uicon-gift': "\uE65B",
-  'uicon-rmb-circle-fill': "\uE657",
-  'uicon-rmb-circle': "\uE677",
-  'uicon-kefu-ermai': "\uE656",
-  'uicon-server-fill': "\uE751",
-  'uicon-coupon-fill': "\uE8C4",
-  'uicon-coupon': "\uE8AE",
-  'uicon-integral': "\uE704",
-  'uicon-integral-fill': "\uE703",
-  'uicon-home-fill': "\uE964",
-  'uicon-home': "\uE965",
-  'uicon-hourglass-half-fill': "\uE966",
-  'uicon-hourglass': "\uE967",
-  'uicon-account': "\uE628",
-  'uicon-plus-people-fill': "\uE626",
-  'uicon-minus-people-fill': "\uE615",
-  'uicon-account-fill': "\uE614",
-  'uicon-thumb-down-fill': "\uE726",
-  'uicon-thumb-down': "\uE727",
-  'uicon-thumb-up': "\uE733",
-  'uicon-thumb-up-fill': "\uE72F",
-  'uicon-lock-fill': "\uE979",
-  'uicon-lock-open': "\uE973",
-  'uicon-lock-opened-fill': "\uE974",
-  'uicon-lock': "\uE97A",
-  'uicon-red-packet-fill': "\uE690",
-  'uicon-photo-fill': "\uE98B",
-  'uicon-photo': "\uE98D",
-  'uicon-volume-off-fill': "\uE659",
-  'uicon-volume-off': "\uE644",
-  'uicon-volume-fill': "\uE670",
-  'uicon-volume': "\uE633",
-  'uicon-red-packet': "\uE691",
-  'uicon-download': "\uE63C",
-  'uicon-arrow-up-fill': "\uE6B0",
-  'uicon-arrow-down-fill': "\uE600",
-  'uicon-play-left-fill': "\uE675",
-  'uicon-play-right-fill': "\uE676",
-  'uicon-rewind-left-fill': "\uE679",
-  'uicon-rewind-right-fill': "\uE67A",
-  'uicon-arrow-downward': "\uE604",
-  'uicon-arrow-leftward': "\uE601",
-  'uicon-arrow-rightward': "\uE603",
-  'uicon-arrow-upward': "\uE607",
-  'uicon-arrow-down': "\uE60D",
-  'uicon-arrow-right': "\uE605",
-  'uicon-arrow-left': "\uE60E",
-  'uicon-arrow-up': "\uE606",
-  'uicon-skip-back-left': "\uE674",
-  'uicon-skip-forward-right': "\uE672",
-  'uicon-rewind-right': "\uE66F",
-  'uicon-rewind-left': "\uE671",
-  'uicon-arrow-right-double': "\uE68D",
-  'uicon-arrow-left-double': "\uE68C",
-  'uicon-wifi-off': "\uE668",
-  'uicon-wifi': "\uE667",
-  'uicon-empty-data': "\uE62F",
-  'uicon-empty-history': "\uE684",
-  'uicon-empty-list': "\uE68B",
-  'uicon-empty-page': "\uE627",
-  'uicon-empty-order': "\uE639",
-  'uicon-man': "\uE697",
-  'uicon-woman': "\uE69C",
-  'uicon-man-add': "\uE61C",
-  'uicon-man-add-fill': "\uE64C",
-  'uicon-man-delete': "\uE61A",
-  'uicon-man-delete-fill': "\uE66A",
-  'uicon-zh': "\uE70A",
-  'uicon-en': "\uE692"
-};
-exports.default = _default;
-
-/***/ }),
-/* 265 */
-/*!**********************************************************************************!*\
-  !*** E:/project/AiEducate/aiWx/node_modules/uview-ui/components/u-icon/props.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  props: {
-    // 图标类名
-    name: {
-      type: String,
-      default: uni.$u.props.icon.name
-    },
-    // 图标颜色，可接受主题色
-    color: {
-      type: String,
-      default: uni.$u.props.icon.color
-    },
-    // 字体大小，单位px
-    size: {
-      type: [String, Number],
-      default: uni.$u.props.icon.size
-    },
-    // 是否显示粗体
-    bold: {
-      type: Boolean,
-      default: uni.$u.props.icon.bold
-    },
-    // 点击图标的时候传递事件出去的index（用于区分点击了哪一个）
-    index: {
-      type: [String, Number],
-      default: uni.$u.props.icon.index
-    },
-    // 触摸图标时的类名
-    hoverClass: {
-      type: String,
-      default: uni.$u.props.icon.hoverClass
-    },
-    // 自定义扩展前缀，方便用户扩展自己的图标库
-    customPrefix: {
-      type: String,
-      default: uni.$u.props.icon.customPrefix
-    },
-    // 图标右边或者下面的文字
-    label: {
-      type: [String, Number],
-      default: uni.$u.props.icon.label
-    },
-    // label的位置，只能右边或者下边
-    labelPos: {
-      type: String,
-      default: uni.$u.props.icon.labelPos
-    },
-    // label的大小
-    labelSize: {
-      type: [String, Number],
-      default: uni.$u.props.icon.labelSize
-    },
-    // label的颜色
-    labelColor: {
-      type: String,
-      default: uni.$u.props.icon.labelColor
-    },
-    // label与图标的距离
-    space: {
-      type: [String, Number],
-      default: uni.$u.props.icon.space
-    },
-    // 图片的mode
-    imgMode: {
-      type: String,
-      default: uni.$u.props.icon.imgMode
-    },
-    // 用于显示图片小图标时，图片的宽度
-    width: {
-      type: [String, Number],
-      default: uni.$u.props.icon.width
-    },
-    // 用于显示图片小图标时，图片的高度
-    height: {
-      type: [String, Number],
-      default: uni.$u.props.icon.height
-    },
-    // 用于解决某些情况下，让图标垂直居中的用途
-    top: {
-      type: [String, Number],
-      default: uni.$u.props.icon.top
-    },
-    // 是否阻止事件传播
-    stop: {
-      type: Boolean,
-      default: uni.$u.props.icon.stop
-    }
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ })
 ]]);

@@ -35,7 +35,6 @@
   z-index: 0;
   background-image: url('/static/my/cardBackground.png');
   background-size: cover; /* 背景图像覆盖 */
-  background-opacity: 0.2; /* 背景透明度 */
   display: flex;
   flex-direction: row;
   justify-content: space-around;

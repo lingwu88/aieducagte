@@ -22,8 +22,8 @@
       {
         "pagePath": "pages/index/index",
         "text": "课堂",
-        "iconPath": "static/class/class.png",
-        "selectedIconPath": "static/class/classSelected.png"
+        "iconPath": "static/classroom/class.png",
+        "selectedIconPath": "static/classroom/classSelected.png"
       },
       {
         "pagePath": "pages/index/selfStudy",

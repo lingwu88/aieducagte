@@ -23,5 +23,6 @@ export default {
 	height: 100vh;
 	background-color: #ffffff;
 	font-size:30rpx;
+	width: 100vw;
 }
 </style>
