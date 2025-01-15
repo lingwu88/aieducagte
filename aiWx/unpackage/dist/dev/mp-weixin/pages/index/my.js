@@ -143,12 +143,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var myHeader = function myHeader() {
   __webpack_require__.e(/*! require.ensure | component/my/myHeader */ "component/my/myHeader").then((function () {
-    return resolve(__webpack_require__(/*! ../../component/my/myHeader.vue */ 215));
+    return resolve(__webpack_require__(/*! ../../component/my/myHeader.vue */ 238));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var list = function list() {
   __webpack_require__.e(/*! require.ensure | component/my/list */ "component/my/list").then((function () {
-    return resolve(__webpack_require__(/*! ../../component/my/list.vue */ 222));
+    return resolve(__webpack_require__(/*! ../../component/my/list.vue */ 245));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {

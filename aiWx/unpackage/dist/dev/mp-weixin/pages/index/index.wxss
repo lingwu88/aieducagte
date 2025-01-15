@@ -46,12 +46,7 @@
   flex: 0;
   width: 90%;
 }
-.content .article-list.data-v-57280228 {
-  width: 90vw;
-  height: 120rpx;
-  margin: 30rpx 0 0 0;
-}
-.content .article-list .article-item.data-v-57280228 {
-  width: 100%;
+.content.data-v-57280228 .u-list-item {
+  margin: 30rpx 0 20rpx 0;
 }
 

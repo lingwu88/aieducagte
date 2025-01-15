@@ -103,6 +103,12 @@ try {
     uSearch: function () {
       return Promise.all(/*! import() | node-modules/uview-ui/components/u-search/u-search */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/uview-ui/components/u-search/u-search")]).then(__webpack_require__.bind(null, /*! uview-ui/components/u-search/u-search.vue */ 193))
     },
+    uList: function () {
+      return Promise.all(/*! import() | node-modules/uview-ui/components/u-list/u-list */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/uview-ui/components/u-list/u-list")]).then(__webpack_require__.bind(null, /*! uview-ui/components/u-list/u-list.vue */ 201))
+    },
+    uListItem: function () {
+      return Promise.all(/*! import() | node-modules/uview-ui/components/u-list-item/u-list-item */[__webpack_require__.e("common/vendor"), __webpack_require__.e("node-modules/uview-ui/components/u-list-item/u-list-item")]).then(__webpack_require__.bind(null, /*! uview-ui/components/u-list-item/u-list-item.vue */ 209))
+    },
   }
 } catch (e) {
   if (
@@ -166,12 +172,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var iconList = function iconList() {
   __webpack_require__.e(/*! require.ensure | component/classroom/iconList */ "component/classroom/iconList").then((function () {
-    return resolve(__webpack_require__(/*! ../../component/classroom/iconList.vue */ 201));
+    return resolve(__webpack_require__(/*! ../../component/classroom/iconList.vue */ 217));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var essay = function essay() {
   __webpack_require__.e(/*! require.ensure | component/classroom/essay */ "component/classroom/essay").then((function () {
-    return resolve(__webpack_require__(/*! ../../component/classroom/essay.vue */ 208));
+    return resolve(__webpack_require__(/*! ../../component/classroom/essay.vue */ 224));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -186,6 +192,28 @@ var _default = {
         height: "50rpx",
         width: "90vw"
       },
+      list: [{
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }, {
+        title: "2024秋冬季学习宝典|掌握规则,轻松学习",
+        img: "/static/classroom/eassyImg1.png"
+      }],
       keyword: ""
     };
   },

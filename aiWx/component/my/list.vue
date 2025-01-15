@@ -50,14 +50,20 @@
 .list{
 	width: 80vw;
 	margin:20rpx 50rpx 0 70rpx ;
+	height: 700rpx;
 	
 	.item:not(:last-child){
-		font-size:40rpx;
+		font-size:50rpx;
 		font-weight: 900;
+		height: 150rpx;
 	}
 	.item:last-child{
 		font-size: 20rpx;
 		font-weight: 400;
+	}
+	
+	/deep/.uni-list-item {
+		height: 100%;
 	}
 }
 </style>

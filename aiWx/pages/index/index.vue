@@ -3,7 +3,12 @@
 		<text class="header" selectable="false" >学习自足，答疑解惑</text>			
 		<iconList class="list"></iconList>
 		<u-search placeholder="请输入关键词进行查找" v-model="keyword"></u-search>
-	  <essay class="article-list"></essay>
+		<u-list width="90vw">
+      <u-list-item v-for="(item, index) in list" :key="index">
+        <essay></essay>
+      </u-list-item>
+    </u-list>
+		
 	</view>
 </template>
 
@@ -22,6 +27,35 @@ import essay from '../../component/classroom/essay.vue';
 					height:"50rpx",
 					width:"90vw"
 				},
+				list:[
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+					{
+						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+						img:"/static/classroom/eassyImg1.png"
+					},
+				],
 				keyword:""
 			}
 		},
@@ -62,13 +96,13 @@ import essay from '../../component/classroom/essay.vue';
 				width: 90%;
 			}
 
-		.article-list{
-			width: 90vw;
-			height: 120rpx;
-			margin:30rpx 0 0 0;
-			.article-item{
-				width: 100%;
-			}
+		// .article-list{
+		// 	width: 90vw;
+		// 	height: 120rpx;
+		// 	margin:30rpx 0 0 40rpx;
+		// }
+		/deep/.u-list-item{
+			margin:30rpx 0 20rpx 0;
 		}
 	}
 </style>

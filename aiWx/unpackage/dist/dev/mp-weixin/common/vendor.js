@@ -19424,7 +19424,99 @@ exports.default = _default;
 /* 203 */,
 /* 204 */,
 /* 205 */,
-/* 206 */,
+/* 206 */
+/*!**************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-list/props.js ***!
+  \**************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 控制是否出现滚动条，仅nvue有效
+    showScrollbar: {
+      type: Boolean,
+      default: uni.$u.props.list.showScrollbar
+    },
+    // 距底部多少时触发scrolltolower事件
+    lowerThreshold: {
+      type: [String, Number],
+      default: uni.$u.props.list.lowerThreshold
+    },
+    // 距顶部多少时触发scrolltoupper事件，非nvue有效
+    upperThreshold: {
+      type: [String, Number],
+      default: uni.$u.props.list.upperThreshold
+    },
+    // 设置竖向滚动条位置
+    scrollTop: {
+      type: [String, Number],
+      default: uni.$u.props.list.scrollTop
+    },
+    // 控制 onscroll 事件触发的频率，仅nvue有效
+    offsetAccuracy: {
+      type: [String, Number],
+      default: uni.$u.props.list.offsetAccuracy
+    },
+    // 启用 flexbox 布局。开启后，当前节点声明了display: flex就会成为flex container，并作用于其孩子节点，仅微信小程序有效
+    enableFlex: {
+      type: Boolean,
+      default: uni.$u.props.list.enableFlex
+    },
+    // 是否按分页模式显示List，默认值false
+    pagingEnabled: {
+      type: Boolean,
+      default: uni.$u.props.list.pagingEnabled
+    },
+    // 是否允许List滚动
+    scrollable: {
+      type: Boolean,
+      default: uni.$u.props.list.scrollable
+    },
+    // 值应为某子元素id（id不能以数字开头）
+    scrollIntoView: {
+      type: String,
+      default: uni.$u.props.list.scrollIntoView
+    },
+    // 在设置滚动条位置时使用动画过渡
+    scrollWithAnimation: {
+      type: Boolean,
+      default: uni.$u.props.list.scrollWithAnimation
+    },
+    // iOS点击顶部状态栏、安卓双击标题栏时，滚动条返回顶部，只对微信小程序有效
+    enableBackToTop: {
+      type: Boolean,
+      default: uni.$u.props.list.enableBackToTop
+    },
+    // 列表的高度
+    height: {
+      type: [String, Number],
+      default: uni.$u.props.list.height
+    },
+    // 列表宽度
+    width: {
+      type: [String, Number],
+      default: uni.$u.props.list.width
+    },
+    // 列表前后预渲染的屏数，1代表一个屏幕的高度，1.5代表1个半屏幕高度
+    preLoadScreen: {
+      type: [String, Number],
+      default: uni.$u.props.list.preLoadScreen
+    }
+    // vue下，是否开启虚拟列表
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
 /* 207 */,
 /* 208 */,
 /* 209 */,
@@ -19432,7 +19524,33 @@ exports.default = _default;
 /* 211 */,
 /* 212 */,
 /* 213 */,
-/* 214 */,
+/* 214 */
+/*!*******************************************************************************************!*\
+  !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-list-item/props.js ***!
+  \*******************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  props: {
+    // 用于滚动到指定item
+    anchor: {
+      type: [String, Number],
+      default: uni.$u.props.listItem.anchor
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
 /* 215 */,
 /* 216 */,
 /* 217 */,
@@ -19452,7 +19570,30 @@ exports.default = _default;
 /* 231 */,
 /* 232 */,
 /* 233 */,
-/* 234 */
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */
 /*!**************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-icon/icons.js ***!
   \**************************************************************************************/
@@ -19683,7 +19824,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 235 */
+/* 258 */
 /*!**************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-icon/props.js ***!
   \**************************************************************************************/
@@ -19790,14 +19931,14 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 236 */,
-/* 237 */,
-/* 238 */,
-/* 239 */,
-/* 240 */,
-/* 241 */,
-/* 242 */,
-/* 243 */
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */
 /*!***************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-image/props.js ***!
   \***************************************************************************************/
@@ -19899,33 +20040,33 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 244 */,
-/* 245 */,
-/* 246 */,
-/* 247 */,
-/* 248 */,
-/* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */,
-/* 254 */,
-/* 255 */,
-/* 256 */,
-/* 257 */,
-/* 258 */,
-/* 259 */,
-/* 260 */,
-/* 261 */,
-/* 262 */,
-/* 263 */,
-/* 264 */,
-/* 265 */,
-/* 266 */,
 /* 267 */,
 /* 268 */,
 /* 269 */,
-/* 270 */
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */,
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */,
+/* 281 */,
+/* 282 */,
+/* 283 */,
+/* 284 */,
+/* 285 */,
+/* 286 */,
+/* 287 */,
+/* 288 */,
+/* 289 */,
+/* 290 */,
+/* 291 */,
+/* 292 */,
+/* 293 */
 /*!********************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/props.js ***!
   \********************************************************************************************/
@@ -19967,7 +20108,7 @@ exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 271 */
+/* 294 */
 /*!*************************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/transition.js ***!
   \*************************************************************************************************/
@@ -19984,7 +20125,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 57));
 var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 59));
-var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 272));
+var _nvueAniMap = _interopRequireDefault(__webpack_require__(/*! ./nvue.ani-map.js */ 295));
 // 定义一个一定时间后自动成功的promise，让调用nextTick方法处，进入下一个then方法
 var nextTick = function nextTick() {
   return new Promise(function (resolve) {
@@ -20076,7 +20217,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 272 */
+/* 295 */
 /*!***************************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/node_modules/uview-ui/components/u-transition/nvue.ani-map.js ***!
   \***************************************************************************************************/
@@ -20269,14 +20410,14 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 273 */,
-/* 274 */,
-/* 275 */,
-/* 276 */,
-/* 277 */,
-/* 278 */,
-/* 279 */,
-/* 280 */
+/* 296 */,
+/* 297 */,
+/* 298 */,
+/* 299 */,
+/* 300 */,
+/* 301 */,
+/* 302 */,
+/* 303 */
 /*!*****************************************************************************************************!*\
   !*** D:/Project/Ai/aieducagte/aiWx/uni_modules/uni-icons/components/uni-icons/uniicons_file_vue.js ***!
   \*****************************************************************************************************/
