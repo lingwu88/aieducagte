@@ -1,11 +1,15 @@
 <template>
 	<view class="container">
-		课堂
+		<headerIcon></headerIcon>
 	</view>
 </template>
 
 <script>
+	import headerIcon from '../../component/class/headerIcon.vue'
 	export default {
+		components:{
+			headerIcon
+		},
 		data() {
 			return {
 				title: 'Hello'
