@@ -1,0 +1,1 @@
+<view class="content data-v-3f33b391"><view class="card data-v-3f33b391"><text class="title data-v-3f33b391">{{title}}</text><view class="img-list data-v-3f33b391"><u--image vue-id="b17980d6-1" src="{{img}}" lazy-load="{{true}}" height="180rpx" mode="heightFix" class="data-v-3f33b391" bind:__l="__l"></u--image></view></view></view>

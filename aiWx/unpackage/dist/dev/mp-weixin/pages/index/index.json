@@ -1,4 +1,10 @@
 {
   "navigationBarTitleText": "课堂",
-  "usingComponents": {}
+  "usingComponents": {
+    "u-search": "/node-modules/uview-ui/components/u-search/u-search",
+    "u-list": "/node-modules/uview-ui/components/u-list/u-list",
+    "u-list-item": "/node-modules/uview-ui/components/u-list-item/u-list-item",
+    "icon-list": "/component/classroom/iconList",
+    "essay": "/component/classroom/essay"
+  }
 }

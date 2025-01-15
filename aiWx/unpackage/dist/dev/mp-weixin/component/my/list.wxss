@@ -25,10 +25,21 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.main.data-v-319a68f1 {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+.list.data-v-319a68f1 {
+  width: 80vw;
+  margin: 20rpx 50rpx 0 70rpx;
+  height: 700rpx;
+}
+.list .item.data-v-319a68f1:not(:last-child) {
+  font-size: 50rpx;
+  font-weight: 900;
+  height: 150rpx;
+}
+.list .item.data-v-319a68f1:last-child {
+  font-size: 20rpx;
+  font-weight: 400;
+}
+.list.data-v-319a68f1 .uni-list-item {
+  height: 100%;
 }
 
