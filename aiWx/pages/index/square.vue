@@ -3,17 +3,17 @@
     <text class="header" selectable="false">广场</text>
 		<u-list width="70vw" height="1200rpx">
       <u-list-item v-for="(item, index) in list" :key="index">
-				<post></post>
+				<waterfall></waterfall>
       </u-list-item>
     </u-list>
 	</view>
 </template>
 
 <script>
-import post from '../../component/square/post.vue'
+import waterfall from '../../component/square/waterfall.vue';
 	export default {
 		components:{
-			post
+			waterfall
 		},
 		data() {
 			return {

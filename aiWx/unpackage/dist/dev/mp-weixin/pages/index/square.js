@@ -167,14 +167,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var post = function post() {
-  __webpack_require__.e(/*! require.ensure | component/square/post */ "component/square/post").then((function () {
-    return resolve(__webpack_require__(/*! ../../component/square/post.vue */ 231));
+var waterfall = function waterfall() {
+  __webpack_require__.e(/*! require.ensure | component/square/waterfall */ "component/square/waterfall").then((function () {
+    return resolve(__webpack_require__(/*! ../../component/square/waterfall.vue */ 231));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
   components: {
-    post: post
+    waterfall: waterfall
   },
   data: function data() {
     return {
