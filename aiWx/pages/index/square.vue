@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import post from '../../component/square/post.vue'
+import waterfall from '../../component/square/waterfall.vue'
 	export default {
 		components:{
-			post
+			waterfall
 		},
 		data() {
 			return {

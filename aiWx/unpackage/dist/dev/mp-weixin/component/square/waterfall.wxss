@@ -25,10 +25,10 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.content.data-v-70ae30bc {
+.content.data-v-37ce5880 {
   width: 45%;
 }
-.content .card.data-v-70ae30bc {
+.content .card.data-v-37ce5880 {
   height: 300rpx;
   width: 100%;
   background-color: red;
@@ -37,11 +37,11 @@
   flex-direction: column;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-.content .card .title.data-v-70ae30bc {
+.content .card .title.data-v-37ce5880 {
   font-size: 30rpx;
   font-family: "楷体";
 }
-.content .card .img-list.data-v-70ae30bc {
+.content .card .img-list.data-v-37ce5880 {
   display: flex;
   flex-direction: row;
   justify-content: center;
