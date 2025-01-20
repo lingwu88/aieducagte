@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-<view class="container data-v-37ce5880"><view class="list data-v-37ce5880"><view class="item data-v-37ce5880"><slot name="item"></slot></view></view></view>
-=======
-<scroll-view data-event-opts="{{[['scroll',[['handleScroll',['$event']]]]]}}" class="waterfall-container data-v-37ce5880" bindscroll="__e"><view class="waterfall-list data-v-37ce5880" style="{{(listStyle)}}"><block wx:if="{{isShow}}"><view class="waterfall-item data-v-37ce5880"><slot name="item"></slot></view></block><view id="temporary-list" class="data-v-37ce5880"><view class="data-v-37ce5880"><slot name="item"></slot></view></view></view></scroll-view>
->>>>>>> 2ecb0c07bfe34cb7dadd2fe43ee1271a6726332b
