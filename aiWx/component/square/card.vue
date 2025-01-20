@@ -2,11 +2,11 @@
   <view class="container">
     <view class="image"></view>
     <view class="footer">
-      <text class="title"></text>
+      <text class="title">{{ title }}</text>
       <view class="author">
         <view class="author-info">
           <div class="avatar"></div>
-          <text class="name"></text>
+          <text class="name">{{ author }}</text>
         </view>
         <text class="like">100</text>
       </view>
@@ -17,8 +17,20 @@
 <script>
 export default{
   props:{
-    detail:{
-      type:Object,
+    title:{
+      type:String,
+      required:true
+    },
+    author:{
+      type:String,
+      required:true      
+    },
+    imageHeight:{
+      type:Number,
+      required:true
+    },
+    bgColor:{
+      type:String,
       required:true
     }
   },
@@ -34,14 +46,14 @@ export default{
 .container{
   width: 100%;
   height:100%;
-  background-color: #fff;
+  background-color: #ffc3c3;
 
   .image{
     width:100%;
-    height:v-bind("`${props.detail.imageHeight}px`");
+    height:v-bind("`${imageHeight}rpx`");
     border:1px solid #eee;
     border-radius:20px;
-    background-color: v-bind("props.detail.bgColor");
+    background-color: v-bind("bgColor");
   }
 
   .footer{
@@ -78,7 +90,7 @@ export default{
         height: 20rpx;
         border-radius: 20px;
         border:1px solid rgba(0,0,0,0.08);
-        background-color:v-bind("props.detail.baColor")
+        background-color:v-bind("bgColor")
       }
       .name{
         width:80%;

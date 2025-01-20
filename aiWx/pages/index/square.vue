@@ -1,66 +1,56 @@
 <template>
 	<view class="container content">
-    <text class="header" selectable="false">广场</text>
-		<u-list width="70vw" height="1200rpx">
-      <u-list-item v-for="(item, index) in list" :key="index">
-				<post></post>
-      </u-list-item>
-    </u-list>
+		<waterfall class="fall">
+			<template #item="{item,imageHeight}">
+				<card
+					:imageHeight="imageHeight"
+					:itle="item.title"
+					:author="item.author"
+					:bgColor="item.bgColor"
+				>
+				</card>
+			</template>
+		</waterfall>
 	</view>
 </template>
 
 <script>
 import waterfall from '../../component/square/waterfall.vue'
+import card from '../../component/square/card.vue'
 	export default {
-		components:{
-			waterfall
-		},
+		components:{ waterfall , card },
 		data() {
 			return {
-				list:[
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-						{
-							title:"我是自律博主",
-							content:"这是一个自律帖子",
-							user:"王源",
-							number:111
-						},
-					]
+					fContainerRef:null,
+					column:6,
+					fContainerObserver:null,
 				}
 		},
 		onLoad() {
-
+			console.log("你好");
+			
 		},
 		methods: {
+			changeColumn(width){
+				if (width > 960) {
+					this.column = 5;
+				} else if (width >= 690 && width < 960) {
+					this.column = 4;
+				} else if (width >= 500 && width < 690) {
+					this.column = 3;
+				} else {
+					this.column = 2;
+				}
+			},
+			// getData(page,pageSize){
+			// 	return new Promise((resolve)=>{
+			// 		setTimeout(()=>{
+			// 			resolve(list.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
+			// 		},1000)
+			// 	})
+			// }
+		},
+		Mounted:{
 
 		}
 	}
@@ -72,8 +62,13 @@ import waterfall from '../../component/square/waterfall.vue'
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-
+		width:700rpx;
+		height:1000rpx;
+		border:1px solid red;
 		
+		.fall{
+			height: 100%;
+		}
 		.header{
 			font-size: 40rpx;
 			font-size: "宋体";

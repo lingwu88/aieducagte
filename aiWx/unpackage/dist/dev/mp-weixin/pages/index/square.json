@@ -1,8 +1,8 @@
 {
   "navigationBarTitleText": "广场",
   "usingComponents": {
-    "u-list": "/node-modules/uview-ui/components/u-list/u-list",
-    "u-list-item": "/node-modules/uview-ui/components/u-list-item/u-list-item",
-    "waterfall": "/component/square/waterfall"
+    "square-waterfall-item": "/pages/index/square-waterfall-item",
+    "waterfall": "/component/square/waterfall",
+    "card": "/component/square/card"
   }
 }

@@ -1,7 +1,7 @@
 //节流
 function rafThrottle(fn) {
   let lock = false;
-  return function (this, ...args) {
+  return function (...args) {
     if (lock)
       return
     lock = true
@@ -15,7 +15,7 @@ function rafThrottle(fn) {
 //防抖
 function debounce(fn, delay = 300) {
   let timer = null
-  return function (this, args) {
+  return function (args) {
     timer && clearTimeout(timer)
     timer = setTimeout(() => {
       fn.apply(this, args)
