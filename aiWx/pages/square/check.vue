@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-    <text class="header" selectable="false">广场</text>
+    <text class="header" selectable="false">打卡</text>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
 </template>
@@ -13,7 +13,7 @@ import waterfall from '../../component/square/waterfall.vue';
 		},
 		data() {
 			return {
-				bgImg:"/static/square/checkIn2.jpg",
+				bgImg:"/static/square/checkIn2.png",
 				list:[
 						{
 							title:"我是自律博主",
@@ -55,11 +55,10 @@ import waterfall from '../../component/square/waterfall.vue';
 				}
 		},
 		onLoad() {
+
 		},
 		methods: {
-			navigaTo(){
-				uni.navigateTo({url:"/pages/square/check"})
-			}
+
 		}
 	}
 </script>
@@ -84,7 +83,7 @@ import waterfall from '../../component/square/waterfall.vue';
 			position:absolute;
 			right:10rpx;
 			bottom: 20rpx;
-			background-color: #ffffff;
+			background-color: inherit;
 		}
 	}
 
