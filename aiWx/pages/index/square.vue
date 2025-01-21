@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<waterfall class="fall">
+		<!-- <waterfall class="fall">
 			<template #item="{item,imageHeight}">
 				<card
 					:imageHeight="imageHeight"
@@ -10,7 +10,9 @@
 				>
 				</card>
 			</template>
-		</waterfall>
+		</waterfall> -->
+    <text class="header" selectable="false">广场</text>
+		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
 </template>
 
@@ -24,6 +26,45 @@ import card from '../../component/square/card.vue'
 					fContainerRef:null,
 					column:6,
 					fContainerObserver:null,
+					bgImg:"/static/square/checkIn2.jpg",
+					list:[
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+								{
+									title:"我是自律博主",
+									content:"这是一个自律帖子",
+									user:"王源",
+									number:111
+								},
+						]
 				}
 		},
 		onLoad() {
@@ -51,7 +92,13 @@ import card from '../../component/square/card.vue'
 			// }
 		},
 		Mounted:{
-
+		},
+		onLoad() {
+		},
+		methods: {
+			navigaTo(){
+				uni.navigateTo({url:"/pages/square/check"})
+			}
 		}
 	}
 </script>
@@ -65,6 +112,8 @@ import card from '../../component/square/card.vue'
 		width:700rpx;
 		height:1000rpx;
 		border:1px solid red;
+		background-color: #fff1d0a1;
+
 		
 		.fall{
 			height: 100%;
@@ -74,6 +123,14 @@ import card from '../../component/square/card.vue'
 			font-size: "宋体";
 		}
 
+		.check-img{
+			width: 200rpx;
+			height: 200rpx;
+			position:absolute;
+			right:10rpx;
+			bottom: 20rpx;
+			background-color: #ffffff;
+		}
 	}
 
 </style>

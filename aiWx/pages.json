@@ -28,6 +28,19 @@
 			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "pages/square",
+			"pages": [
+				{
+					"path": "check",
+					"style": {
+						"navigationBarTitleText": "打卡圈"
+					}
+				}
+			]
+		}
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

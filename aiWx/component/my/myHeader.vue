@@ -33,8 +33,11 @@
   position:relative;
   overflow: hidden;
   z-index: 0;
-  background-image: url('/static/my/cardBackground.png');
+  background-image: url('/static/my/bg2.png');
+  background-color: "black";
   background-size: cover; /* 背景图像覆盖 */
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: row;
   justify-content: space-around;

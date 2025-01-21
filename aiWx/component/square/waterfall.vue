@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import { rafThrottle , debounce } from "../../utils/tool.js"
 	export default {
     props:{
       requesst:{
@@ -40,9 +39,10 @@ import { rafThrottle , debounce } from "../../utils/tool.js"
         required:true
       },
       column:{
-        type:
+        type:Number,
+        required:true
       }
-    }
+    },
     //temporary —— 在还没加载数据时，做的定高瀑布流
     data() {
       return {
