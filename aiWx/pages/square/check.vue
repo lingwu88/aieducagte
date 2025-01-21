@@ -1,19 +1,29 @@
 <template>
 	<view class="container content">
-    <text class="header" selectable="false">打卡</text>
-		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
+		<view>
+			<u-search placeholder="请输入关键词，如名称，打卡内容等" v-model="keyword" :inputStyle="inputStyle"></u-search>
+		</view>
+		<u-list width="90vw">
+      <u-list-item v-for="(item, index) in list" :key="index">
+        <post class="item"></post>
+      </u-list-item>
+    </u-list>
 	</view>
 </template>
 
 <script>
-import waterfall from '../../component/square/waterfall.vue';
+import post from '../../component/square/post.vue'
 	export default {
 		components:{
-			waterfall
+			post
 		},
 		data() {
 			return {
 				bgImg:"/static/square/checkIn2.png",
+				inputStyle:{
+					width: "500rpx"
+				},
+				keyword:"",
 				list:[
 						{
 							title:"我是自律博主",
@@ -69,7 +79,7 @@ import waterfall from '../../component/square/waterfall.vue';
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		background-color: #fff1d0a1;
+		background-color: #fffffff5;
 
 		
 		.header{
@@ -86,5 +96,7 @@ import waterfall from '../../component/square/waterfall.vue';
 			background-color: inherit;
 		}
 	}
-
+	.item{
+		min-height: 300rpx;
+	}
 </style>
