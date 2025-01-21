@@ -1,26 +1,15 @@
 <template>
 	<view class="container content">
-		<!-- <waterfall class="fall">
-			<template #item="{item,imageHeight}">
-				<card
-					:imageHeight="imageHeight"
-					:itle="item.title"
-					:author="item.author"
-					:bgColor="item.bgColor"
-				>
-				</card>
-			</template>
-		</waterfall> -->
-    <text class="header" selectable="false">广场</text>
+		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 2" :request="getData">
+		</waterfall>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
 </template>
-
 <script>
 import waterfall from '../../component/square/waterfall.vue'
-import card from '../../component/square/card.vue'
+import list from "../../config/index.js"
 	export default {
-		components:{ waterfall , card },
+		components:{ waterfall  },
 		data() {
 			return {
 					fContainerRef:null,
@@ -67,10 +56,6 @@ import card from '../../component/square/card.vue'
 						]
 				}
 		},
-		onLoad() {
-			console.log("你好");
-			
-		},
 		methods: {
 			changeColumn(width){
 				if (width > 960) {
@@ -83,23 +68,22 @@ import card from '../../component/square/card.vue'
 					this.column = 2;
 				}
 			},
-			// getData(page,pageSize){
-			// 	return new Promise((resolve)=>{
-			// 		setTimeout(()=>{
-			// 			resolve(list.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
-			// 		},1000)
-			// 	})
-			// }
-		},
-		Mounted:{
-		},
-		onLoad() {
-		},
-		methods: {
+			getData(page,pageSize){
+				return new Promise((resolve)=>{
+					setTimeout(()=>{
+						resolve(list.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
+					},1000)
+				})
+			},
 			navigaTo(){
 				uni.navigateTo({url:"/pages/square/check"})
 			}
-		}
+		},
+		mounted() {
+			
+		},
+		onLoad() {
+		},
 	}
 </script>
 

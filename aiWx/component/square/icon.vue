@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <image src="/static/square/read.png" class="image"></image>
-    <text class="footer-item">100</text
+    <text class="footer-item">100</text>
   </view>
 </template>
 
@@ -20,7 +20,8 @@ export default{
 .container{
   width: 100%;
   height:100%;
-  background-color: #ffffff;
+  background-color: inherit;
+  padding:10rpx;
 
   .image{
     width:35rpx;

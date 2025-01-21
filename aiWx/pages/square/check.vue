@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<view>
+		<view class="header">
 			<u-search placeholder="请输入关键词，如名称，打卡内容等" v-model="keyword" :inputStyle="inputStyle"></u-search>
 		</view>
 		<u-list width="90vw">
@@ -21,7 +21,7 @@ import post from '../../component/square/post.vue'
 			return {
 				bgImg:"/static/square/checkIn2.png",
 				inputStyle:{
-					width: "500rpx"
+					width: "500rpx",
 				},
 				keyword:"",
 				list:[
@@ -78,13 +78,12 @@ import post from '../../component/square/post.vue'
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		background-color: #fffffff5;
 
 		
 		.header{
-			font-size: 40rpx;
-			font-size: "宋体";
+			margin-top:20rpx;
 		}
 
 		.check-img{

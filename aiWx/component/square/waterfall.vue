@@ -12,22 +12,21 @@
         :key = "renderItem.item.id"
         :style = "renderItem.style"
         >
-        <slot name="item" :item="renderItem.item" :imageHeight="renderItem.imageHeight"></slot>
-      </view>
-      <view id="temporary-list" v-else>
-        <view v-for="temporary in temporaryList" :style="temporary.style">
-          <slot name="item" :item="temporary.item" :imageHeight="temporary.imageHeight"></slot>
-        </view>
+        <card :title="renderItem.item.title" :author="renderItem.item.author" :bgColor="renderItem.item.bgColor" :imageHeight="renderItem.imageHeight"></card>
       </view>
     </view>
   </scroll-view>
 </template>
 
 <script>
+import card from './card.vue'
 	export default {
+    components:{
+      card
+    },
     props:{
-      requesst:{
-        type:Object,
+      request:{
+        type:Function,
         required:true
       },
       gap:{
@@ -41,11 +40,17 @@
       column:{
         type:Number,
         required:true
+      },
+      enterSize:{
+        type:Number,
+        required:true
       }
     },
     //temporary —— 在还没加载数据时，做的定高瀑布流
     data() {
       return {
+        //容器视图实例
+        fContainerRef:null,
         isShow:true,
         renderList:[
           {
@@ -313,14 +318,56 @@
             imageHeight:500
           }
         ],
-        temporaryList:[]
+        temporaryList:[],
+        scrollState:{},
+        itemSizeInfo:{},
+        dataState:{
+          loading:false,
+          isFinish:false,
+          currentPage:1,
+          list:[]
+        }
       }
     },
     methods:{
-      handleScroll(){
-        console.log("你触发了滚动");
-        
-      }
+      handleScroll(event){
+        console.log("你触发了滚动",event);
+      },
+      //初始化滚动视图元素状态
+      initScrollState(){
+        this.fContainerRef.boundingClientRect((rect)=>{
+          console.log(rect);
+          this.scrollState.viewWidth = rect.width
+          this.scrollState.viewHeight = rect.height
+          this.scrollState.start = rect.top
+        }).exec()
+      },
+      async loadDataList(){
+        if(this.dataState.isFinish){
+          return
+
+        }
+
+        const list = await this.request(this.dataState.currentPage++,this.pageSize)
+         console.log(list);
+         
+        if(!list.length){
+          this.dataState.isFinish = true
+          return
+        }
+        return list.length
+      },
+      async init(){
+        this.initScrollState()
+		const len = await this.loadDataList()
+		console.log(len);
+      },
+    },
+    mounted() {
+      this.fContainerRef = uni.createSelectorQuery().in(this).select('.waterfall-container');
+      this.init()
+
+      
     }
     // props:{
     //   gap:{
