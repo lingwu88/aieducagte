@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-    进度反馈
+    学习建议
 	</view>
 </template>
 

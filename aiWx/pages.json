@@ -39,6 +39,50 @@
 					}
 				}
 			]
+		},
+		{
+			"root": "pages/classManagement",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "课程管理"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/learnResource",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "学习资源"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/progressFeedback",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "进度反馈"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/learnSuggestion",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "学习建议"
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {

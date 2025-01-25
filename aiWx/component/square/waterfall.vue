@@ -320,16 +320,89 @@ import card from './card.vue'
         ],
         temporaryList:[],
         scrollState:{},
-        itemSizeInfo:{},
+        itemSizeInfo:new Map(),
         dataState:{
           loading:false,
           isFinish:false,
           currentPage:1,
           list:[]
+        },
+        queueState:{
+          queue:new Array(this.column).fill(0).map(()=>({list:[],height:0})),
+          len:0
         }
       }
     },
     methods:{
+      //预渲染的带样式数据列表(定高)
+      mountTemporaryList(size = this.enterSize){
+        if(!this.hasMoreData)
+          return
+        this.isShow = false
+        if(size){
+          for(let i = 0;i<size;i++){
+            const item = this.dataState.list[this.queueState.len+1]
+            if(!item){
+              break
+            }
+            const rect = this.itemSizeInfo.get(item.id)
+            this.temporaryList.push({
+              item,
+              y:0,
+              h:0,
+              imageHeight:rect.imageHeight,
+              style:{
+                width:`${rect.width}px`
+              }
+            })
+          }
+        }
+         // 使用 this.$nextTick 来等 DOM 更新完成后执行回调
+      this.$nextTick(() => {
+          const list = document.querySelector("#temporary-list");
+          if (list) {
+            [...list.children].forEach((item, index) => {
+              const rect = item.getBoundingClientRect();
+              this.temporaryList[index].h = rect.height;
+            });
+          }
+          this.isShow = true;
+          this.updateItemSize();
+          this.addInQueue(this.temporaryList.length);
+          this.temporaryList = [];
+        });
+      },
+        // 其他方法
+        updateItemSize() {
+          // 假设这是一个更新项大小的逻辑
+          this.temporaryList.forEach(({item,h})=>{
+            const rect = this.itemSizeInfo.get(item.id)
+            this.itemSizeInfo.set(item.id,{...rect , height:h})
+          })
+        },
+        addInQueue(size = this.enterSize) {
+          // 假设这是一个添加到队列的逻辑
+          if(size){
+            for(let i = 0 ; i<size ; i++){
+              const minIndex = this.computedHeight.minIndex
+            }
+          }
+        },
+      //设置每一项的样式
+      setItemSize() {
+      this.itemSizeInfo = this.dataState.list.reduce((pre, current) => {
+        const itemWidth = Math.floor(
+          (this.scrollState.viewWidth - (this.column - 1) * this.gap) / this.column
+        );
+        const rect = this.itemSizeInfo.get(current.id);
+        pre.set(current.id, {
+          width: itemWidth,
+          height: rect ? rect.height : 0,
+          imageHeight: Math.floor((itemWidth * current.height) / current.width),
+        });
+        return pre;
+      }, new Map());
+    },
       handleScroll(event){
         console.log("你触发了滚动",event);
       },
@@ -355,13 +428,45 @@ import card from './card.vue'
           this.dataState.isFinish = true
           return
         }
+        //如果有数据
+        this.dataState.list.push(...list)
+        this.dataState.loading = false
         return list.length
       },
       async init(){
         this.initScrollState()
-		const len = await this.loadDataList()
-		console.log(len);
+        const len = await this.loadDataList()
+        console.log(len);
+        console.log("这是dataState的list",this.dataState.list);
+        this.setItemSize()
+        console.log("这是itemSizeInfo的map",this.itemSizeInfo);
+        
       },
+    },
+    computed:{
+      hasMoreData(){
+        return this.queueState.len < this.dataState.list.length
+      },
+      //动态计算高度
+      computedHeight(){
+        let minIndex = 0
+        minHeight = Infinity
+        maxHeight = -Infinity
+        this.queueState.queue.forEach(({height},index)=>{
+          if(height < minHeight){
+            minHeight = height
+            minIndex = index
+          }
+          if(height > maxHeight){
+            maxHeight = height
+          }
+        })
+        return {
+          minIndex,
+          minHeight,
+          maxHeight
+        }
+      }
     },
     mounted() {
       this.fContainerRef = uni.createSelectorQuery().in(this).select('.waterfall-container');
@@ -651,8 +756,9 @@ import card from './card.vue'
 <style lang="scss" scoped>
 .waterfall{
   &-container{
-    width:100%;
+    width:90vw;
     height:100%;
+    margin:auto;
   }
   &-list{
     position: relative;
