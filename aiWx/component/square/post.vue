@@ -11,7 +11,7 @@
     <view class="content">附近的刷卡JFK大厦看来房价肯定撒尽快立法飞机开绿灯撒加风口浪尖阿三的克拉科夫就ask离开家卡拉幅度萨芬大师傅</view>
     <view class="footer">
       <icon></icon>
-      <icon></icon>
+      <icon>你好</icon>
     </view>
   </view>
 </template>
