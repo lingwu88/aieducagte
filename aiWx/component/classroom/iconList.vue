@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
     <view class="list">
-      <view class="list-item" v-for="(item,index) in menu" :key="index" @click="handleTo(item,index)">
+      <view class="list-item" v-for="(item,index) in menu" :key="index" @click="handleTo(item)">
         <u-image :src="item.img" :lazy-load="true" height="120rpx" width="120rpx"></u-image>
         <text class="text" selectable="false">{{ item.content }}</text>
       </view>
@@ -19,22 +19,22 @@
           {
             img:"/static/classroom/learningResource.png",
             content:"学习资源",
-            path:"/pages/index/index.vue"
+            path:"/pages/learnResource/index"
           },
           {
             img:"/static/classroom/classroomManagement.png",
             content:"课堂管理",
-            path:"/pages/index/index.vue"
+            path:"/pages/classManagement/index"
           },
           {
             img:"/static/classroom/learningSuggestion.png",
             content:"学习建议",
-            path:"/pages/index/index.vue"
+            path:"/pages/learnSuggestion/index"
           },
           {
             img:"/static/classroom/progessFeedback.png",
             content:"进度反馈",
-            path:"/pages/index/index.vue"
+            path:"/pages/progressFeedback/index"
           },
         ]
 			}
@@ -43,9 +43,13 @@
 
 		},
 		methods: {
-      handleTo(item,index){
+      handleTo(item){
         console.log('触发导航');
+        console.log(item.path);
         
+        uni.navigateTo({
+          url:item.path
+        })
       }
 		}
 	}

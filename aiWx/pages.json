@@ -59,6 +59,12 @@
 					"style": {
 						"navigationBarTitleText": "学习资源"
 					}
+				},
+				{
+					"path": "aiConvert",
+					"style": {
+						"navigationBarTitleText": "AI变文"
+					}
 				}
 			]
 		},

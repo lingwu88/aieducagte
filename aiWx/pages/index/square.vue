@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 2" :request="getData">
+		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 4" :request="getData">
 		</waterfall>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
@@ -13,7 +13,7 @@ import list from "../../config/index.js"
 		data() {
 			return {
 					fContainerRef:null,
-					column:6,
+					column:2,
 					fContainerObserver:null,
 					bgImg:"/static/square/checkIn2.jpg",
 					list:[
@@ -94,10 +94,9 @@ import list from "../../config/index.js"
 		align-items: center;
 		justify-content: center;
 		width:700rpx;
-		height:1000rpx;
-		border:1px solid red;
+		height:95vh;
 		background-color: #fff1d0a1;
-
+		margin: 2vh 2.5vw 0 2.5vw;
 		
 		.fall{
 			height: 100%;

@@ -1,11 +1,16 @@
 <template>
   <view class="container">
-    <view class="image"></view>
+    <view class="image" :style="{
+      backgroundColor: `${bgColor}`,
+      height: `${imageHeight}rpx`
+    }"></view>
     <view class="footer">
       <text class="title">{{ title }}</text>
       <view class="author">
         <view class="author-info">
-          <div class="avatar"></div>
+          <div class="avatar" :style="{
+            backgroundColor: `${bgColor}`,
+          }"></div>
           <text class="name">{{ author }}</text>
         </view>
         <text class="like">100</text>
@@ -48,13 +53,12 @@ export default{
   width: 100%;
   height:100%;
   background-color: #ffc3c3;
+  border-radius:20px 20px 0 0;
 
   .image{
     width:100%;
-    height:v-bind("`${imageHeight}rpx`");
     border:1px solid #eee;
     border-radius:20px;
-    background-color: v-bind("bgColor");
   }
 
   .footer{
@@ -91,7 +95,6 @@ export default{
         height: 20rpx;
         border-radius: 20px;
         border:1px solid rgba(0,0,0,0.08);
-        background-color:v-bind("bgColor")
       }
       .name{
         width:80%;

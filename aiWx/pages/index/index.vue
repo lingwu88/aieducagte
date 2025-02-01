@@ -1,7 +1,7 @@
 <template>
 	<view class="container content">
 		<text class="header" selectable="false" >学习自足，答疑解惑</text>			
-		<iconList class="list"></iconList>
+		<iconList class="list" ></iconList>
 		<u-search placeholder="请输入关键词进行查找" v-model="keyword"></u-search>
 		<u-list width="90vw">
       <u-list-item v-for="(item, index) in list" :key="index">
