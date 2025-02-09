@@ -7,7 +7,7 @@
       v-model="value"
       ></u-input>
 			<view class="icon-list">
-				<view class="icon-item" v-for="(item,index) in iconList" :key="index">
+				<view class="icon-item" v-for="(item,index) in iconList" :key="index" @tap="handleUpload(index)">
 					<view class="icon-border">
 						<uni-icons :type="item.type" size="20"></uni-icons>
 					</view>
@@ -107,6 +107,27 @@ import tag from './components/tag.vue'
 			handleMenuClick(index){
 				this.menuActive = index
 				console.log(this.menuActive);
+			},
+			handleUpload(index){
+				//微信聊天记录文件
+			// 	uni.chooseMessageFile({
+      //   count: 1,
+      //   type: 'file',
+      //   extension: this.allowTypes,
+      //   success: (res) => {
+      //     const file = res.tempFiles[0]
+			// 		console.log(file);
+      //     // 检查文件大小				
+      //   }
+      // })
+						uni.chooseImage({
+					count: 1,
+					sizeType: ['original', 'compressed'],
+					sourceType: ['album', 'camera'],
+					success: (res) => {
+						console.log('选择的图片:', res.tempFilePaths[0])
+					}
+				})
 			}
 		}
 	}

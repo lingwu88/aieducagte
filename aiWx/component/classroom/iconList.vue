@@ -24,7 +24,7 @@
           {
             img:"/static/classroom/classroomManagement.png",
             content:"课堂管理",
-            path:"/pages/classManagement/index"
+            path:"/pages/classManagement/aiChats"
           },
           {
             img:"/static/classroom/learningSuggestion.png",

@@ -2,25 +2,25 @@
   <view class="chat-container">
     <!-- 聊天内容区域  
 			scrolltoupper 上拉加载更多
-			scroll-into-view 滚动到指定位置
+			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
 		-->
     <scroll-view 
-      class="chat-content" 
-      scroll-y 
-      :scroll-top="scrollTop"
+      class="chat-content"
+      scroll-y
+      scroll-top="scrollTop" 
       :scroll-into-view="lastMessageId"
       @scrolltoupper="loadMoreHistory"
-    >
+      >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
         <text>加载中...</text>
       </view>
-      
+
       <!-- 消息列表 -->
       <view class="message-list">
-        <view 
-          v-for="(item, index) in messageList" 
+        <view
+          v-for="(item, index) in messageList"
           :key="index"
           :id="'msg-' + index"
           class="message-item"
@@ -28,44 +28,43 @@
         >
           <!-- 头像 -->
           <image 
-            class="avatar"
-            :src="item.type === 'user' ? userAvatar : aiAvatar"
+            :src="item.type === 'user' ? userAvatar : aiAvatar" 
+            class="avatar" 
           />
-          
           <!-- 消息内容 -->
           <view class="message-content">
             <!-- 文本消息 -->
             <view v-if="item.contentType === 'text'" class="text-content">
               {{ item.content }}
             </view>
-            
+
             <!-- 图片消息 -->
-            <image 
+             <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
             />
-            
+
             <!-- 语音消息 -->
             <view 
               v-else-if="item.contentType === 'voice'"
               class="voice-content"
               @tap="playVoice(item.content)"
             >
-              <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"/>
+              <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"></uni-icons>
               <text>{{ item.duration }}″</text>
             </view>
           </view>
-          
-          <!-- 消息状态 -->
+
+        <!-- 消息状态 -->
           <view class="message-status" v-if="item.type === 'user'">
             <text v-if="item.status === 'sending'">发送中...</text>
             <text v-else-if="item.status === 'failed'" class="error">发送失败</text>
           </view>
         </view>
-        
+
         <!-- AI 输入中状态 -->
         <view class="ai-typing" v-if="isAiTyping">
           <image class="avatar" :src="aiAvatar"/>
@@ -77,34 +76,27 @@
         </view>
       </view>
     </scroll-view>
-    
-    <!-- 输入区域 -->
+
     <view class="input-area">
-      <!-- 语音/键盘切换按钮 -->
-      <view class="mode-switch" @tap="switchInputMode">
-        <uni-icons :type="isVoiceMode ? 'keyboard' : 'mic'" size="24"/>
+      <view class="mode-swtich" @tap="switchMode">
+        <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
       </view>
-      
-      <!-- 文本输入框 -->
+
       <view class="input-box" v-if="!isVoiceMode">
         <textarea
           v-model="inputText"
           :adjust-position="false"
           :cursor-spacing="20"
+          auto-height
           :show-confirm-bar="false"
           placeholder="请输入内容..."
           :maxlength="-1"
-					auto-height="true"
           @focus="handleFocus"
           @blur="handleBlur"
+          class="input-textarea"
         />
       </view>
       
-      <!-- 语音输入按钮 
-				touchstart 触摸开始
-				touchend 触摸结束
-				touchcancel 触摸取消
-			-->
       <view 
         v-else
         class="voice-input"
@@ -115,8 +107,7 @@
       >
         {{ isRecording ? '松开发送' : '按住说话' }}
       </view>
-      
-      <!-- 发送按钮 -->
+
       <view 
         class="send-btn"
         :class="{ active: canSend }"
@@ -124,79 +115,72 @@
       >
         发送
       </view>
+
     </view>
   </view>
+
 </template>
 
 <script>
 //recorderManager 录音管理器 ,用来录音
-//innerAudioContext 音频播放器 ，用来播放音频
 const recorderManager = uni.getRecorderManager()
+//innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
-
 export default {
-  name: 'ai-chat',
-  
   props: {
     userAvatar: {
       type: String,
-      default: '/static/user-avatar.png'
+      default: '/static/my/user.png'
     },
     aiAvatar: {
       type: String,
-      default: '/static/ai-avatar.png'
+      default: '/static/my/avatar.png'
     }
   },
-  
   data() {
     return {
-      messageList: [],
-      inputText: '',
-      isVoiceMode: false,
-      isRecording: false,
-      isPlaying: false,
-      currentVoice: '',
-      isAiTyping: false,
       scrollTop: 0,
       lastMessageId: '',
       isLoading: false,
-      page: 1
+      messageList: [],
+      isPlaying: false,
+      currentVoice: '',
+      isVoiceMode: false,
+      inputText: '',
+      isRecording: false,
+      page: 1,
+      isAiTyping: false,
     }
   },
-  
-  computed: {
-    canSend() {
-      return this.inputText.trim().length > 0
-    }
-  },
-  
   created() {
-    this.initRecorder()
+    this.initRecorder(),
     this.initAudioContext()
   },
-  
   methods: {
-    // 初始化录音管理器
     initRecorder() {
       recorderManager.onStart(() => {
+        console.log('onStart');
+        
         this.isRecording = true
       })
-      
+
       recorderManager.onStop((res) => {
+        console.log('onStop', res);
+        
         this.isRecording = false
         this.sendVoiceMessage(res.tempFilePath, res.duration)
       })
     },
-    
-    // 初始化音频播放器
     initAudioContext() {
       innerAudioContext.onEnded(() => {
         this.isPlaying = false
         this.currentVoice = ''
       })
     },
-    
-    // 加载更多历史消息
+    cancelRecording() {
+      recorderManager.stop()
+      this.isRecording = false
+    },
     loadMoreHistory() {
       if (this.isLoading) return
       
@@ -207,12 +191,15 @@ export default {
         this.isLoading = false
       }, 1000)
     },
-    
-    // 发送消息
+    handleFocus() {
+      this.isVoiceMode = false
+    },
+    handleBlur() {
+      this.isVoiceMode = false
+    },
     async handleSend() {
-      if (!this.canSend) return
-      
-      // 添加用户消息
+      if(!this.canSend) return
+
       const userMessage = {
         type: 'user',
         contentType: 'text',
@@ -221,21 +208,14 @@ export default {
       }
       this.messageList.push(userMessage)
       this.scrollToBottom()
-      
-      // 清空输入框
+
       this.inputText = ''
       
-      try {
-        // 显示AI输入状态
+      // 显示AI输入状态
+      try{
         this.isAiTyping = true
-        
-        // 发送请求到AI服务
         const response = await this.sendToAI(userMessage.content)
-        
-        // 更新发送状态
         userMessage.status = 'sent'
-        
-        // 添加AI回复
         this.messageList.push({
           type: 'ai',
           contentType: 'text',
@@ -252,35 +232,26 @@ export default {
         this.scrollToBottom()
       }
     },
-    
-    // 发送语音消息
-    sendVoiceMessage(filePath, duration) {
-      this.messageList.push({
-        type: 'user',
-        contentType: 'voice',
-        content: filePath,
-        duration: Math.round(duration / 1000)
-      })
-      this.scrollToBottom()
-      
-      // TODO: 发送语音到服务器
-    },
-    
-    // 播放语音
     playVoice(filePath) {
-      if (this.isPlaying && this.currentVoice === filePath) {
+      if(this.isPlaying && this.currentVoice === filePath) {
         innerAudioContext.stop()
         this.isPlaying = false
         this.currentVoice = ''
         return
       }
-      
       innerAudioContext.src = filePath
       innerAudioContext.play()
       this.isPlaying = true
       this.currentVoice = filePath
     },
-    
+    previewImage(url) {
+      uni.previewImage({
+        urls: [url]
+      })
+    },
+    switchMode() {
+      this.isVoiceMode = !this.isVoiceMode
+    },
     // 开始录音
     startRecording() {
       recorderManager.start({
@@ -291,124 +262,126 @@ export default {
         format: 'mp3'
       })
     },
-    
-    // 停止录音
     stopRecording() {
       recorderManager.stop()
     },
-    
-    // 取消录音
-    cancelRecording() {
-      recorderManager.stop()
-      this.isRecording = false
-    },
-    
-    // 切换输入模式
-    switchInputMode() {
-      this.isVoiceMode = !this.isVoiceMode
-    },
-    
-    // 预览图片
-    previewImage(url) {
-      uni.previewImage({
-        urls: [url]
+
+    sendVoiceMessage(tempFilePath, duration) {
+      console.log('sendVoiceMessage', tempFilePath, duration)
+      this.messageList.push({
+        type: 'user',
+        contentType: 'voice',
+        content: tempFilePath,
+        duration: Math.round(duration / 1000)
       })
+      this.scrollToBottom()
     },
-    
-    // 滚动到底部
     scrollToBottom() {
       this.$nextTick(() => {
         this.lastMessageId = 'msg-' + (this.messageList.length - 1)
       })
     },
-    
-    // 发送消息到AI服务
-    async sendToAI(content) {
-      // TODO: 实现实际的AI服务调用
-      return new Promise((resolve) => {
+    sendToAI(content) {
+        // TODO: 实现实际的AI服务调用
+        return new Promise((resolve) => {
         setTimeout(() => {
           resolve('这是AI的回复消息...')
         }, 1000)
       })
     }
+    
+  },
+  computed: {
+    canSend() {
+      return this.inputText.trim().length > 0
+    }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss"s scoped>
 .chat-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
-  
+
   .chat-content {
     flex: 1;
     padding: 20rpx;
-    
-    .message-list {
-      .message-item {
+
+    .loading-more{
+      padding: 20rpx;
+      text-align: center;
+    }
+
+    .message-list{
+      .message-item{
         display: flex;
         margin-bottom: 30rpx;
         
-        &.user {
+        &.user{
           flex-direction: row-reverse;
-          
-          .message-content {
+          margin-right: 40rpx;
+            
+
+          .message-content{
             margin-right: 20rpx;
             margin-left: 60rpx;
             background-color: #007AFF;
             color: #fff;
             
-            &::after {
+            //用来制作对话框的那个小角
+            &::after{
               right: -16rpx;
               border-left-color: #007AFF;
             }
           }
         }
-        
-        &.ai {
-          .message-content {
+
+        &.ai{
+          .message-content{
             margin-left: 20rpx;
             margin-right: 60rpx;
             background-color: #fff;
+            margin-left: 40rpx;
             
-            &::after {
+            &::after{
               left: -16rpx;
               border-right-color: #fff;
             }
           }
         }
-        
-        .avatar {
+
+        .avatar{
           width: 80rpx;
           height: 80rpx;
           border-radius: 50%;
         }
-        
-        .message-content {
+
+        .message-content{
+          position: relative;
           padding: 20rpx;
           border-radius: 10rpx;
-          position: relative;
           max-width: 60%;
           
-          &::after {
+          &::after{
             content: '';
             position: absolute;
             top: 20rpx;
             border: 8rpx solid transparent;
           }
-          
-          .text-content {
+
+          .text-content{
             word-break: break-all;
             line-height: 1.5;
           }
-          
-          .image-content {
+
+          .image-content{ 
             max-width: 100%;
             border-radius: 8rpx;
           }
-          
+
           .voice-content {
             display: flex;
             align-items: center;
@@ -419,14 +392,19 @@ export default {
               color: #999;
             }
           }
+          
         }
       }
     }
-    
     .ai-typing {
       display: flex;
       align-items: flex-start;
       margin-bottom: 30rpx;
+      .avatar{
+          width: 80rpx;
+          height: 80rpx;
+          border-radius: 50%;
+        }
       
       .typing-indicator {
         display: flex;
@@ -455,65 +433,65 @@ export default {
       }
     }
   }
-  
+
+
+
   .input-area {
-    background-color: #fff;
-    padding: 20rpx;
     display: flex;
     align-items: flex-end;
+    padding: 20rpx;
+    background-color: #fff;
     border-top: 1rpx solid #eee;
-    
-    .mode-switch {
-      padding: 20rpx;
+
+    .mode-swtich{
+      padding:10rpx;
     }
-    
-    .input-box {
+
+    .input-box{
       flex: 1;
       background-color: #f5f5f5;
       border-radius: 10rpx;
       margin: 0 20rpx;
-      
-      textarea {
+
+      .input-textarea{
         width: 100%;
-        padding: 20rpx;
-        min-height: 80rpx;
+        padding:20rpx;
         max-height: 200rpx;
         font-size: 28rpx;
         line-height: 1.5;
+        box-sizing: border-box;
       }
     }
-    
-    .voice-input {
-      flex: 1;
-      height: 80rpx;
-      line-height: 80rpx;
-      text-align: center;
+
+    .voice-input{
+      flex:1;
+      padding:20rpx;
       background-color: #f5f5f5;
       border-radius: 10rpx;
       margin: 0 20rpx;
-      
-      &.recording {
+      text-align: center;
+
+      &.recording{
         background-color: #e6e6e6;
       }
     }
-    
-    .send-btn {
-      width: 120rpx;
-      height: 80rpx;
+
+    .send-btn{
+      width:120rpx;
+      height:80rpx;
       line-height: 80rpx;
       text-align: center;
       background-color: #007AFF;
       color: #fff;
       border-radius: 10rpx;
       opacity: 0.5;
-      
-      &.active {
+
+      &.active{
         opacity: 1;
       }
     }
   }
 }
-
 @keyframes typing {
   0%, 100% {
     transform: translateY(0);
