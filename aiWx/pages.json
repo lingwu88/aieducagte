@@ -54,6 +54,12 @@
 					"style": {
 						"navigationBarTitleText": "课程管理"
 					}
+				},
+				{
+					"path":"searchResult",
+					"style":{
+						"navigationStyle":"custom"
+					}
 				}
 			]
 		},
@@ -70,6 +76,18 @@
 					"path": "aiConvert",
 					"style": {
 						"navigationBarTitleText": "AI变文"
+					}
+				},
+				{
+					"path": "convertResult",
+					"style": {
+						"navigationBarTitleText": "转换结果"
+					}
+				},
+				{
+					"path":"courseLibrary",
+					"style":{
+						"navigationBarTitleText":"课程库"
 					}
 				}
 			]
@@ -92,6 +110,28 @@
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "学习建议"
+					}
+				}
+			]
+		},
+		{
+			"root":"pages/login",
+			"pages": [
+				{
+					"path":"login",
+					"style":{
+						"navigationBarTitleText":"登录"
+					}
+				}
+			]
+		},
+		{
+			"root":"pages/personal",
+			"pages":[
+				{
+					"path":"info",
+					"style":{
+						"navigationBarTitleText":"个人信息"
 					}
 				}
 			]

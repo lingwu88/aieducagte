@@ -1,11 +1,7 @@
 <template>
 	<view class="list">
 		<uni-list>
-			<uni-list-item  title="个人信息" clickable link @click="handleUserInfo" class="item"></uni-list-item>
-			<uni-list-item  title="记录与收藏" clickable link @click="handleRecord" class="item"></uni-list-item>
-			<uni-list-item  title="我的贴子" clickable link @click="handlePost" class="item"></uni-list-item>
-			<uni-list-item  title="建议与反馈" clickable link @click="handleSuggestion" class="item"></uni-list-item>
-			<uni-list-item  title="清除缓存" clickable  @click="handleClean" class="item"></uni-list-item>
+			<uni-list-item v-for="(item,index) in list"  :title="item.title" :key="index" clickable link @click="handleTo(item)" class="item"></uni-list-item>
 		</uni-list>
 	</view>
 </template>
@@ -14,33 +10,46 @@
 	export default {
 		data() {
 			return {
-				title: 'Hello'
+				list:[
+					{
+						title:"个人信息",
+						url:"/pages/personal/info"
+					},
+					{
+						title:"我的帖子",
+						url:"/pages/personal/index"
+					},
+					{
+						title:"记录与收藏",
+						url:"/pages/personal/index"
+					},
+					{
+						title:"建议与反馈",
+						url:"/pages/personal/index"
+					},
+					{
+						title:"清除缓存",
+						url:"/pages/personal/index"
+					}
+				]
 			}
 		},
 		onLoad() {
 
 		},
 		methods: {
-			handleUserInfo(){
-				console.log("点击个人信息");
-				
+			handleTo(item){
+				console.log(`点击${item.title}`);
+				if(item.url === "/pages/personal/index"){
+					uni.showToast({
+						title:"暂未开放此功能",
+						icon:none
+					})
+				}
+				uni.navigateTo({
+					url:item.url
+				})
 			},
-			handleRecord(){
-				console.log("点击记录与收藏");
-				
-			},
-			handlePost(){
-				console.log('点击我的帖子');
-				
-			},
-			handleSuggestion(){
-				console.log('点击建议与反馈');
-				
-			},
-			handleClean(){
-				console.log('点击清除缓存');
-				
-			}
 
 		}
 	}
@@ -55,15 +64,23 @@
 	.item:not(:last-child){
 		font-size:50rpx;
 		font-weight: 900;
+		// height: 100%;
 		height: 150rpx;
+		padding:auto 0;
 	}
 	.item:last-child{
 		font-size: 20rpx;
 		font-weight: 400;
 	}
-	
-	/deep/.uni-list-item {
-		height: 100%;
+	.item{
+			/deep/.uni-list-item {
+			height: 100%;
+		}
+		/deep/.item--uni-list-item{
+			height: 100%;
+		}
 	}
+
 }
+
 </style>
