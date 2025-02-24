@@ -8,7 +8,7 @@
     </view>
 		<view class="footer">
 			<view class="footer-item" v-for="(item,index) in list" :key="index">
-				<image :src="item.img" alt="无法加载出图片" class="item-img"></image>
+				<image :src="item.img" alt="无法加载出图片" class="item-img" @click="navigateTo(item)"></image>
 				<text class="item-description">{{item.description}}</text>
 			</view>
 		</view>
@@ -22,11 +22,13 @@
 				list:[
 					{
 						description:"课件库",
-						img:"/static/classroom/learnResource/book.png"
+						img:"/static/classroom/learnResource/book.png",
+						url:"/pages/learnResource/courseLibrary"
 					},
 					{
 						description:"资料库",
-						img:"/static/classroom/learnResource/essay.png"
+						img:"/static/classroom/learnResource/essay.png",
+						url:""
 					}
 				]
 				}
@@ -41,6 +43,11 @@
 					console.log(1)
 					uni.navigateTo({url:"/pages/learnResource/aiConvert"})
 				}
+			},
+			navigateTo(item){
+				uni.navigateTo({
+					url:item.url
+				})
 			}
 		}
 	}
