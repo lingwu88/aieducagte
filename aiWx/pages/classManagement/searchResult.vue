@@ -1,82 +1,36 @@
 <template>
+
+  <!-- 头部导航栏 -->
   <view class="chat-container">
-    <!-- 聊天内容区域  
-			scrolltoupper 上拉加载更多
-			scroll-into-view 滚动到指定位置 ——似乎不生效
-			scroll-top 竖直滚动条的位置
-		-->
-    <scroll-view 
-      class="chat-content"
-      scroll-y
-      scroll-top="scrollTop" 
-      :scroll-into-view="lastMessageId"
-      @scrolltoupper="loadMoreHistory"
-      >
-      <!-- 加载更多 -->
-      <view class="loading-more" v-if="isLoading">
-        <text>加载中...</text>
+    <view class="header">
+      <view class="navigation-icon" @click="back"></view>
+      <view class="title">课程规划与建议</view>
+      <view class="voice-play">
+        <uni-icons type="sound" size="28"></uni-icons>
       </view>
+      <view class="collection">
+        <uni-icons :type="swtichStar==false?'star':'star-filled'" size="28" @click="swtichStars"></uni-icons>
+      </view>
+    </view>
 
-      <!-- 消息列表 -->
-      <view class="message-list">
-        <view
-          v-for="(item, index) in messageList"
-          :key="index"
-          :id="'msg-' + index"
-          class="message-item"
-          :class="item.type"
-        >
-          <!-- 头像 -->
-          <image 
-            :src="item.type === 'user' ? userAvatar : aiAvatar" 
-            class="avatar" 
-          />
-          <!-- 消息内容 -->
-          <view class="message-content">
-            <!-- 文本消息 -->
-            <view v-if="item.contentType === 'text'" class="text-content">
-              {{ item.content }}
-            </view>
-
-            <!-- 图片消息 -->
-             <image 
-              v-else-if="item.contentType === 'image'"
-              class="image-content"
-              :src="item.content"
-              mode="widthFix"
-              @tap="previewImage(item.content)"
-            />
-
-            <!-- 语音消息 -->
-            <view 
-              v-else-if="item.contentType === 'voice'"
-              class="voice-content"
-              @tap="playVoice(item.content)"
-            >
-              <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"></uni-icons>
-              <text>{{ item.duration }}″</text>
-            </view>
-          </view>
-
-        <!-- 消息状态 -->
-          <view class="message-status" v-if="item.type === 'user'">
-            <text v-if="item.status === 'sending'">发送中...</text>
-            <text v-else-if="item.status === 'failed'" class="error">发送失败</text>
-          </view>
-        </view>
-
-        <!-- AI 输入中状态 -->
-        <view class="ai-typing" v-if="isAiTyping">
-          <image class="avatar" :src="aiAvatar"/>
-          <view class="typing-indicator">
-            <view class="dot"></view>
-            <view class="dot"></view>
-            <view class="dot"></view>
-          </view>
+    <view class="content">
+      <view class="content-title">{{ result.title }}</view>
+      <view class="second">
+        <view class="base">基于{{ result.base }}篇参考资料</view>
+        <view class="select">
+          <uni-data-select
+            v-model="value"
+            :localdata="range"
+            @change="change"
+          ></uni-data-select>
         </view>
       </view>
-    </scroll-view>
+      <view class="word">
+        <mp-html :content="result.word"/>
+      </view>
+    </view>
 
+    <!-- 底部输入框 -->
     <view class="input-area">
 
       <view class="input">
@@ -124,25 +78,33 @@
 </template>
 
 <script>
+import { marked } from 'marked'
+import hljs from "highlight.js"
+import "highlight.js/scss/atom-one-dark.scss"
+import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
   props: {
-    userAvatar: {
-      type: String,
-      default: '/static/my/user.png'
-    },
-    aiAvatar: {
-      type: String,
-      default: '/static/my/avatar.png'
-    }
+  },
+  components:{
+    mpHtml
   },
   data() {
     return {
-      scrollTop: 0,
-      lastMessageId: '',
+      result:{
+        title:"这是搜索标题",
+        base:"8",
+        word:"\"introduce\":\"1. **计算机科学导论**：这是入门课程，介绍计算机科学的基本概念和原理，包括编程基础、计算机系统组成和基本算法。目标是为学生建立对计算机科学领域的整体理解，为后续更深入的学习打下坚实的基础。\\n\\n2. **数据结构与算法**：基于导论中获得的编程和逻辑思维能力，本课程深入探讨各种数据结构（如数组、链表、树等）和经典算法（排序、搜索等）。学习目标是掌握高效的数据管理和问题解决技巧，这些技能在操作系统、网络和数据库等后续课程中至关重要。\\n\\n3. **操作系统原理**：在此阶段，学生将学习操作系统如何管理硬件资源和提供服务给应用程序。课程内容涵盖进程管理、内存管理、文件系统等。此课程直接依赖于之前所学的数据结构知识，并为理解和设计复杂的软件系统奠定基础。\\n\\n4. **计算机网络基础**：该课程讲解计算机网络的工作原理，从物理层到应用层的各层协议，以及网络安全基础。它结合了操作系统中关于通信机制的知识，并为分布式系统和互联网应用开发提供了必要背景。\\n\\n5. **数据库系统设计**：专注于关系型数据库的设计、实现和优化，包括SQL语言、事务处理、并发控制等内容。这门课利用了之前学到的数据结构和算法知识，同时也涉及到操作系统的存储管理和网络中的数据传输。\\n\\n6. **人工智能与机器学习**：作为高级课程，它探索智能系统的设计与实现，重点在于机器学习算法及其应用。此课程整合了前面所有课程的知识——编程、数据处理、计算资源管理、网络通信和大规模数据存储，使学生能够构建复杂的人工智能解决方案。\""
+      },
+      value: 0,
+      range: [
+        { value: 0, text: "简洁" },
+        { value: 1, text: "标准" },
+        { value: 2, text: "深入" },
+      ],
       isLoading: false,
       messageList: [],
       isPlaying: false,
@@ -150,15 +112,55 @@ export default {
       isVoiceMode: false,
       inputText: '',
       isRecording: false,
-      page: 1,
-      isAiTyping: false,
+      swtichStar:false
     }
   },
+  mounted() {
+			this.initHighLight()
+			console.log(this.initHighLight);
+			//先处理essay中的换行符
+			this.result.word = this.result.word.replace(/\\n/g, '<br>')
+			// console.log(this.mdEssay);
+			
+			const word = marked(this.result.word).replace(/<pre>/g, "<pre class='hljs'>")
+			this.$set(this.result,"word",word)
+      console.log(this.result.word);
+
+		},
   created() {
     this.initRecorder(),
     this.initAudioContext()
   },
   methods: {
+      back(){
+        uni.navigateBack({
+          delta:1
+        })
+      },
+    	//初始化highlight和转换md
+			initHighLight(){
+				hljs.configure({
+        	useBR: true,
+        	tabReplace: " ",
+      	});
+				marked.setOptions({
+					renderer: new marked.Renderer(),
+					gfm: true,
+					tables: true,
+					breaks: true,
+					pedantic: false,
+					highlight: function (code, lang) {
+						if (lang && hljs.getLanguage(lang)) {
+							return hljs.highlightAuto(code, { language: lang }).value;
+						} else {
+							return hljs.highlightAuto(code).value;
+						}
+					},
+				})
+			},
+    change(e) {
+      console.log("e:", e);
+    },
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');
@@ -209,8 +211,6 @@ export default {
         status: 'sending'
       }
       this.messageList.push(userMessage)
-      this.scrollToBottom()
-
       this.inputText = ''
       
       // 显示AI输入状态
@@ -222,11 +222,6 @@ export default {
           type: 'ai',
           contentType: 'text',
           content: response
-        })
-        
-        //ai应答后跳转
-        uni.navigateTo({
-          url:"/pages/classManagement/searchResult"
         })
       } catch (error) {
         userMessage.status = 'failed'
@@ -283,6 +278,7 @@ export default {
       recorderManager.stop()
     },
 
+    //拿到音频暂存文件
     sendVoiceMessage(tempFilePath, duration) {
       console.log('sendVoiceMessage', tempFilePath, duration)
       this.messageList.push({
@@ -292,16 +288,6 @@ export default {
         duration: Math.round(duration / 1000)
       })
       this.scrollToBottom()
-      
-      //发送完语音后
-      uni.navigateTo({
-        url:"/pages/classManagement/searchResult"
-      })
-    },
-    scrollToBottom() {
-      this.$nextTick(() => {
-        this.lastMessageId = 'msg-' + (this.messageList.length - 1)
-      })
     },
     sendToAI(content) {
         // TODO: 实现实际的AI服务调用
@@ -310,6 +296,16 @@ export default {
           resolve('这是AI的回复消息...')
         }, 1000)
       })
+    },
+    swtichStars(){
+      if(this.swtichStar == false){
+        this.$set(this,"swtichStar",true)
+        console.log("此时是false");
+        
+      }
+      else{ 
+        this.$set(this,"swtichStar",false)
+      }
     }
     
   },
@@ -323,142 +319,84 @@ export default {
 
 <style lang="scss"s scoped>
 .chat-container {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
 
-  .chat-content {
-    flex: 1;
-    padding: 20rpx;
+  .header{
+    position:sticky;
+    top: 0;
+    left: 0;
+    display: flex;
+    width:100vw;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top:80rpx;
+    padding-left: 40rpx;
+    height: 100rpx;
+    background-color: #fff;
 
-    .loading-more{
-      padding: 20rpx;
+    .navigation-icon{
+      width:20rpx;
+      height: 20rpx;
+      border-left: 3px solid #000000;
+      border-top: 3px solid #000000;
+      transform: rotate(-45deg);
+    }
+
+    .title{
       text-align: center;
+      flex:1;
+      font-size:38rpx;
+      font-weight: 600;
+      color:#000000;
     }
 
-    .message-list{
-      .message-item{
-        display: flex;
-        margin-bottom: 30rpx;
-        
-        &.user{
-          flex-direction: row-reverse;
-          margin-right: 40rpx;
-            
-
-          .message-content{
-            margin-right: 20rpx;
-            margin-left: 60rpx;
-            background-color: #007AFF;
-            color: #fff;
-            
-            //用来制作对话框的那个小角
-            &::after{
-              right: -16rpx;
-              border-left-color: #007AFF;
-            }
-          }
-        }
-
-        &.ai{
-          .message-content{
-            margin-left: 20rpx;
-            margin-right: 60rpx;
-            background-color: #fff;
-            margin-left: 40rpx;
-            
-            &::after{
-              left: -16rpx;
-              border-right-color: #fff;
-            }
-          }
-        }
-
-        .avatar{
-          width: 80rpx;
-          height: 80rpx;
-          border-radius: 50%;
-        }
-
-        .message-content{
-          position: relative;
-          padding: 20rpx;
-          border-radius: 10rpx;
-          max-width: 60%;
-          
-          &::after{
-            content: '';
-            position: absolute;
-            top: 20rpx;
-            border: 8rpx solid transparent;
-          }
-
-          .text-content{
-            word-break: break-all;
-            line-height: 1.5;
-          }
-
-          .image-content{ 
-            max-width: 100%;
-            border-radius: 8rpx;
-          }
-
-          .voice-content {
-            display: flex;
-            align-items: center;
-            padding: 10rpx 20rpx;
-            
-            text {
-              margin-left: 10rpx;
-              color: #999;
-            }
-          }
-          
-        }
-      }
+    .collection{
+      margin-right: 30vw;
     }
-    .ai-typing {
+
+  }
+
+  .content{
+    min-height: 80vh;
+    background-color: #fff;
+
+    &-title{
+      font-size: 50rpx;
+      font-weight: 600;
+      padding:30rpx;
+    }
+    .second{
       display: flex;
-      align-items: flex-start;
-      margin-bottom: 30rpx;
-      .avatar{
-          width: 80rpx;
-          height: 80rpx;
-          border-radius: 50%;
-        }
-      
-      .typing-indicator {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-        padding: 20rpx;
-        border-radius: 10rpx;
-        margin-left: 20rpx;
-        
-        .dot {
-          width: 8rpx;
-          height: 8rpx;
-          border-radius: 50%;
-          background-color: #999;
-          margin: 0 4rpx;
-          animation: typing 1s infinite;
-          
-          &:nth-child(2) {
-            animation-delay: 0.2s;
-          }
-          
-          &:nth-child(3) {
-            animation-delay: 0.4s;
-          }
-        }
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      font-size: 38rpx;
+      margin:0 30rpx;
+
+      /deep/.uni-select{
+        border:none;
       }
+
+      /deep/ .uni-icons{
+          font-size: 20px;
+        }
+    }
+
+    .word{
+      width: 90vw;
+      margin:0 auto;
     }
   }
 
-
-
   .input-area {
+    position:sticky;
+    bottom:0;
+    left: 0;
     display: flex;
     align-items: flex-end;
     padding: 20rpx;
@@ -482,7 +420,7 @@ export default {
       padding:0 20rpx 0 0;
       display: flex;
       flex-direction: row;
-      align-items: flex-end;
+      align-items: center;
       flex: 1;
 
 
@@ -525,12 +463,5 @@ export default {
     }
   }
 }
-@keyframes typing {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6rpx);
-  }
-}
+
 </style>
