@@ -17,7 +17,9 @@
             "delay" : 0
         },
         /* 模块配置 */
-        "modules" : {},
+        "modules" : {
+            "OAuth" : {}
+        },
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -43,7 +45,14 @@
             /* ios打包配置 */
             "ios" : {},
             /* SDK配置 */
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "oauth" : {
+                    "weixin" : {
+                        "appid" : "wx9e7afb652fe643a9",
+                        "UniversalLinks" : ""
+                    }
+                }
+            }
         }
     },
     /* 快应用特有相关 */
@@ -53,10 +62,21 @@
         "appid" : "wx9e7afb652fe643a9",
         "setting" : {
             "urlCheck" : false,
-            "minified" : true
+            "minified" : true,
+            "es6" : true
         },
         "usingComponents" : true,
-        "permission" : {}
+        "permission" : {
+            // "scope.userLocation" : {
+            //     "desc" : "获取用户模糊位置，用于计算机设计大赛中参赛作品，无其他用途，仅是为模拟完整小程序流程"
+            // },
+            "scope.userFuzzyLocation":{
+                "desc":"获取用户模糊位置，用于计算机设计大赛中参赛作品，无其他用途，仅是为模拟完整小程序流程"
+            },
+            "scope.userInfo":{
+                "desc":"获取用户信息，你别怕！"
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true

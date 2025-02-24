@@ -1,29 +1,35 @@
 <template>
-  <view class="container">
-    <view class="header">
-      <u--image src="/static/my/user.png" class="user-img" height="175rpx" width="175rpx"  shape="circle"></u--image>
-      <view class="header-content">
-        <text class="name" selectable="false" space="false" decode="false">{{ item.name }}</text>
-        <text class="header-content-item" selectable="false" space="false" decode="false">{{ item.time }}</text>
-        <text class="header-content-item" selectable="false" space="false" decode="false">来自:{{ item.type }}</text>
+  <view>
+    <view class="container">
+      <view class="header">
+        <u--image src="/static/my/user.png" class="user-img" height="175rpx" width="175rpx"  shape="circle"></u--image>
+        <view class="header-content">
+          <text class="name" selectable="false" space="false" decode="false">{{ author }}</text>
+          <text class="header-content-item" selectable="false" space="false" decode="false">{{ time }}</text>
+          <text class="header-content-item" selectable="false" space="false" decode="false">来自:{{ sourceType }}</text>
+        </view>
+      </view>
+      <view class="content">{{ content }}</view>
+      <view class="footer">
+        <icon img="/static/square/read.png"></icon>
+        <icon img="/static/square/comment.png" @click="handleShow"></icon>
       </view>
     </view>
-    <view class="content">附近的刷卡JFK大厦看来房价肯定撒尽快立法飞机开绿灯撒加风口浪尖阿三的克拉科夫就ask离开家卡拉幅度萨芬大师傅</view>
-    <view class="footer">
-      <icon></icon>
-      <icon>你好</icon>
-    </view>
+    <commentSection v-if="showComment"></commentSection>
   </view>
+    
 </template>
 
 <script>
 import icon from "./icon.vue"
+import commentSection from './commentSection.vue'
 export default{
   components:{
-    icon
+    icon,
+    commentSection
   },
   props:{
-    title:{
+    time:{
       type:String,
       required:true
     },
@@ -31,11 +37,11 @@ export default{
       type:String,
       required:true      
     },
-    imageHeight:{
-      type:Number,
+    content:{
+      type:String,
       required:true
     },
-    bgColor:{
+    sourceType:{
       type:String,
       required:true
     }
@@ -46,9 +52,16 @@ export default{
         name:"lingwu99",
         time:"2025-1-20 19:00:00",
         type:"Ai agent"
-      }
+      },
+      showComment:false
     }
-  }
+  },
+  methods: {
+    handleShow(){
+      this.showComment = !this.showComment
+      this.$emit('showComment')
+    }
+  },
 }
 </script>
 
@@ -56,9 +69,12 @@ export default{
 .container{
   width: 100%;
   height:100%;
-  background-color: #fffff7;
-  margin:40rpx 0;
-  box-shadow: rgb(219, 219, 233) 0 7px 10px 0px;
+  background-color: #ffffff;
+  // border: 2px solid #000000;
+  border-radius: 10rpx;
+  margin:40rpx 0 0 0;
+  box-shadow: #d2d2ef 7px -5px 1px 0px;
+  
 
   .header{
     display: flex;
@@ -84,7 +100,7 @@ export default{
   }
 
   .content{
-    padding: 0 20rpx;
+    padding: 30rpx 20rpx 0 60rpx;
     font-size: 30rpx;
   }
   .footer{

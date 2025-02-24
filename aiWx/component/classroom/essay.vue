@@ -3,11 +3,11 @@
     <view class="card">
       <text class="title">{{ title }}</text>
       <view class="img-list">
-        <u--image :src="img" :lazy-load="true" height="180rpx" mode="heightFix"></u--image>
+        <u--image :src="img" :lazy-load="true" height="250rpx" mode="widthFix"></u--image>
       </view>
       <view class="footer">
-        <text class="read">{{ number }}</text>
         <uni-icons type="eye-filled" size="20"></uni-icons>
+        <text class="read">{{ number }}</text> 
       </view>
     </view>
   </view>
@@ -35,15 +35,18 @@
     width: 100%;
 
     .card{
-      height: 270rpx;
+      min-height: 270rpx;
       width: 100%;
       background-color: inherit;
-      border-radius: 5rpx;
+      border-radius: 20rpx;
       display: flex;
       flex-direction: column;
-      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 10px 0px;
+      box-shadow: rgba(100, 100, 111, 0.2) 1px -3px 0px 0px;
+      border: none;
+      // box-shadow: rgb(100 100 111 / 17%) 1px -1px 1px 2px;
 
       .title{
+        padding:10rpx 0 10rpx 10rpx;
         font-size: 30rpx;
         font-family: "楷体";
       }
@@ -60,13 +63,14 @@
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
+        padding:20rpx 0 0 50rpx;
 
         .read{
-        color:gray;
-        font-size: 24rpx;
-        margin-left: 30rpx;
-        margin-top: 7rpx;
-        margin-right: 10rpx;
+          color:gray;
+          font-size: 24rpx;
+          margin-left: 10rpx;
+          margin-top: 7rpx;
+        // margin-right: 10rpx;
         }
       }
 
