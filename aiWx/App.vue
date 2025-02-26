@@ -10,13 +10,13 @@ export default {
 		wx.getSetting({
 			withSubscriptions:true,
 			success: (result) => {
-				console.log(result);
+				// console.log(result);
 				//用户信息
 				if (result.authSetting['scope.userInfo']) {
           // 已经授权，可以直接调用 getUserInfo 获取头像昵称
           wx.getUserInfo({
             success: function(res) {
-              console.log(res.userInfo)
+              // console.log(res.userInfo)
             }
           })
         }
@@ -34,7 +34,7 @@ export default {
           // 已经授权，可以直接调用 getUserInfo 获取头像昵称
           wx.getUserInfo({
             success: function(res) {
-              console.log(res)
+              // console.log(res)
             }
           })
         }

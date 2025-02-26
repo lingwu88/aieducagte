@@ -1,5 +1,4 @@
 <template>
-
   <!-- 头部导航栏 -->
   <view class="chat-container">
     <view class="header">

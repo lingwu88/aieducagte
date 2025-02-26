@@ -37,18 +37,18 @@
 					"style": {
 						"navigationBarTitleText": "打卡圈"
 					}
+				},
+				{
+					"path":"edit",
+					"style":{
+						"navigationBarTitleText":"编辑信息"
+					}
 				}
 			]
 		},
 		{
 			"root": "pages/classManagement",
 			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "课程管理"
-					}
-				},
 				{
 					"path": "aiChats",
 					"style": {
@@ -59,6 +59,18 @@
 					"path":"searchResult",
 					"style":{
 						"navigationStyle":"custom"
+					}
+				},
+				{
+					"path":"aiChatProfession",
+					"style":{
+						"navigationBarTitleText":"课程规划[专业版]"
+					}
+				},
+				{
+					"path":"searchResultProfession",
+					"style":{
+						"navigationBarTitleText":"搜索结果[专业版]"
 					}
 				}
 			]

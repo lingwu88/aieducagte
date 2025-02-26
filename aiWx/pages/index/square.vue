@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 4" :request="getData">
+		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 8" :request="getData">
 		</waterfall>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>

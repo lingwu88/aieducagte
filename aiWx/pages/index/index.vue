@@ -5,7 +5,7 @@
 		<u-search placeholder="请输入关键词进行查找" v-model="keyword"></u-search>
 		<u-list width="90vw">
       <u-list-item v-for="(item, index) in list" :key="index">
-        <essay></essay>
+        <essay @click="handleTo"></essay>
       </u-list-item>
     </u-list>
 		
@@ -26,7 +26,12 @@ import essay from '../../component/classroom/essay.vue';
 				inputStyle1:{
 					height:"50rpx",
 					width:"90vw"
-				},
+				},	value: 1,
+				range: [
+					{ value: 0, text: "篮球" },
+					{ value: 1, text: "足球" },
+					{ value: 2, text: "游泳" },
+      ],
 				list:[
 					{
 						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
@@ -65,6 +70,8 @@ import essay from '../../component/classroom/essay.vue';
 		methods: {
 			search(){
 				console.log("监听变化，并触发关键词搜索，并返回结果");
+			},
+			handleClick(){
 				
 			}
 		}

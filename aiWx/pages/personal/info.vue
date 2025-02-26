@@ -4,67 +4,173 @@
           <text class="title">修改个人信息</text>
       </view>
       <view class="form">
-          <view class="form-item">
-              <text class="label">头像:</text>
-              <image :src="avatar" class="avatar" @click="chooseAvatar" />
-          </view>
-          <view class="form-item">
-              <text class="label">昵称:</text>
-              <input v-model="nickname" class="input" placeholder="请输入昵称" />
-          </view>
-          <view class="form-item">
-              <text class="label">性别:</text>
-              <picker mode="selector" :range="genders" @change="onGenderChange">
+      <u--form
+				labelPosition="left"
+				:model="form"
+				:rules="rules"
+				ref="uForm"
+        >
+        <u-form-item
+					label="头像"
+					prop="avatar"
+					ref="item1"
+          >
+            <image :src="label.avatar" class="avatar" @click="chooseAvatar" />
+          </u-form-item>
+          <u-form-item
+            label="昵称"
+            prop="nickname"
+            ref="item1"
+            >
+            <input v-model="form.nickname" class="input" placeholder="请输入昵称" />
+          </u-form-item>
+          <u-form-item
+            label="性别"
+            prop="sex"
+            ref="item1"
+            >
+              <picker mode="selector" :range="genders" @change="onGenderChange" range-key="label">
                   <view class="picker">
-                      {{ selectedGender }}
+                    {{ label.gender }}
                   </view>
               </picker>
-          </view>
-          <view class="form-item">
-              <text class="label">生日:</text>
+            </u-form-item>
+            <!-- <u-form-item
+              label="生日"
+              prop="birthday"
+              @click="showSex = true; hideKeyboard()"
+              ref="item1"
+              >
               <picker mode="date" @change="onBirthdayChange">
                   <view class="picker">
-                      {{ birthday || '选择生日' }}
+                      {{ form.birthday || '选择生日' }}
                   </view>
               </picker>
-          </view>
-          <view class="form-item">
-              <text class="label">个性签名:</text>
-              <textarea v-model="signature" class="textarea" placeholder="请输入个性签名"></textarea>
-          </view>
-          <view class="button-box">
-              <button class="save-button" @click="saveInfo">保存</button>
-          </view>
-      </view>
+            </u-form-item> -->
+            <u-form-item
+              label="个性签名"
+              prop="signature"
+              ref="item1"
+              >
+              <textarea v-model="form.signature" class="textarea" placeholder="请输入个性签名"></textarea>
+            </u-form-item>
+            <view class="button-box">
+                <button class="save-button" @click="saveInfo">保存</button>
+            </view>
+      </u--form>
+    </view>
   </view>
 </template>
 
 <script>
+import request from '../../tools/request';
 export default {
   data() {
       return {
-          avatar: '/static/my/avatar.png', // 默认头像
-          nickname: '',
-          genders: ['男', '女'],
-          selectedGender: '男',
-          birthday: '',
+        label:{
+          avatar:"/static/my/avatar.png",
+          userName:"",
+          gender:"",
+          signature:""
+        },
+        form:{
+          userId:'',
+          // avatar: '', // 默认头像
+          usersName: '',
+          gender:0,
+          // birthday: '',
           signature: ''
+        },
+        genders: [
+          {
+            value:0,
+            label:'隐藏'
+          },
+          {
+            value:1,
+            label:'男'
+          },
+          {
+            value:2,
+            label:'女'
+          }
+        ],
+        userId:'',
+        rules:{
+
+        }
       };
+  },
+  onLoad(){
+    if(uni.getStorageSync('userId'))
+      this.userId = uni.getStorageSync('userId')
+  },
+  onShow(){
+    this.getAvatar()
+    this.getInfo()
   },
   methods: {
       chooseAvatar() {
           uni.chooseImage({
               count: 1,
               success: (res) => {
-                  this.avatar = res.tempFilePaths[0]; // 更新头像
+                  this.label.avatar = res.tempFilePaths[0]; // 更新头像
+                  console.log(res);
+                  // this.form.avatar = res.tempFiles[0]
+                  // console.log(this.form.avatar);
+                  
+                  //更新头像
+                  this.$api.personal.uploadAvatar({
+                    userId:this.userId,
+                    file:this.label.avatar
+                  }).then(res=>{
+                    console.log(res);
+                  })
+                  .catch(err=>{
+                    console.log(err);
+                    
+                  })
               }
           });
       },
-      onGenderChange(e) {
-          this.selectedGender = this.genders[e.detail.value]; // 更新性别
+      getAvatar(){
+        this.$api.personal.getUserAvatar(this.userId).then(res=>{
+          console.log(res);
+          this.label.avatar = request.baseUrl + res.data
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+        // this.$set(this.label,'avatar',this.$api.personal.getUserAvatar(this.userId    ))
+        // console.log(this.label.avatar);
+        
       },
-      onBirthdayChange(e) {
-          this.birthday = e.detail.value; // 更新生日
+      onGenderChange(e) {
+        this.form.gender = this.genders[e.detail.value].value ; // 更新性别
+        this.findGender()
+      },
+      // onBirthdayChange(e) {
+      //     this.birthday = e.detail.value; // 更新生日
+      // },
+      getInfo(){
+				this.$api.personal.getUserInfo(this.userId).then(res=>{
+					console.log(res);
+          // this.$set(this.label,'avatar')
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+      findGender(){
+        console.log(this.form);
+        
+        const item = this.genders.find(item => item.value == this.form.gender)
+        console.log(item.label);
+        
+        this.$set(this.label,'gender',item.label)
+        console.log(this.label);
+        
       },
       saveInfo() {
           // 保存个人信息的逻辑
@@ -141,8 +247,7 @@ export default {
 }
 
 .textarea {
-  flex:1;
-  height: 80px;
+  width: inherit;
   border: 1px solid #dcdcdc;
   border-radius: 4px;
   padding: 10px;

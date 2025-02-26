@@ -1,6 +1,6 @@
 <template>
   <view class="content">
-    <view class="card">
+    <view class="card" @click="handleClick">
       <text class="title">{{ title }}</text>
       <view class="img-list">
         <u--image :src="img" :lazy-load="true" height="250rpx" mode="widthFix"></u--image>
@@ -15,17 +15,31 @@
 
 <script>
 	export default {
+    props:{
+      // title:{
+      //   type:String,
+      //   required:true
+      // },
+      // img:{
+      //   type:String,
+      //   required:true
+      // }
+    },
 		data() {
 			return {
         title:"2024秋冬季学习宝典|掌握规则,轻松学习",
         img:"/static/classroom/eassyImg1.png",
-        number:10000
+        number:10000,
+        // url:'https://mp.weixin.qq.com/s/ckxVWOXCFWBk9ivXYmrwDA'
 			}
 		},
 		onLoad() {
 
 		},
 		methods: {
+      handleClick(){
+        this.$emit('click')
+      }
 		}
 	}
 </script>

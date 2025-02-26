@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "广场",
-  "usingComponents": {
-    "square-waterfall-item": "/pages/index/square-waterfall-item",
-    "waterfall": "/component/square/waterfall",
-    "card": "/component/square/card"
-  }
-}

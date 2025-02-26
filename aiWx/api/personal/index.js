@@ -1,0 +1,103 @@
+import request from "../../tools/request";
+
+export function wxLogin(params){
+  return new Promise((resolve,reject)=>{
+    // uni.showLoading({
+    //   title:'加载中'
+    // })
+    wx.login({	
+      success (res) {
+        console.log(res);
+        
+        if (res.code) {
+          resolve(res.code)
+            // uni.showToast({
+            //   title:'登录成功',
+            //   icon:'none'
+            // })
+        } else {
+          uni.showToast({
+            title:res.errMsg,
+            icon:'none'
+          })
+          console.log('登录失败！' + res.errMsg)
+          reject(res.errMsg)
+        }
+      }
+    })
+  })
+}
+
+//第一个是url，第二个是data，第三个是contentType，第四个是token
+export function userLogin(data){
+  return request.post(
+    `/api/user/login`,
+    data,
+    undefined,
+    false
+  )
+  // return new Promise((resolve,reject)=>{
+  //   wx.request({
+  //     url:request.baseUrl+'api/user/info',
+  //     data,
+  //     success(res){
+  //       console.log(res);
+  //     },
+  //     fail(err){
+  //       console.log(err);
+  //     }
+  //   })
+  // })
+}
+
+export function getUserInfo(userId){
+  return request.get(
+    `/api/user/info?userId=${userId}`
+  )
+}
+
+export function uploadAvatar(data){
+  // return request.post(
+  //   '/api/user/avatar',
+  //   data
+  // )
+  console.log(data);
+  
+  return new Promise((resolve,reject)=>{
+    // uni.showLoading({
+    //   title:'加载中'
+    // })
+    uni.uploadFile({
+      url: request.baseUrl+'/api/user/avatar', //仅为示例，非真实的接口地址
+      filePath: data.file,
+      name: 'file',
+      formData: {
+        'userId':data.userId 
+      },
+      header:{
+        Authorization:request.access_token
+      },
+      success: (uploadFileRes) => {
+        console.log(uploadFileRes.data);
+        resolve(uploadFileRes)
+      },
+      fail(err){
+        console.log(err);
+        
+      }
+    });
+  })
+}
+
+export function changeInfo(data){
+  return request.post(
+    '/api/user/modifyInfo',
+    data
+  )
+}
+
+export function getUserAvatar(userId){
+  return request.get(
+    `/api/user/getAvatar?userId=${userId}`,
+  )
+}

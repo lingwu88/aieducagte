@@ -1,11 +1,14 @@
 <template>
 	<view class="container">
 		<view class="header">
-			<u-input
-      placeholder="请输入内容"
-      border="surround"
-      v-model="value"
-      ></u-input>
+			<textarea
+				placeholder="请输入内容"
+				v-model="value"
+				auto-height
+				:show-confirm-bar="false"
+				class="textarea-box"
+				maxlength=-1
+			></textarea>
 			<view class="icon-list">
 				<view class="icon-item" v-for="(item,index) in iconList" :key="index" @tap="handleUpload(index)">
 					<view class="icon-border">
@@ -26,7 +29,7 @@
 				<tag v-for="(item,index) in list" :key="index" :desc="item.desc" :color="item.color" :is-active="index === menuActive" @click="handleMenuClick(index)"></tag>
 			</view>
 		</view>
-		<view class="start-btn">开始生成</view>
+		<view class="start-btn" @click="handleConvert">开始生成</view>
 	</view>
 </template>
 
@@ -66,7 +69,7 @@ import tag from './components/tag.vue'
 						desc:"微信文件"
 					}
 				],
-				active:-1,
+				active:0,
 				list:[
 					{
 						desc:"故事叙述",
@@ -97,11 +100,21 @@ import tag from './components/tag.vue'
 						color:"#6d6d6d"
           },
 					],
-					menuActive:-1
+					menuActive:0
 				}
 		},
 		onLoad() {
 
+		},
+		mounted() {
+			this.initHighLight()
+			console.log(this.initHighLight);
+			//先处理essay中的换行符
+			this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
+			// console.log(this.mdEssay);
+			
+			this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
+			console.log(this.essay);
 		},
 		methods: {
 			handleMenuClick(index){
@@ -109,26 +122,42 @@ import tag from './components/tag.vue'
 				console.log(this.menuActive);
 			},
 			handleUpload(index){
-				//微信聊天记录文件
-			// 	uni.chooseMessageFile({
-      //   count: 1,
-      //   type: 'file',
-      //   extension: this.allowTypes,
-      //   success: (res) => {
-      //     const file = res.tempFiles[0]
-			// 		console.log(file);
-      //     // 检查文件大小				
-      //   }
-      // })
-						uni.chooseImage({
-					count: 1,
-					sizeType: ['original', 'compressed'],
-					sourceType: ['album', 'camera'],
-					success: (res) => {
-						console.log('选择的图片:', res.tempFilePaths[0])
-					}
+				if(index === 3){
+					// 微信聊天记录文件
+					uni.chooseMessageFile({
+						count: 1,
+						type: 'file',
+						extension: this.allowTypes,
+						success: (res) => {
+							const file = res.tempFiles[0]
+							console.log(file);
+							// 检查文件大小				
+						}
+					});
+				}
+				else if(index === 2){
+					uni.chooseImage({
+						count: 1,
+						sizeType: ['original', 'compressed'],
+						sourceType: ['album', 'camera'],
+						success: (res) => {
+							console.log('选择的图片:', res.tempFilePaths[0])
+						}
+					})
+				}
+				else{
+					uni.showToast({
+						title: '此功能暂未开放',
+						icon: 'none'
+					})
+				}
+			},
+			handleConvert(){
+				console.log(this.value);
+				uni.navigateTo({
+					url: '/pages/learnResource/convertResult?value=' + this.value
 				})
-			}
+			}  
 		}
 	}
 </script>
@@ -137,12 +166,23 @@ import tag from './components/tag.vue'
 .header{
   padding: 20rpx;
 	background-color: #f2f4ff;
-	height:180rpx;
+	min-height:180rpx;
+	max-height: 460rpx;
 	/deep/ .u-input{
 		background-color: #fff;
 		border:none;
 		border-radius: 40rpx;
 		box-shadow: 2px 4px 9px 0px #dadada;
+	}
+	.textarea-box{
+		width: 90vw;
+		border:1px solid #000000;
+		border-radius: 20rpx;
+		margin: 20rpx auto;
+		padding: 20rpx;
+		background-color: #fff;
+		word-break: break-all;
+		word-wrap: break-word;
 	}
 
 	.icon-list{
@@ -179,9 +219,11 @@ import tag from './components/tag.vue'
 }
 .progress{
   margin-top: 20rpx;
+	height: 100rpx;
 }
 .menu-container{
   margin-top: 20rpx;
+	overflow-y: scroll;
 
 	.title{
 		font-size: 38rpx;

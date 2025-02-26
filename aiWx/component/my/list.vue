@@ -58,14 +58,15 @@
 <style lang="scss" scoped>
 .list{
 	width: 80vw;
-	margin:20rpx 50rpx 0 70rpx ;
-	height: 700rpx;
+	margin:20rpx 50rpx 70rpx 70rpx ;
+	min-height: 700rpx;
 	
 	.item:not(:last-child){
 		font-size:50rpx;
 		font-weight: 900;
 		// height: 100%;
 		height: 150rpx;
+		line-height: 150rpx;
 		padding:auto 0;
 	}
 	.item:last-child{

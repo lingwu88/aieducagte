@@ -77,8 +77,13 @@
       </view>
     </scroll-view>
 
-    <view class="input-area">
 
+    <view class="navigate-box" @click="handleToProfession">
+      <image src="/static/classroom/classManagement/professional.png"></image>
+      <view>专业模式</view>
+    </view>
+
+    <view class="input-area">
       <view class="input">
         <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
@@ -192,6 +197,11 @@ export default {
         // TODO: 实际加载逻辑
         this.isLoading = false
       }, 1000)
+    },
+    handleToProfession(){
+      uni.navigateTo({
+        url:"/pages/classManagement/aiChatProfession"
+      })
     },
     handleFocus() {
       this.isVoiceMode = false
@@ -459,6 +469,9 @@ export default {
 
 
   .input-area {
+    position: sticky;
+    bottom: 0;
+    left: 0;
     display: flex;
     align-items: flex-end;
     padding: 20rpx;
@@ -522,6 +535,22 @@ export default {
       &.active{
         opacity: 1;
       }
+    }
+  }
+  .navigate-box{
+    position: relative;
+    margin:0 0 20rpx 0;
+    left: 50%;
+    transform: translate(-50%,-20%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 30vw;
+    height: auto;
+    image{
+      width:30rpx;
+      height: 30rpx;
     }
   }
 }
