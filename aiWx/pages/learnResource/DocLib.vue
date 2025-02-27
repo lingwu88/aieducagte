@@ -1,5 +1,5 @@
 <template>
-	<view class="container" @touchstart="handleTouchStart">
+	<view class="container" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
 		<!-- 提示组件 -->
 		<toast ref="toast"></toast>
 		<!-- 分类导航，支持滑动 -->
@@ -69,7 +69,13 @@
 				loading: false,
 				defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png', // 默认图片
 				maxTitleLength: 20, // 标题最大字符数（约一行）
-				maxPreviewLength: 40 // 描述最大字符数（约两行）
+				maxPreviewLength: 40, // 描述最大字符数（约两行）
+				// ... 滑动检测
+				touchStartX: 0,
+				touchStartY: 0,
+				isMoving: false,
+				isTouchingMenu: false,
+				hasMoved: false // 新增：记录整个操作是否发生过滑动
 			};
 		},
 		onLoad() {
@@ -80,11 +86,11 @@
 				this.loadRemoteJson()
 					.then(data => {
 						this.processJsonData(data);
-						this.showToast('数据请求成功',0.95); // 网络请求成功时弹出提示
+						this.showToast('数据请求成功', 0.95); // 网络请求成功时弹出提示
 					})
 					.catch(err => {
 						console.error('远程JSON加载失败，使用静态数据:', err);
-						this.showToast('数据请求失败，现在用的是静态数据',0.95); // 网络请求失败时弹出提示
+						this.showToast('数据请求失败，现在用的是静态数据', 0.95); // 网络请求失败时弹出提示
 						this.loadStaticData(); // 请求失败时加载静态数据
 					});
 			},
@@ -182,7 +188,7 @@
 
 				filteredData.forEach(item => {
 					if (!this.isValidUrl(item.url)) {
-						this.showToast('url导向错误，联系开发者维护',0.60);
+						this.showToast('url导向错误，联系开发者维护', 0.60);
 					}
 				});
 			},
@@ -196,13 +202,13 @@
 					}
 					const start = this.page * this.pageSize;
 					const moreData = filteredData.slice(start, start + this.pageSize);
-					
+
 					if (moreData.length === 0) {
-						this.showToast('已经加载全部了哦~',0.60); // 弹出提示
+						this.showToast('已经加载全部了哦~', 0.60); // 弹出提示
 						this.loading = false;
 						return;
 					}
-					
+
 					this.resources = this.resources.concat(moreData);
 					this.page++;
 					this.loading = false;
@@ -268,11 +274,60 @@
 						url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}`
 					});
 				} else {
-					this.showToast('url导向错误，联系开发者维护!',0.6);
+					this.showToast('url导向错误，联系开发者维护!', 0.6);
 				}
 			},
 			showToast(message, heightPercent = 0.5) {
-			  this.$refs.toast.show(message, heightPercent);
+				this.$refs.toast.show(message, heightPercent);
+			},
+			handleTouchStart(e) {
+				const touch = e.touches[0];
+				this.touchStartX = touch.clientX;
+				this.touchStartY = touch.clientY;
+				this.isMoving = false;
+				this.hasMoved = false; // 重置为无滑动
+				this.isTouchingMenu = false;
+
+				const menus = this.resources.filter(item => item.showMenu);
+				if (menus.length === 0) return;
+
+				const query = wx.createSelectorQuery();
+				query.selectAll('.menu-buttons').boundingClientRect(rects => {
+					rects.forEach(rect => {
+						if (
+							touch.clientX >= rect.left &&
+							touch.clientX <= rect.right &&
+							touch.clientY >= rect.top &&
+							touch.clientY <= rect.bottom
+						) {
+							this.isTouchingMenu = true;
+						}
+					});
+				}).exec();
+			},
+			handleTouchMove(e) {
+				const touch = e.touches[0];
+				if (
+					Math.abs(touch.clientX - this.touchStartX) > 5 ||
+					Math.abs(touch.clientY - this.touchStartY) > 5
+				) {
+					this.isMoving = true;
+					this.hasMoved = true; // 标记整个操作包含滑动
+				}
+			},
+			handleTouchEnd(e) {
+				if (!this.hasMoved && !this.isTouchingMenu) {
+					// 无滑动且点击在外部，收起菜单
+					console.log('点击在外部，收起菜单');
+					this.resources = this.resources.map(item => ({
+						...item,
+						showMenu: false
+					}));
+				}
+				// 重置状态
+				this.isMoving = false;
+				this.hasMoved = false;
+				this.isTouchingMenu = false;
 			}
 		}
 	};
@@ -280,18 +335,19 @@
 <style lang="scss" scoped>
 	.container {
 		height: 100vh;
-		background-color: #f5f5f5;
+		background-color: #fafafa;
 	}
 
 	.categories-scroll {
 		width: 100%;
 		white-space: nowrap;
+		box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.15);
 	}
 
 	.categories {
 		display: inline-flex;
 		padding: 20rpx 0;
-		background-color: #fff;
+		background-color: #fefefe;
 	}
 
 	.category {
