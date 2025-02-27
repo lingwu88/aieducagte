@@ -1,5 +1,5 @@
 <template>
-	<view class="container" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+	<view class="container" @touchstart="handleTouchStart"  @touchend="handleTouchEnd">
 		<!-- 提示组件 -->
 		<toast ref="toast"></toast>
 		<!-- 分类导航，支持滑动 -->
@@ -73,10 +73,28 @@
 				// ... 滑动检测
 				touchStartX: 0,
 				touchStartY: 0,
+				touchStartTime: 0, // 触摸开始的时间
 				isMoving: false,
 				isTouchingMenu: false,
-				hasMoved: false ,// 新增：记录整个操作是否发生过滑动
-				isTouchActive: false // 新增：标记触摸是否激活
+				hasMoved: false, // 新增：记录整个操作是否发生过滑动
+				isTouchActive: false, // 新增：标记触摸是否激活
+				resources: [{
+						id: 1,
+						showMenu: false,
+						favorited: false
+					},
+					{
+						id: 2,
+						showMenu: false,
+						favorited: false
+					}
+					// 其他数据
+				],
+				touchStartX: 0,
+				touchStartY: 0,
+				touchEndX: 0,
+				touchEndY: 0,
+				hasMoved: false
 			};
 		},
 		onLoad() {
@@ -253,12 +271,8 @@
 			},
 			handleTouchStart(e) {
 				const touch = e.touches[0];
-				this.touchStartX = touch.clientX;
-				this.touchStartY = touch.clientY;
-				this.isMoving = false;
-				this.hasMoved = false;
+				this.touchStartTime = Date.now(); // 记录触摸开始时间
 				this.isTouchingMenu = false;
-				this.isTouchActive = true; // 标记触摸开始
 
 				const menus = this.resources.filter(item => item.showMenu);
 				if (menus.length === 0) return;
@@ -277,30 +291,21 @@
 					});
 				}).exec();
 			},
-			handleTouchMove(e) {
-				const touch = e.touches[0];
-				if (
-					Math.abs(touch.clientX - this.touchStartX) > 5 ||
-					Math.abs(touch.clientY - this.touchStartY) > 5
-				) {
-					this.isMoving = true;
-					this.hasMoved = true; // 标记整个操作包含滑动
-				}
-			},
 			handleTouchEnd(e) {
-				if (this.isTouchActive && !this.hasMoved && !this.isTouchingMenu) {
-					// 无滑动且点击在外部，收起菜单
+				const touch = e.changedTouches[0];
+				const duration = Date.now() - this.touchStartTime; // 计算触摸时长
+
+				if (duration < 100 && !this.isTouchingMenu) {
+					// 时长 < 200ms 且在外部，收起菜单
 					console.log('点击在外部，收起菜单');
 					this.resources = this.resources.map(item => ({
 						...item,
 						showMenu: false
 					}));
 				}
+
 				// 重置状态
-				this.isMoving = false;
-				this.hasMoved = false;
 				this.isTouchingMenu = false;
-				this.isTouchActive = false; // 标记触摸结束
 			}
 		}
 	};
