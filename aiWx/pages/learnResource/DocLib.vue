@@ -12,8 +12,13 @@
 			</view>
 		</scroll-view>
 		<!-- 资料列表 -->
-		<scroll-view scroll-y class="resource-list" @scrolltolower="loadMore">
-			<block v-for="item in resources" :key="item.id">
+		<scroll-view scroll-y class="resource-list" @scrolltolower="loadMore" enable-back-to-top scroll-with-animation
+			:style="{ height: 'calc(100vh - 100rpx)' }">
+			<!-- 添加下拉刷新区域 -->
+			<view class="pull-down-area" :style="{ height: pullDownHeight + 'px' }">
+				<text v-if="pullDownHeight > 500">松手刷新</text>
+			</view>
+			<block v-for=" item in resources" :key="item.id">
 				<view v-if="item.url" class="resource-item" @tap="navigateTo(item.url)">
 					<image :src="item.img || defaultImg" class="item-img"></image>
 					<view class="item-content">
@@ -67,12 +72,17 @@
 				pageSize: 20,
 				page: 1,
 				loading: false,
+				//列表项样式
 				defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png', // 默认图片
 				maxTitleLength: 20, // 标题最大字符数（约一行）
 				maxPreviewLength: 40, // 描述最大字符数（约两行）
-				// ... 滑动检测
+				//收藏等按钮更新优化体验
 				touchStartTime: 0, // 触摸开始的时间
 				isTouchingMenu: false,
+				//拉取数据更新优化体验
+				pullDownHeight: 0, // 下拉区域高度
+				touchStartY: 0, // 触摸开始的 Y 坐标
+				isPulling: false // 是否正在下拉
 			};
 		},
 		onLoad() {
@@ -83,11 +93,11 @@
 				this.loadRemoteJson()
 					.then(data => {
 						this.processJsonData(data);
-						this.showToast('数据请求成功', 0.95); // 网络请求成功时弹出提示
+						this.showToast('数据请求成功', 0.15, "down"); // 网络请求成功时弹出提示
 					})
 					.catch(err => {
 						console.error('远程JSON加载失败，使用静态数据:', err);
-						this.showToast('数据请求失败，现在用的是静态数据', 0.95); // 网络请求失败时弹出提示
+						this.showToast('数据请求失败，现在用的是静态数据', 0.15, "down"); // 网络请求失败时弹出提示
 						this.loadStaticData(); // 请求失败时加载静态数据
 					});
 			},
@@ -199,17 +209,15 @@
 					}
 					const start = this.page * this.pageSize;
 					const moreData = filteredData.slice(start, start + this.pageSize);
-
 					if (moreData.length === 0) {
-						this.showToast('已经加载全部了哦~', 0.60); // 弹出提示
+						this.showToast('已经加载全部了哦~', 0.6);
 						this.loading = false;
 						return;
 					}
-
 					this.resources = this.resources.concat(moreData);
 					this.page++;
 					this.loading = false;
-				}, 1000);
+				}, 300); // 缩短延迟时间，从 1000ms 改为 300ms
 			},
 			changeCategory(category) {
 				this.currentCategory = category;
@@ -241,11 +249,11 @@
 						url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}`
 					});
 				} else {
-					this.showToast('url导向错误，联系开发者维护!', 0.6);
+					this.showToast('url导向错误，联系开发者_f维护!', 0.6);
 				}
 			},
-			showToast(message, heightPercent = 0.5) {
-				this.$refs.toast.show(message, heightPercent);
+			showToast(message, heightPercent = 0.5, ...args) {
+				this.$refs.toast.show(message, heightPercent, ...args);
 			},
 			handleTouchStart(e) {
 				const touch = e.touches[0];
@@ -284,7 +292,8 @@
 
 				// 重置状态
 				this.isTouchingMenu = false;
-			}
+			},
+
 		}
 	};
 </script>
@@ -321,6 +330,12 @@
 
 	.resource-list {
 		height: calc(100vh - 100rpx);
+		overflow-y: scroll;
+		/* 确保滚动生效 */
+		-webkit-overflow-scrolling: touch;
+		/* 增强 iOS 滚动丝滑感 */
+		overscroll-behavior: auto;
+		/* 允许弹性拉动 */
 	}
 
 	.resource-item {
@@ -394,6 +409,7 @@
 		border-radius: 8rpx;
 		padding-bottom: 0rpx;
 		margin-top: auto;
+
 	}
 
 	.more-icon {
@@ -408,6 +424,7 @@
 		justify-content: space-between;
 		padding: 0 20rpx 10rpx 60rpx;
 		background-color: transparent;
+		z-index:10;
 	}
 
 	.menu-btn {
