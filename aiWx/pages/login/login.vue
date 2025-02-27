@@ -17,7 +17,7 @@
 				<view class="btn" @click="login">手机号快捷登录</view>
 				<view class="check">
 					<u-checkbox-group v-model="checked" placement="row">
-						<u-checkbox activeColor="#2E93FF" size="16" name="1"></u-checkbox>
+						<u-checkbox activeColor="#8B6FF0" size="16" name="1"></u-checkbox>
 					</u-checkbox-group>
 					<view @click="handleCheck">
 						<text @click.stop="toDesc">《平台用户协议以及隐私协议》</text>
@@ -101,7 +101,7 @@
 	transform: translate(0,-50%);
 	
 	.logo{
-		width:300rpx;
+		width:600rpx;
 		height: 300rpx;
 	}
 	view{
@@ -123,7 +123,7 @@
 	border-radius: 60rpx 60rpx 0rpx 0rpx;
 	margin-top: -50rpx;
 	// background-color: rgba(204,241,196, 0.5);
-	background-color: rgba(#43d7b5,.22);
+	background-color: rgba(#7C55D4,.22);
 
 	z-index: 8;
 }
@@ -131,7 +131,7 @@
 	width: 100%;
 	box-sizing: border-box;
 	border-radius: 60rpx 60rpx 0 0;
-	background-color: #f1ffee;
+	background-color: #A587E7;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -159,7 +159,7 @@
 	color:#ffffff;
 	// background-color: rgb(204,241,196);
 	// background-color: rgb(204,241,196);
-	background-color: #89d07a;
+	background-color: #6F53D9;
 	// background-color: #67bd55;
 	// background-color: #43d7b5;
 	border-radius: 20rpx;
@@ -179,7 +179,7 @@
 		font-size:28rpx;
 		color: #999999;
 		text{
-			color:#4AA0f0;
+			color:#F5F3FF;
 		}
 	}
 }
