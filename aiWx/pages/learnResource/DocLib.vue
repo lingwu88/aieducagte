@@ -29,9 +29,9 @@
             <text class="more-icon">⋮</text>
           </view>
         </view>
-        <view v-if="item.showMenu" class="menu-buttons">
+        <view v-if="item.showMenu" class="menu-buttons" @touchstart.stop>
           <view class="menu-btn" @click.stop="toggleFavorite(item)">
-            <image :src="item.isFavorited ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico' : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'" class="btn-icon"></image>
+            <image :src="item.isFavorited ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled' : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'" class="btn-icon"></image>
             <text>{{ item.isFavorited ? '已收藏' : '收藏' }}</text>
           </view>
           <view class="menu-btn" @click.stop="console.log('下载')">
@@ -39,7 +39,7 @@
             <text>下载</text>
           </view>
           <view class="menu-btn" @click.stop="console.log('分享')">
-            <image src="/static/classroom/learnResource/ResourceLibrary/icon/share.ico" class="btn-icon"></image>
+            <image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
             <text>分享转发</text>
           </view>
         </view>
@@ -79,11 +79,9 @@ export default {
       this.loadRemoteJson()
         .then(data => {
           this.processJsonData(data);
-          this.showToast('数据请求成功');
         })
         .catch(err => {
           console.error('远程JSON加载失败，使用静态数据:', err);
-          this.showToast('数据请求失败，现在用的是静态数据');
           this.loadStaticData();
         });
     },
@@ -170,13 +168,6 @@ export default {
         }
         const start = this.page * this.pageSize;
         const moreData = filteredData.slice(start, start + this.pageSize);
-        
-        if (moreData.length === 0) {
-          this.showToast('已经加载全部了哦~'); // 没有更多数据时弹出提示
-          this.loading = false;
-          return;
-        }
-
         this.resources = this.resources.concat(moreData);
         this.page++;
         this.loading = false;
@@ -210,18 +201,22 @@ export default {
 
       const query = wx.createSelectorQuery();
       let isOutside = true;
-      menus.forEach(item => {
-        query.select(`#menu-${item.id}`).boundingClientRect(rect => {
+
+      // 检查是否点击在菜单按钮区域内
+      query.selectAll('.menu-buttons').boundingClientRect(rects => {
+        rects.forEach(rect => {
           if (
             touch.clientX >= rect.left &&
             touch.clientX <= rect.right &&
             touch.clientY >= rect.top &&
             touch.clientY <= rect.bottom
           ) {
-            isOutside = false;
+            isOutside = false; // 点击在菜单按钮区域内，不收起
           }
         });
       });
+
+      // 检查是否点击在列表项区域内
       query.selectAll('.resource-item').boundingClientRect(items => {
         items.forEach(rect => {
           if (
@@ -230,7 +225,7 @@ export default {
             touch.clientY >= rect.top &&
             touch.clientY <= rect.bottom
           ) {
-            isOutside = false;
+            isOutside = false; // 点击在列表项内，不收起
           }
         });
       }).exec(() => {
@@ -268,7 +263,7 @@ export default {
   background-color: #fff;
 }
 .category {
-  width: 300rpx;
+  width: 180rpx;
   font-size: 32rpx;
   color: #666;
   text-align: center;
@@ -286,9 +281,11 @@ export default {
   align-items: center;
   padding: 20rpx;
   background-color: #fff;
-  margin: 20rpx;
+  margin: 15rpx 20rpx 20rpx 20rpx;
   border-radius: 10rpx;
-  width: 690rpx;
+  width: 675rpx;
+  height:135rpx;
+  box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.17);
 }
 .item-img {
   width: 100rpx;
@@ -325,18 +322,19 @@ export default {
 }
 .item-more {
   width: 40rpx;
-  height: 80rpx;
+  height: 55rpx;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   background-color: #f0f0f0;
   border-radius: 8rpx;
-  padding-bottom: 10rpx;
+  padding-bottom: 0rpx;
+  margin-top: auto;
 }
 .more-icon {
   font-size: 40rpx;
   color: #666;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 .menu-buttons {
   display: flex;
@@ -365,7 +363,8 @@ export default {
   font-size: 28rpx;
   color: #333;
 }
-.loading, .empty {
+.loading,
+.empty {
   text-align: center;
   font-size: 28rpx;
   color: #999;
