@@ -26,7 +26,7 @@
 						<text class="more-icon">⋮</text>
 					</view>
 				</view>
-				<view v-if="item.showMenu" class="menu-buttons" >
+				<view v-if="item.showMenu" class="menu-buttons">
 					<view class="menu-btn" @tap.stop="toggleFavorite(item)">
 						<image
 							:src="item.isFavorited ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico' : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'"
@@ -196,6 +196,13 @@
 					}
 					const start = this.page * this.pageSize;
 					const moreData = filteredData.slice(start, start + this.pageSize);
+					
+					if (moreData.length === 0) {
+						this.showToast('已经加载全部了哦~'); // 弹出提示
+						this.loading = false;
+						return;
+					}
+					
 					this.resources = this.resources.concat(moreData);
 					this.page++;
 					this.loading = false;
@@ -226,31 +233,34 @@
 				console.log(`${item.isFavorited ? '取消收藏' : '收藏'}: ${item.title}`);
 			},
 			handleTouchStart(e) {
-			  const touch = e.touches[0];
-			  const menus = this.resources.filter(item => item.showMenu);
-			  if (menus.length === 0) return;
-			
-			  const query = wx.createSelectorQuery();
-			  let isOutside = true;
-			
-			  query.selectAll('.menu-buttons').boundingClientRect(rects => {
-			    rects.forEach(rect => {
-			      if (
-			        touch.clientX >= rect.left &&
-			        touch.clientX <= rect.right &&
-			        touch.clientY >= rect.top &&
-			        touch.clientY <= rect.bottom
-			      ) {
-			        console.log('点击在菜单内');
-			        isOutside = false;
-			      }
-			    });
-			  }).exec(() => {
-			    if (isOutside) {
-			      console.log('点击在外部，收起菜单');
-			      this.resources = this.resources.map(item => ({ ...item, showMenu: false }));
-			    }
-			  });
+				const touch = e.touches[0];
+				const menus = this.resources.filter(item => item.showMenu);
+				if (menus.length === 0) return;
+
+				const query = wx.createSelectorQuery();
+				let isOutside = true;
+
+				query.selectAll('.menu-buttons').boundingClientRect(rects => {
+					rects.forEach(rect => {
+						if (
+							touch.clientX >= rect.left &&
+							touch.clientX <= rect.right &&
+							touch.clientY >= rect.top &&
+							touch.clientY <= rect.bottom
+						) {
+							console.log('点击在菜单内');
+							isOutside = false;
+						}
+					});
+				}).exec(() => {
+					if (isOutside) {
+						console.log('点击在外部，收起菜单');
+						this.resources = this.resources.map(item => ({
+							...item,
+							showMenu: false
+						}));
+					}
+				});
 			},
 			navigateTo(url) {
 				if (this.isValidUrl(url)) {
@@ -261,8 +271,18 @@
 					this.showToast('url导向错误，联系开发者维护');
 				}
 			},
-			showToast(message) {
-				this.$refs.toast.show(message);
+			showToast(message, heightPercent = 0.5) { // 默认值为 0.5，即屏幕中间
+			  const systemInfo = uni.getSystemInfoSync();
+			  const screenHeight = systemInfo.windowHeight; // 获取屏幕高度（单位：px）
+			  const toastHeight = 60; // 假设 Toast 高度为 60rpx，大约为 30px（根据样式调整）
+			  const initialTop = screenHeight * (1 - heightPercent) - toastHeight / 2; // 初始位置：屏幕顶部向下偏移
+			  const endTop = initialTop - 150; // 结束位置：向上移动 150rpx
+			
+			  this.$refs.toast.show({
+			    message: message,
+			    top: initialTop > 0 ? initialTop : 50, // 确保不超出顶部
+			    endTop: endTop > -100 ? endTop : -100 // 确保结束位置合理
+			  });
 			}
 		}
 	};

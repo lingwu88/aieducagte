@@ -1,5 +1,5 @@
 <template>
-  <view v-if="visible" class="toast" :style="{ top: top + 'rpx' }">
+  <view v-if="visible" class="toast" :style="{ top: top + 'px' }">
     {{ message }}
   </view>
 </template>
@@ -10,20 +10,20 @@ export default {
     return {
       visible: false,
       message: '',
-      top: 50 // 初始顶部位置
+      top: 50 // 初始默认值，单位改为 px
     };
   },
   methods: {
-    show(message) {
+    show({ message, top, endTop }) {
       this.message = message;
+      this.top = top; // 使用传入的初始位置
       this.visible = true;
-      this.top = 50; // 重置位置
       setTimeout(() => {
-        this.top = -100; // 3秒后上移消失
+        this.top = endTop; // 移动到结束位置
         setTimeout(() => {
           this.visible = false;
         }, 500); // 动画结束后隐藏
-      }, 3000);
+      }, 3000); // 3秒后移动
     }
   }
 };
@@ -43,6 +43,6 @@ export default {
   transition: top 0.5s ease;
   max-width: 80%;
   text-align: center;
-  pointer-events: none; /* 添加此属性，让点击事件穿透 */
+  pointer-events: none;
 }
 </style>
