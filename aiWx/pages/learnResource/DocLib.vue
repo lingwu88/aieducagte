@@ -39,7 +39,7 @@
             <text>下载</text>
           </view>
           <view class="menu-btn" @click.stop="console.log('分享')">
-            <image src="/static/classroom/learnResource/ResourceLibrary/icon/share.ico" class="btn-icon"></image>
+            <image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
             <text>分享转发</text>
           </view>
         </view>
@@ -66,7 +66,7 @@ export default {
       pageSize: 20,
       page: 1,
       loading: false,
-      defaultImg: '/static/classroom/learnResource/ResourceLibrary/icon/star.ico', // 默认图片
+      defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png', // 默认图片
       maxTitleLength: 20, // 标题最大字符数（约一行）
       maxPreviewLength: 40 // 描述最大字符数（约两行）
     };
@@ -87,15 +87,14 @@ export default {
     },
     loadRemoteJson() {
       return new Promise((resolve, reject) => {
-        // 预留远程 JSON URL，由你填写
-        const jsonUrl = 'https://fugui.mynatapp.cc/fg/source.json'; // 请填写，如 'https://your-api.com/resources.json'
+        const jsonUrl = 'https://fugui.mynatapp.cc/fg/source.json';  //需要替换的后端接口
         uni.request({
           url: jsonUrl,
           method: 'GET',
-          timeout: 5000, // 设置超时时间 5秒
+          timeout: 5000,
           success: (res) => {
             if (res.data && res.data.doc) {
-              resolve(res.data.doc); // 数据在 doc 中
+              resolve(res.data.doc);
             } else {
               reject(new Error('数据格式错误'));
             }
@@ -131,12 +130,10 @@ export default {
         showMenu: false
       }));
 
-      // 动态生成分类
       const categoriesSet = new Set(['全部']);
       allItems.forEach(item => categoriesSet.add(item.category));
       this.categories = Array.from(categoriesSet);
 
-      // 加载当前分类的数据
       this.loadResources();
     },
     isValidUrl(str) {
@@ -146,7 +143,7 @@ export default {
     },
     loadResources() {
       this.loading = true;
-      let filteredData = this.allResources.filter(item => item.url); // 过滤掉无有效 URL 的项
+      let filteredData = this.allResources.filter(item => item.url);
       if (this.currentCategory !== '全部') {
         filteredData = filteredData.filter(item => item.category === this.currentCategory);
       }
@@ -154,7 +151,6 @@ export default {
       this.resources = data;
       this.loading = false;
 
-      // 检查无效 URL 并显示提示
       filteredData.forEach(item => {
         if (!this.isValidUrl(item.url)) {
           this.showToast('url导向错误，联系开发者维护');
@@ -253,7 +249,7 @@ export default {
   background-color: #fff;
 }
 .category {
-  width: 300rpx;
+  width: 200rpx;
   font-size: 32rpx;
   color: #666;
   text-align: center;
@@ -269,11 +265,13 @@ export default {
 .resource-item {
   display: flex;
   align-items: center;
-  padding: 20rpx;
+  padding: 20rpx; /* 内边距保持不变 */
   background-color: #fff;
-  margin: 20rpx;
+  margin: 15rpx 20rpx 24rpx 20rpx; /* 外边距从 20rpx 增加到 36rpx，增加 16rpx（约 8px）间距 */
   border-radius: 10rpx;
-  width: 690rpx; /* 固定宽度，适配标题和描述 */
+  width: 680rpx;
+  height: 140rpx; /* 原高度 100rpx + 50rpx（约 25px），适应两行 preview */
+  box-shadow: 0 5rpx 9rpx rgba(0, 0, 0, 0.15); /* 添加阴影提升质感 */
 }
 .item-img {
   width: 100rpx;
@@ -282,6 +280,8 @@ export default {
 }
 .item-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 .item-title {
@@ -289,6 +289,7 @@ export default {
   color: #333;
   line-height: 40rpx;
   max-width: 500rpx;
+  display: block;
 }
 .item-title.ellipsis {
   white-space: nowrap;
@@ -296,10 +297,12 @@ export default {
   text-overflow: ellipsis;
 }
 .item-desc {
-  font-size: 24rpx; /* 描述字体小一点 */
+  font-size: 24rpx;
   color: #999;
   line-height: 30rpx;
   max-width: 500rpx;
+  display: block;
+  margin-top: 10rpx;
 }
 .item-desc.ellipsis-two {
   display: -webkit-box;
@@ -310,7 +313,7 @@ export default {
 }
 .item-more {
   width: 40rpx;
-  height: 80rpx;
+  height: 60rpx;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -350,7 +353,8 @@ export default {
   font-size: 28rpx;
   color: #333;
 }
-.loading, .empty {
+.loading,
+.empty {
   text-align: center;
   font-size: 28rpx;
   color: #999;
