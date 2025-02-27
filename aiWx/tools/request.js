@@ -28,7 +28,7 @@ function request(url,params={},data={},method = "POST",contentType="application/
       timeout,
       header:{
         Authorization:token?access_token:'',
-        'content-type':contentType,
+        contentType,
       },
       ...args,
       success(res){

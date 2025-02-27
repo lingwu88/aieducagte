@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view class="input-area">
-			<!-- <view class="input-box">
+			<view class="input-box">
 				<textarea
 					v-model="inputText"
 					:adjust-position="false"
@@ -13,35 +13,7 @@
 					@blur="handleBlur"
 					class="input-textarea"
 				/>
-			</view> -->
-  		<view class="box">
-				<view class="form">
-					<u--form
-						labelPosition="top"
-						:model="form"
-						ref="uForm"
-						labelWidth="150"
-				>
-					<u-form-item
-							label="标题"
-							prop="title"
-							borderBottom
-							ref="item1"
-					>
-						<input v-model="form.title" placeholder="请输入标题"></input>
-					</u-form-item>
-					<u-form-item
-							label="内容"
-							prop="content"
-							borderBottom
-							ref="item1"
-					>
-						<u-textarea v-model="form.content" count maxlength="400" height="200" placeholder="这里可以内容"></u-textarea>
-					</u-form-item>
-				</u--form>
 			</view>
-
-
 			<view class="clear-btn" @click="clearText">
 				<text>清空文本</text>
 			</view>
@@ -57,10 +29,6 @@
 		<view class="upload-btn" @click="uploadImage">
 			<text>上传图片</text>
 		</view>
-		<view class="publish-btn" @click="handlePublish">
-			<text>发表</text>
-		</view>
-		</view>
 	</view>
 </template>
 
@@ -69,69 +37,42 @@
 		data() {
 			return {
 				inputText: '',
-				images: [],
-      form:{
-				userId:'',
-				title:"",
-				content:""
-      }
-    }
-  },
-  onLoad() {
-
-	},
-	methods: {
-		uploadImage() {
-			// 这里可以使用 uni.chooseImage 来选择图片
-			uni.chooseImage({
-				count: 1,
-				success: (res) => {
-					this.images.push(res.tempFilePaths[0]);
-				}
-			});
-		},
-		clearText() {
-			this.form.title = '';
-			this.form.content=''
-		},
-		deleteImage(index) {
-			this.images.splice(index, 1);
-		},
-		previewImage(image) {
-			uni.previewImage({
-				current: image,
-				urls: this.images
-			});
-		},
-		handleFocus() {
-			// 处理焦点事件
-		},
-		handleBlur() {
-			// 处理失去焦点事件
-		},
-		handlePublish(){
-			if(this.form.title.trim()!='' && this.form.content.trim()!=''){
-				this.$api.square.pushlishArticle({
-					...this.form,
-					userId:uni.getStorageSync('userId')
-				}).then(res=>{
-					console.log(res);
-					
-				})
-				.catch(err=>{
-					console.log(err);
-					
-				})
+				images: []
 			}
-			else{
-				uni.showToast({
-					title:"标题或内容不能为空!",
-					icon:'none'
-				})
+		},
+		onLoad() {
+
+		},
+		methods: {
+			uploadImage() {
+				// 这里可以使用 uni.chooseImage 来选择图片
+				uni.chooseImage({
+					count: 1,
+					success: (res) => {
+						this.images.push(res.tempFilePaths[0]);
+					}
+				});
+			},
+			clearText() {
+				this.inputText = '';
+			},
+			deleteImage(index) {
+				this.images.splice(index, 1);
+			},
+			previewImage(image) {
+				uni.previewImage({
+					current: image,
+					urls: this.images
+				});
+			},
+			handleFocus() {
+				// 处理焦点事件
+			},
+			handleBlur() {
+				// 处理失去焦点事件
 			}
 		}
 	}
-}
 </script>
 
 <style lang="scss" scoped>
@@ -146,7 +87,6 @@
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 20rpx;
-	min-height: 100vh;
 }
 
 .input-box {
@@ -165,16 +105,13 @@
 }
 
 .clear-btn {
-	background-color: #ef8c87;
+	background-color: #FF3B30;
 	color: #fff;
 	text-align: center;
 	padding: 10rpx;
 	border-radius: 5rpx;
 	cursor: pointer;
 	margin-top: 10rpx;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
 }
 
 .preview {
@@ -207,10 +144,6 @@
 	padding: 2rpx 5rpx;
 	border-radius: 3rpx;
 	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
-
 }
 
 .upload-btn {
@@ -220,51 +153,5 @@
 	padding: 10rpx;
 	border-radius: 5rpx;
 	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
-}
-.publish-btn{
-	background-color: #6984a0;
-	color: #fff;
-	text-align: center;
-	padding: 10rpx;
-	border-radius: 5rpx;
-	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
-	margin-top:20rpx;
-}
-.box{
-
-  .form{
-    min-height: 50vh;
-
-    /deep/.u-textarea.data-v-81cd9d32 {
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        border: none;
-        width: 90vw;
-        margin: auto;
-    }
-  }
-
-  .navigate-box{
-    position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 30vw;
-    height: auto;
-    image{
-      width:30rpx;
-      height: 30rpx;
-    }
-  }
 }
 </style>

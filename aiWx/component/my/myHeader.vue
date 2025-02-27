@@ -2,54 +2,34 @@
 	<view>
     <view :class="['card',isLogin?'login-style':'noLogin-style']">
      <view class="image-border">
-      <image :src="img" class="user-img" height="160rpx" width="160rpx"  shape="circle"></image>
+      <u--image src="/static/my/user.png" class="user-img" height="160rpx" width="160rpx"  shape="circle"></u--image>
      </view>
-     <text :class="['description']" selectable="false" @click="handleTo">{{isLogin?name:'点击登录/注册'}}</text>
+     <text :class="['description']" selectable="false" @click="handleTo">点击登录/注册</text>
      <div :class="['background',isLogin?'login-background':'noLogin-background']"></div>
     </view>
 	</view>
 </template>
 
 <script>
-import request from '../../tools/request';
 	export default {
-    props:{
-      isLogin:{
-        type:Boolean,
-        required:true,
-        default:false
-      },
-      img:{
-        type:String,
-        required:true
-      },
-      name:{
-        type:String,
-        default:"未填写昵称"
-      }
-    },
 		data() {
 			return {
 				title: 'Hello',
+        isLogin:false
 			}
 		},
-    onShow(){
-      console.log(request.baseUrl);
-      
-    },
+		onLoad() {
+      if(uni.getStorageSync('userId')&&uni.getStorageSync('access_token')){
+        this.$set(this,'isLogin',true) 
+      }
+		},
 		methods: {
       handleTo(){
         uni.navigateTo({
           url:"/pages/login/login"
         })
       }
-		},
-    // watch:{
-    //   img(newVal){
-    //     console.log(request.baseUrl+newVal);
-    //     return request.baseUrl+newVal
-    //   }
-    // }
+		}
 	}
 </script>
 
@@ -85,9 +65,6 @@ import request from '../../tools/request';
     z-index: 2; /* 用户头像在上层 */
 
     .user-img{
-      width: 160rpx;
-      height: 160rpx;
-      border-radius: 50rpx;
       margin:auto 0;
     }
   }
