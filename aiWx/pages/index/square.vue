@@ -95,7 +95,7 @@ import list from "../../config/index.js"
 		justify-content: center;
 		width:700rpx;
 		height:95vh;
-		background-color: #fff1d0a1;
+		background-color: #ffffff;
 		margin: 2vh 2.5vw 0 2.5vw;
 		
 		.fall{
