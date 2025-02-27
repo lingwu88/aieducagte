@@ -202,7 +202,7 @@
 			loadMore() {
 				if (this.loading) return;
 				this.loading = true;
-				setTimeout(() => {
+
 					let filteredData = this.allResources.filter(item => item.url);
 					if (this.currentCategory !== '全部') {
 						filteredData = filteredData.filter(item => item.category === this.currentCategory);
@@ -210,14 +210,14 @@
 					const start = this.page * this.pageSize;
 					const moreData = filteredData.slice(start, start + this.pageSize);
 					if (moreData.length === 0) {
-						this.showToast('已经加载全部了哦~', 0.6);
+						this.showToast('已经加载完所有资料了哦~', 0.6);
 						this.loading = false;
 						return;
 					}
 					this.resources = this.resources.concat(moreData);
 					this.page++;
 					this.loading = false;
-				}, 300); // 缩短延迟时间，从 1000ms 改为 300ms
+
 			},
 			changeCategory(category) {
 				this.currentCategory = category;
@@ -265,15 +265,18 @@
 
 				const query = wx.createSelectorQuery();
 				query.selectAll('.menu-buttons').boundingClientRect(rects => {
+					this.isTouchingMenu = true;  //精妙设计之一
 					rects.forEach(rect => {
+						console.log(`用户点击区域：x: ${touch.clientX}, y: ${touch.clientY}`);
+						console.log(`按钮所在区域：left: ${rect.left}, right: ${rect.right},top: ${rect.top}, bottom: ${rect.bottom}`);
 						if (
-							touch.clientX >= rect.left &&
-							touch.clientX <= rect.right &&
-							touch.clientY >= rect.top &&
-							touch.clientY <= rect.bottom
+							touch.clientX < rect.left ||
+							touch.clientX > rect.right ||
+							touch.clientY < rect.top ||
+							touch.clientY > rect.bottom
 						) {
-							this.isTouchingMenu = true;
-						}
+							this.isTouchingMenu = false;
+						};
 					});
 				}).exec();
 			},
@@ -283,11 +286,13 @@
 
 				if (duration < 100 && !this.isTouchingMenu) {
 					// 时长 < 200ms 且在外部，收起菜单
-					console.log('点击在外部，收起菜单');
+					console.log('[info] 点击在按钮外部，收起菜单');
 					this.resources = this.resources.map(item => ({
 						...item,
 						showMenu: false
 					}));
+				}else{
+					console.log('[info] 点击在按钮内部');
 				}
 
 				// 重置状态
@@ -424,7 +429,7 @@
 		justify-content: space-between;
 		padding: 0 20rpx 10rpx 60rpx;
 		background-color: transparent;
-		z-index:10;
+		z-index:10000;
 	}
 
 	.menu-btn {
@@ -437,12 +442,14 @@
 		background-color: #fff;
 		border-radius: 8rpx;
 		box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+		z-index:10001;
 	}
 
 	.btn-icon {
 		width: 40rpx;
 		height: 40rpx;
 		margin-right: 10rpx;
+		z-index:10001;
 	}
 
 	.menu-btn text {
