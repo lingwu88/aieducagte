@@ -43,5 +43,6 @@ export default {
   transition: top 0.5s ease;
   max-width: 80%;
   text-align: center;
+  pointer-events: none; /* 添加此属性，让点击事件穿透 */
 }
 </style>

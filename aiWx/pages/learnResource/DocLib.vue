@@ -30,16 +30,16 @@
           </view>
         </view>
         <view v-if="item.showMenu" class="menu-buttons">
-          <view class="menu-btn" @click.stop="console.log('收藏')">
-            <image src="/static/classroom/learnResource/ResourceLibrary/icon/star.ico" class="btn-icon"></image>
-            <text>收藏</text>
+          <view class="menu-btn" @click.stop="toggleFavorite(item)">
+            <image :src="item.isFavorited ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico' : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'" class="btn-icon"></image>
+            <text>{{ item.isFavorited ? '已收藏' : '收藏' }}</text>
           </view>
           <view class="menu-btn" @click.stop="console.log('下载')">
             <image src="/static/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
             <text>下载</text>
           </view>
           <view class="menu-btn" @click.stop="console.log('分享')">
-            <image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
+            <image src="/static/classroom/learnResource/ResourceLibrary/icon/share.ico" class="btn-icon"></image>
             <text>分享转发</text>
           </view>
         </view>
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import Toast from '@/pages/learnResource/components/Toast.vue'; // 引入提示组件
+import Toast from '@/pages/learnResource/components/Toast.vue';
 
 export default {
   components: {
@@ -59,16 +59,16 @@ export default {
   },
   data() {
     return {
-      categories: ['全部'], // 默认包含“全部”，动态添加其他分类
+      categories: ['全部'],
       currentCategory: '全部',
-      allResources: [], // 存储所有资源数据
-      resources: [], // 当前显示的资源列表
+      allResources: [],
+      resources: [],
       pageSize: 20,
       page: 1,
       loading: false,
-      defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png', // 默认图片
-      maxTitleLength: 20, // 标题最大字符数（约一行）
-      maxPreviewLength: 40 // 描述最大字符数（约两行）
+      defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
+      maxTitleLength: 20,
+      maxPreviewLength: 40
     };
   },
   onLoad() {
@@ -79,15 +79,17 @@ export default {
       this.loadRemoteJson()
         .then(data => {
           this.processJsonData(data);
+          this.showToast('数据请求成功');
         })
         .catch(err => {
           console.error('远程JSON加载失败，使用静态数据:', err);
-          this.loadStaticData(); // 请求失败时加载静态数据
+          this.showToast('数据请求失败，现在用的是静态数据');
+          this.loadStaticData();
         });
     },
     loadRemoteJson() {
       return new Promise((resolve, reject) => {
-        const jsonUrl = 'https://fugui.mynatapp.cc/fg/source.json';  //需要替换的后端接口
+        const jsonUrl = 'https://fugui.mynatapp.cc/fg/source.json';
         uni.request({
           url: jsonUrl,
           method: 'GET',
@@ -127,7 +129,8 @@ export default {
         img: this.isValidUrl(item.img) ? item.img : this.defaultImg,
         url: this.isValidUrl(item.url) ? item.url : null,
         category: item.category,
-        showMenu: false
+        showMenu: false,
+        isFavorited: false // 新增收藏状态，默认未收藏
       }));
 
       const categoriesSet = new Set(['全部']);
@@ -167,6 +170,13 @@ export default {
         }
         const start = this.page * this.pageSize;
         const moreData = filteredData.slice(start, start + this.pageSize);
+        
+        if (moreData.length === 0) {
+          this.showToast('已经加载全部了哦~'); // 没有更多数据时弹出提示
+          this.loading = false;
+          return;
+        }
+
         this.resources = this.resources.concat(moreData);
         this.page++;
         this.loading = false;
@@ -183,6 +193,15 @@ export default {
         ...item,
         showMenu: item.id === id ? !item.showMenu : false
       }));
+    },
+    toggleFavorite(item) {
+      this.resources = this.resources.map(res => {
+        if (res.id === item.id) {
+          return { ...res, isFavorited: !res.isFavorited }; // 切换收藏状态
+        }
+        return res;
+      });
+      console.log(`${item.isFavorited ? '取消收藏' : '收藏'}: ${item.title}`);
     },
     handleTouchStart(e) {
       const touch = e.touches[0];
@@ -249,7 +268,7 @@ export default {
   background-color: #fff;
 }
 .category {
-  width: 200rpx;
+  width: 300rpx;
   font-size: 32rpx;
   color: #666;
   text-align: center;
@@ -265,13 +284,11 @@ export default {
 .resource-item {
   display: flex;
   align-items: center;
-  padding: 20rpx; /* 内边距保持不变 */
+  padding: 20rpx;
   background-color: #fff;
-  margin: 15rpx 20rpx 24rpx 20rpx; /* 外边距从 20rpx 增加到 36rpx，增加 16rpx（约 8px）间距 */
+  margin: 20rpx;
   border-radius: 10rpx;
-  width: 680rpx;
-  height: 140rpx; /* 原高度 100rpx + 50rpx（约 25px），适应两行 preview */
-  box-shadow: 0 5rpx 9rpx rgba(0, 0, 0, 0.15); /* 添加阴影提升质感 */
+  width: 690rpx;
 }
 .item-img {
   width: 100rpx;
@@ -280,8 +297,6 @@ export default {
 }
 .item-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 .item-title {
@@ -289,7 +304,6 @@ export default {
   color: #333;
   line-height: 40rpx;
   max-width: 500rpx;
-  display: block;
 }
 .item-title.ellipsis {
   white-space: nowrap;
@@ -301,8 +315,6 @@ export default {
   color: #999;
   line-height: 30rpx;
   max-width: 500rpx;
-  display: block;
-  margin-top: 10rpx;
 }
 .item-desc.ellipsis-two {
   display: -webkit-box;
@@ -313,7 +325,7 @@ export default {
 }
 .item-more {
   width: 40rpx;
-  height: 60rpx;
+  height: 80rpx;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -353,8 +365,7 @@ export default {
   font-size: 28rpx;
   color: #333;
 }
-.loading,
-.empty {
+.loading, .empty {
   text-align: center;
   font-size: 28rpx;
   color: #999;
