@@ -268,7 +268,7 @@
 						url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}`
 					});
 				} else {
-					this.showToast('url导向错误，联系开发者维护');
+					this.showToast('url导向错误，联系开发者维护!',0.6);
 				}
 			},
 			showToast(message, heightPercent = 0.5) {
