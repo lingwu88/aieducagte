@@ -1,5 +1,5 @@
 <template>
-	<view class="container" @touchstart="handleTouchStart"  @touchend="handleTouchEnd">
+	<view class="container" @touchstart="handleTouchStart" @touchend="handleTouchEnd">
 		<!-- 提示组件 -->
 		<toast ref="toast"></toast>
 		<!-- 分类导航，支持滑动 -->
@@ -71,30 +71,8 @@
 				maxTitleLength: 20, // 标题最大字符数（约一行）
 				maxPreviewLength: 40, // 描述最大字符数（约两行）
 				// ... 滑动检测
-				touchStartX: 0,
-				touchStartY: 0,
 				touchStartTime: 0, // 触摸开始的时间
-				isMoving: false,
 				isTouchingMenu: false,
-				hasMoved: false, // 新增：记录整个操作是否发生过滑动
-				isTouchActive: false, // 新增：标记触摸是否激活
-				resources: [{
-						id: 1,
-						showMenu: false,
-						favorited: false
-					},
-					{
-						id: 2,
-						showMenu: false,
-						favorited: false
-					}
-					// 其他数据
-				],
-				touchStartX: 0,
-				touchStartY: 0,
-				touchEndX: 0,
-				touchEndY: 0,
-				hasMoved: false
 			};
 		},
 		onLoad() {
@@ -365,6 +343,10 @@
 
 	.item-content {
 		flex: 1;
+		display: flex;
+		/* 使用 flex 布局 */
+		flex-direction: column;
+		/* 垂直排列 */
 		overflow: hidden;
 	}
 
@@ -373,6 +355,8 @@
 		color: #333;
 		line-height: 40rpx;
 		max-width: 500rpx;
+		display: block;
+		/* 确保独占一行 */
 	}
 
 	.item-title.ellipsis {
@@ -386,6 +370,10 @@
 		color: #999;
 		line-height: 30rpx;
 		max-width: 500rpx;
+		display: block;
+		/* 确保独占一行 */
+		margin-top: 10rpx;
+		/* 添加间距以区分 title 和 preview */
 	}
 
 	.item-desc.ellipsis-two {
