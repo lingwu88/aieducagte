@@ -5,6 +5,7 @@
       </view>
       <view class="form">
       <u--form
+      labelWidth="60"
 				labelPosition="left"
 				:model="form"
 				:rules="rules"
@@ -22,7 +23,14 @@
             prop="nickname"
             ref="item1"
             >
-            <input v-model="form.nickname" class="input" placeholder="请输入昵称" />
+            <input v-model="form.userName" class="input" placeholder="请输入昵称" />
+          </u-form-item>
+          <u-form-item
+            label="手机号"
+            prop="phone"
+            ref="item1"
+            >
+            <input v-model="form.phone" class="input" placeholder="请输入手机号" />
           </u-form-item>
           <u-form-item
             label="性别"
@@ -48,7 +56,7 @@
               </picker>
             </u-form-item> -->
             <u-form-item
-              label="个性签名"
+              label="个性签"
               prop="signature"
               ref="item1"
               >
@@ -71,13 +79,15 @@ export default {
           avatar:"/static/my/avatar.png",
           userName:"",
           gender:"",
-          signature:""
+          signature:"",
+          phone:""
         },
         form:{
           userId:'',
           // avatar: '', // 默认头像
           usersName: '',
           gender:0,
+          phone:"",
           // birthday: '',
           signature: ''
         },
@@ -173,17 +183,22 @@ export default {
         
       },
       saveInfo() {
+        console.log(this.form);
+        this.$api.personal.changeInfo({
+          ...this.form,
+          userId:this.userId
+        }).then(res=>{
+          console.log(res);
+          
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
           // 保存个人信息的逻辑
           uni.showToast({
               title: '信息已保存',
               icon: 'success'
-          });
-          console.log({
-              avatar: this.avatar,
-              nickname: this.nickname,
-              gender: this.selectedGender,
-              birthday: this.birthday,
-              signature: this.signature
           });
       }
   }
