@@ -22,12 +22,12 @@
 				list:[
 					{
 						description:"课件库",
-						img:"/static/classroom/learnResource/book.png",
+						img:"/static/classroom/learnResource/courseware.png",
 						url:"/pages/learnResource/courseLibrary"
 					},
 					{
 						description:"资料库",
-						img:"/static/classroom/learnResource/essay.png",
+						img:"/static/classroom/learnResource/information.png",
 						url:""
 					}
 				]

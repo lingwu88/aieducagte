@@ -52,7 +52,7 @@ export default{
 .container{
   width: 100%;
   height:100%;
-  background-color: #ffc3c3;
+  background-color: #F4F5F7;
   border-radius:20px 20px 0 0;
 
   .image{

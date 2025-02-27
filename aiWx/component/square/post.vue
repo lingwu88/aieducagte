@@ -102,7 +102,7 @@ export default{
 .container{
   width: 100%;
   height:100%;
-  background-color: #ffffff;
+  background-color: #ECEDF1;
   // border: 2px solid #000000;
   border-radius: 10rpx;
   margin:40rpx 0 0 0;

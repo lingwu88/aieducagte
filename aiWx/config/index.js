@@ -1,7 +1,7 @@
 import data1 from "./data1.json";
 import data2 from "./data2.json";
 
-const colorArr = ["#409eff", "#67c23a", "#e6a23c", "#f56c6c", "#909399"];
+const colorArr = ["#486BFF", "#1DCD9E", "#FCAF2A", "#FF6951", "#909399"];
 
 const list1 = data1.data.items.map((i) => ({
   id: i.id,
