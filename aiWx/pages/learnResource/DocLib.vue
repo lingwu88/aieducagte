@@ -14,7 +14,7 @@
 		<!-- 资料列表 -->
 		<scroll-view scroll-y class="resource-list" @scrolltolower="loadMore">
 			<block v-for="item in resources" :key="item.id">
-				<view v-if="item.url" class="resource-item" @click="navigateTo(item.url)">
+				<view v-if="item.url" class="resource-item" @tap="navigateTo(item.url)">
 					<image :src="item.img || defaultImg" class="item-img"></image>
 					<view class="item-content">
 						<text class="item-title"
@@ -22,12 +22,12 @@
 						<text class="item-desc"
 							:class="{ 'ellipsis-two': item.preview && item.preview.length > maxPreviewLength }">{{ item.preview || '无描述' }}</text>
 					</view>
-					<view class="item-more" @click.stop="toggleMenu(item.id)">
+					<view class="item-more" @tap.stop="toggleMenu(item.id)">
 						<text class="more-icon">⋮</text>
 					</view>
 				</view>
-				<view v-if="item.showMenu" class="menu-buttons" @touchstart.stop>
-					<view class="menu-btn" @tap="toggleFavorite(item)">
+				<view v-if="item.showMenu" class="menu-buttons" >
+					<view class="menu-btn" @tap.stop="toggleFavorite(item)">
 						<image
 							:src="item.isFavorited ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico' : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'"
 							class="btn-icon"></image>
@@ -226,43 +226,31 @@
 				console.log(`${item.isFavorited ? '取消收藏' : '收藏'}: ${item.title}`);
 			},
 			handleTouchStart(e) {
-				const touch = e.touches[0];
-				const menus = this.resources.filter(item => item.showMenu);
-				if (menus.length === 0) return;
-
-				const query = wx.createSelectorQuery();
-				let isOutside = true;
-				menus.forEach(item => {
-					query.select(`#menu-${item.id}`).boundingClientRect(rect => {
-						if (
-							touch.clientX >= rect.left &&
-							touch.clientX <= rect.right &&
-							touch.clientY >= rect.top &&
-							touch.clientY <= rect.bottom
-						) {
-							isOutside = false;
-						}
-					});
-				});
-				query.selectAll('.resource-item').boundingClientRect(items => {
-					items.forEach(rect => {
-						if (
-							touch.clientX >= rect.left &&
-							touch.clientX <= rect.right &&
-							touch.clientY >= rect.top &&
-							touch.clientY <= rect.bottom
-						) {
-							isOutside = false;
-						}
-					});
-				}).exec(() => {
-					if (isOutside) {
-						this.resources = this.resources.map(item => ({
-							...item,
-							showMenu: false
-						}));
-					}
-				});
+			  const touch = e.touches[0];
+			  const menus = this.resources.filter(item => item.showMenu);
+			  if (menus.length === 0) return;
+			
+			  const query = wx.createSelectorQuery();
+			  let isOutside = true;
+			
+			  query.selectAll('.menu-buttons').boundingClientRect(rects => {
+			    rects.forEach(rect => {
+			      if (
+			        touch.clientX >= rect.left &&
+			        touch.clientX <= rect.right &&
+			        touch.clientY >= rect.top &&
+			        touch.clientY <= rect.bottom
+			      ) {
+			        console.log('点击在菜单内');
+			        isOutside = false;
+			      }
+			    });
+			  }).exec(() => {
+			    if (isOutside) {
+			      console.log('点击在外部，收起菜单');
+			      this.resources = this.resources.map(item => ({ ...item, showMenu: false }));
+			    }
+			  });
 			},
 			navigateTo(url) {
 				if (this.isValidUrl(url)) {
