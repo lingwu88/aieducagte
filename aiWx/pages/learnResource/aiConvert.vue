@@ -7,8 +7,11 @@
 				auto-height
 				:show-confirm-bar="false"
 				class="textarea-box"
-				maxlength=-1
-			></textarea>
+				count
+				maxlength=400
+			>
+		</textarea>
+		<text class="text-count" selectable="false">{{ value.length }}/400</text>
 			<view class="icon-list">
 				<view class="icon-item" v-for="(item,index) in iconList" :key="index" @tap="handleUpload(index)">
 					<view class="icon-border">
@@ -18,11 +21,12 @@
 				</view>
 			</view>
 		</view>
-		<view class="progress">
-			<uni-section title="基本用法" type="line" padding>
-				<uni-steps :options="list1" :active="active" />
-			</uni-section>
-		</view>
+		<progress
+			:progress="progressLength"
+			:steps="nodes"
+			:currentStep="currentIndex"
+			class="progress"
+		></progress>
 		<view class="menu-container">
 			<view class="title">请选择改写风格</view>
 			<view class="menu">
@@ -34,15 +38,16 @@
 </template>
 
 <script>
+import progress from './components/progress.vue';
 import tag from './components/tag.vue'
 	export default {
 		components:{
-			tag
+			tag,
+			progress
 		},
 		data() {
 			return {
 				value:"",
-
 				list1:[
 					{
 						title:"定义文案风格"
@@ -76,49 +81,63 @@ import tag from './components/tag.vue'
 						color:"#fdad3d"
 					},
           {
-            desc:"幽默风趣",
+            desc:"幽默讽刺",
 						color:"#36a5d8"
           },
+          // {
+          //   desc:"学术严谨",
+					// 	color:"#24aa9d"
+          // },
+          // {
+          //   desc:"新闻播报",
+					// 	color:"#4c6dc9"
+          // },
+          // {
+          //   desc:"文艺诗意",
+					// 	color:"#d25481"
+          // },
           {
-            desc:"学术严谨",
-						color:"#24aa9d"
-          },
-          {
-            desc:"新闻播报",
-						color:"#4c6dc9"
-          },
-          {
-            desc:"文艺诗意",
-						color:"#d25481"
-          },
-          {
-            desc:"轻松口语",
+            desc:"活泼口语",
 						color:"#f4e963"
           },
-          {
-            desc:"商业风格",
-						color:"#6d6d6d"
-          },
+					{
+						desc:"正式学术",
+						color:"#ce9494;"
+					}
+          // {
+          //   desc:"商业风格",
+					// 	color:"#6d6d6d"
+          // },
 					],
-					menuActive:0
+					menuActive:-1,
+					progressLength:0,
+					nodes:[
+						{
+							label:'初始',
+							value:0
+						},
+						{
+							label:'选择文案风格',
+							value:1
+						},
+						{
+							label:'生成内容',
+							value:2
+						}
+					],
+					currentIndex:0
 				}
 		},
 		onLoad() {
 
 		},
 		mounted() {
-			this.initHighLight()
-			console.log(this.initHighLight);
-			//先处理essay中的换行符
-			this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
-			// console.log(this.mdEssay);
-			
-			this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
-			console.log(this.essay);
 		},
 		methods: {
 			handleMenuClick(index){
 				this.menuActive = index
+				this.$set(this,'currentIndex',1)
+				this.$set(this,'progressLength',50)
 				console.log(this.menuActive);
 			},
 			handleUpload(index){
@@ -154,8 +173,18 @@ import tag from './components/tag.vue'
 			},
 			handleConvert(){
 				console.log(this.value);
-				uni.navigateTo({
-					url: '/pages/learnResource/convertResult?value=' + this.value
+				this.$api.learnResource.convert({
+					userId:uni.getStorageSync('userId'),
+					text:this.value,
+					style:this.list[this.menuActive].desc
+				}).then(res=>{
+					console.log(res);
+					uni.navigateTo({
+						url: '/pages/learnResource/convertResult?snowId=' + res.data
+					})
+				})
+				.catch(err=>{
+					console.log(err);
 				})
 			}  
 		}
@@ -174,6 +203,14 @@ import tag from './components/tag.vue'
 		border-radius: 40rpx;
 		box-shadow: 2px 4px 9px 0px #dadada;
 	}
+	.text-count{
+		// position: relative;
+		position: absolute;
+		// margin:0 0 20rpx 0;
+		left:85vw;
+		font-size: 20rpx;
+		color: #000000;
+	}
 	.textarea-box{
 		width: 90vw;
 		border:1px solid #000000;
@@ -190,7 +227,7 @@ import tag from './components/tag.vue'
 		flex-wrap: nowrap;
 		justify-content: space-around;
 		align-items: center;
-		margin: 20rpx 0;
+		margin: 60rpx 0 20rpx 0;
 
 		.icon-item{
 			display: flex;
@@ -218,7 +255,8 @@ import tag from './components/tag.vue'
 	}
 }
 .progress{
-  margin-top: 20rpx;
+	width: 90vw;
+  margin: 60rpx auto;
 	height: 100rpx;
 }
 .menu-container{

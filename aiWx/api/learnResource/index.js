@@ -1,0 +1,15 @@
+import request from "../../tools/request";
+
+//ai变文接口
+export function convert(data){
+  return request.post(
+    '/api/ai/change-text',
+    data
+  )
+}
+
+export function getConvert(snowId){
+  return request.get(
+    `api/ai/get-text?snowId=${snowId}`,
+  )
+}

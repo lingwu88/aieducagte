@@ -15,7 +15,7 @@ import list from "../../config/index.js"
 					fContainerRef:null,
 					column:2,
 					fContainerObserver:null,
-					bgImg:"/static/square/checkIn2.jpg",
+					bgImg:"/static/square/checkIn2.png",
 					list:[
 								{
 									title:"我是自律博主",

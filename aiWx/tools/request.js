@@ -1,4 +1,4 @@
-const baseUrl = " http://ag4ytv.natappfree.cc"
+const baseUrl = "  http://uj7hyq.natappfree.cc"
 const timeout = 5000
 const access_token = uni.getStorageSync('accessToken')
 
