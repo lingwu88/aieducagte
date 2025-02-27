@@ -407,12 +407,12 @@ import request from '../../tools/request';
 		}
 
 		.check-img{
-			width: 200rpx;
-			height: 200rpx;
+			width: 180rpx;
+			height: 180rpx;
 			position:absolute;
 			right:10rpx;
 			bottom: 20rpx;
-			background-color: inherit;
+			background-color: transparent;
 		}
 	}
 	.item{
