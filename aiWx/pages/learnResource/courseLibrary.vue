@@ -1,7 +1,5 @@
 <template>
 	<view class="container">
-    <view class="line"></view>
-    <view class="title">优质课程汇总</view>
     <view class="course-list">
       <view  v-for="(item,index) in list" :key="index" class="course-item">
         <courseCard :img="item.img" :title="item.title" class="course-item"></courseCard>
@@ -57,28 +55,15 @@ import courseCard from './components/courseCard.vue';
 </script>
 
 <style lang="scss" scoped>
-.line{
-  width: 100%;
-  height: 40rpx;
-  background-color: #f1f1f1;
-}
-.title{
-  font-size: 40rpx;
-  font-weight: 700;
-  text-align: center;
-  margin-top: 50rpx;
-}
 .course-list{
-  width: 100vw;
+  width: 100%;
   min-height: 400rpx;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  display: row;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
 }
 .course-item{
-  margin:auto 30rpx;
-  width: 40vw;
+  width: 45vw;
 }
 </style>

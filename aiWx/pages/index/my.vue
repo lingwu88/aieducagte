@@ -1,6 +1,6 @@
 <template>
 	<view class="container main">
-    <myHeader :isLogin="isLogin" :img="img" :name="userName"></myHeader>
+    <myHeader></myHeader>
 		<list></list>
 		<view class="btn">登出</view>
 	</view>
@@ -9,7 +9,6 @@
 <script>
 import myHeader from '../../component/my/myHeader.vue';
 import list from '../../component/my/list.vue';
-import request from '../../tools/request';
 	export default {
 		components:{
 			myHeader,
@@ -18,44 +17,26 @@ import request from '../../tools/request';
 		data() {
 			return {
 				userId:'',
-				isLogin:false,
-				img:'',
-				userName:""
+				title: 'Hello'
 			}
 		},
 		onLoad() {
-			this.img = request.baseUrl+'/avatars/defaultAvatar.jpg'
-		},
-		onShow(){
 			if(uni.getStorageSync('userId')){
 				this.userId = uni.getStorageSync('userId')
-				this.isLogin = true
 			}
+		},
+		onShow(){
 			this.getInfo()
-			this.getAvatar()
 		},
 		methods: {
 			getInfo(){
 				this.$api.personal.getUserInfo(this.userId).then(res=>{
-					// this.$set(this,'img',res.data.avatar)
-					this.$set(this,'userName',res.data.userName)
+					console.log(res);
 				})
 				.catch(err=>{
 					console.log(err);
 				})
-			},
-			getAvatar(){
-        this.$api.personal.getUserAvatar(this.userId).then(res=>{
-          console.log(res);
-					this.img = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
-					console.log(this.img);
-					
-        })
-        .catch(err=>{
-          console.log(err);
-          
-        })
-      },
+			}
 		}
 	}
 </script>
@@ -77,6 +58,6 @@ import request from '../../tools/request';
 	line-height: 100rpx;
 	text-align: center;
 	color: #ffffff;
-	background-color: #bec1e8;
+	background-color: #989adc;
 }
 </style>

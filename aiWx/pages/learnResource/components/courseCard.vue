@@ -37,16 +37,17 @@
 
 <style lang="scss" scoped>
 .card-box{
-  width:100%;
+  width:45vw;
+  margin:auto;
   min-height: 200rpx;
 
   .img-box{
-    width:100%;
+    width:45vw;
     height: 180rpx;
 
     /deep/image{
-      width:inherit;
-      height: inherit;
+      width:45vw;
+      height: auto;
       background-color: #000000;
     }
   }

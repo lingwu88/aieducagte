@@ -1,0 +1,206 @@
+{
+    "doc": {
+        "自学资源": [
+            {
+            "title": "Java 全栈知识体系",
+            "tag": "编程",
+            "preview": "",
+            "url": "https://pdai.tech/"
+            },
+            {
+            "title": "CS DIY",
+            "tag": "编程",
+            "preview": "",
+            "url": "https://csdiy.wiki/"
+            },
+            {
+            "title": "菜鸟教程",  
+            "tag": "编程",
+            "preview": "",
+            "url": "https://www.runoob.com/"
+            },
+            {
+            "title": "人工智能的基本概念和发展历史",  
+            "tag": "AI",
+            "preview": "",
+            "url": "https://www.datawhale.cn/learn/content/30/1833"
+            },
+            {
+            "title": "人工智能的三大学派",  
+            "tag": "AI",
+            "preview": "",
+            "url": "https://www.datawhale.cn/learn/content/30/1833"
+            },
+            {
+            "title": "人工智能的主要任务及其应用领域",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://www.datawhale.cn/learn/content/30/1833"
+            },
+            {
+            "title": "人工智能对社会发展的影响与未来趋势",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://www.datawhale.cn/learn/content/30/1833"
+            },
+            {
+            "title": "人工智能中的数学基础",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://www.datawhale.cn/learn/content/30/1833"
+            },
+            {
+            "title": "人工智能中的编程基础：Python基础",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/learn-python-the-smart-way-v2"
+            },
+            {
+            "title": "人工智能中的数据处理基础：NumPy基础",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/powerful-numpy"
+            },
+            {
+            "title": "人工智能中的数据处理基础：Pandas基础",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/joyful-pandas"
+            },
+            {
+            "title": "人工智能中的数据可视化基础：Matplotlib基础",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/fantastic-matplotlib"
+            },
+            {
+            "title": "机器学习框架：scikit-learn",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/machine-learning-toy-code"
+            },
+            {
+            "title": "深度学习框架：PyTorch",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/thorough-pytorch"
+            },
+            {
+            "title": "NLP工具库: transformers",
+            "tag": "AI",
+            "preview": "",
+            "url": "https://github.com/datawhalechina/learn-nlp-with-transformers"
+            },
+            {
+                "title": "CV工具库：OpenMMLab",
+                "tag": "AI",
+                "preview": "",
+                "url": "https://github.com/datawhalechina/openmmlab-tutorial"
+            },
+            {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+                {
+                "title": "",
+                "tag": "AI",
+                "preview": "",
+                "url": "
+            },
+        ],
+        "优质科普": [
+            {
+            "title": "科普1",
+            "tag": "内容1",
+            "preview": "预览1",
+            "url": "http://example.com/science1"
+            },
+            {
+            "title": "科普2",
+            "tag": "内容2",
+            "preview": "预览2",
+            "url": "http://example.com/science2"
+            }
+        ],
+        "文章": [
+            {
+            "title": "文章1",
+            "tag": "内容1",
+            "preview": "预览1",
+            "url": "http://example.com/article1"
+            },
+            {
+            "title": "文章2",
+            "tag": "内容2",
+            "preview": "预览2",
+            "url": "http://example.com/article2"
+            }
+        ],
+        "竞赛": [
+            {
+            "title": "竞赛1",
+            "tag": "内容1",
+            "preview": "预览1",
+            "url": "http://example.com/competition1"
+            },
+            {
+            "title": "竞赛2",
+            "tag": "内容2",
+            "preview": "预览2",
+            "url": "http://example.com/competition2"
+            }
+        ],
+        "书籍": [
+            {
+            "title": "书籍1",
+            "tag": "内容1",
+            "preview": "预览1",
+            "url": "http://example.com/book1"
+            },
+            {
+            "title": "书籍2",
+            "tag": "内容2",
+            "preview": "预览2",
+            "url": "http://example.com/book2"
+            }
+        ]
+    }
+}

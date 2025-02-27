@@ -1,63 +1,7 @@
 import request from "../../tools/request";
 
-//获取文章列表
-export function getArticleList({articleId,limit,userId}){
-  return request.get(
-    '/api/square/getArticleList?limit='+limit+'&userId='+userId+'&articleId='+articleId
-  )
-}
-
-export function getComment(articleId){
-  return request.get(`/api/square/getCommentList?articleId=${articleId}`)
-}
-
-//控制点赞
-export function star(data){
+export function pushlishArticle({userId,title,content}){
   return request.post(
-    '/api/square/approveArticle',
-    data
-  )
-}
-
-//评论
-export function comment(data){
-  return request.post(
-    '/api/square/postComment',
-    data
-  )
-}
-
-//删除评论
-export function delComment(data){
-  return request.post(
-    '/api/square/deleteComment',
-    daat
-  )
-}
-
-//发表文章
-export function pushlishArticle(data){
-  return request.post(
-    '/api/square/postArticle',
-    data
-  )
-}
-
-//删除文章
-export function delArticle(data){
-  return request.post(
-    '/api/square/deleteArticle',
-    data
-  )
-}
-
-//搜索文章
-export function searchArticle({userId,content}){
-  const url = decodeURI(`/api/square/queryArticleByName?content=${content}&userId=${userId}`)
-  console.log(url);
-  
-  return request.get(
-    url,
-    'application/x-www-form-urlencoded;charset=utf-8'
+    '/api/square/postArticle?userId='+userId+'&title='+title+'&content='+content 
   )
 }

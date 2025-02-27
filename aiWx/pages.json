@@ -39,9 +39,9 @@
 					}
 				},
 				{
-					"path":"edit",
-					"style":{
-						"navigationBarTitleText":"编辑信息"
+					"path": "edit",
+					"style": {
+						"navigationBarTitleText": "编辑信息"
 					}
 				}
 			]
@@ -56,21 +56,21 @@
 					}
 				},
 				{
-					"path":"searchResult",
-					"style":{
-						"navigationStyle":"custom"
+					"path": "searchResult",
+					"style": {
+						"navigationStyle": "custom"
 					}
 				},
 				{
-					"path":"aiChatProfession",
-					"style":{
-						"navigationBarTitleText":"课程规划[专业版]"
+					"path": "aiChatProfession",
+					"style": {
+						"navigationBarTitleText": "课程规划[专业版]"
 					}
 				},
 				{
-					"path":"searchResultProfession",
-					"style":{
-						"navigationBarTitleText":"搜索结果[专业版]"
+					"path": "searchResultProfession",
+					"style": {
+						"navigationBarTitleText": "搜索结果[专业版]"
 					}
 				}
 			]
@@ -97,9 +97,23 @@
 					}
 				},
 				{
-					"path":"courseLibrary",
-					"style":{
-						"navigationBarTitleText":"课程库"
+					"path": "courseLibrary",
+					"style": {
+						"navigationBarTitleText": "课程库"
+					}
+				},
+
+				{
+					"path": "DocLib",
+					"style": {
+						"navigationBarTitleText": "资料库" 
+					}
+				},
+
+				{
+					"path": "webview",
+					"style": {
+						"navigationBarTitleText": "资料详情"
 					}
 				}
 			]
@@ -127,23 +141,23 @@
 			]
 		},
 		{
-			"root":"pages/login",
+			"root": "pages/login",
 			"pages": [
 				{
-					"path":"login",
-					"style":{
-						"navigationBarTitleText":"登录"
+					"path": "login",
+					"style": {
+						"navigationBarTitleText": "登录"
 					}
 				}
 			]
 		},
 		{
-			"root":"pages/personal",
-			"pages":[
+			"root": "pages/personal",
+			"pages": [
 				{
-					"path":"info",
-					"style":{
-						"navigationBarTitleText":"个人信息"
+					"path": "info",
+					"style": {
+						"navigationBarTitleText": "个人信息"
 					}
 				}
 			]
