@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <image :src=img class="image" @click="handleClick"></image>
-    <text class="footer-item">100</text>
+    <text class="footer-item">{{ number }}</text>
   </view>
 </template>
 
@@ -12,6 +12,11 @@ export default{
     img:{
       type:String,
       required:true
+    },
+    number:{
+      type:Number,
+      required:true,
+      default:0
     }
   },
   data(){

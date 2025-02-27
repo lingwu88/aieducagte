@@ -14,6 +14,8 @@
 
 // export default install
 import * as personal from "./personal"
+import * as square from "./square"
 export default{
-  personal
+  personal,
+  square
 }
