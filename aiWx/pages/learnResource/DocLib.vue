@@ -14,10 +14,6 @@
 		<!-- 资料列表 -->
 		<scroll-view scroll-y class="resource-list" @scrolltolower="loadMore" enable-back-to-top scroll-with-animation
 			:style="{ height: 'calc(100vh - 100rpx)' }">
-			<!-- 添加下拉刷新区域 -->
-			<view class="pull-down-area" :style="{ height: pullDownHeight + 'px' }">
-				<text v-if="pullDownHeight > 500">松手刷新</text>
-			</view>
 			<block v-for=" item in resources" :key="item.id">
 				<view v-if="item.url" class="resource-item" @tap="navigateTo(item.url)">
 					<image :src="item.img || defaultImg" class="item-img"></image>
@@ -65,6 +61,7 @@
 		},
 		data() {
 			return {
+				//配置项
 				categories: ['全部'], // 默认包含“全部”，动态添加其他分类
 				currentCategory: '全部',
 				allResources: [], // 存储所有资源数据
@@ -79,7 +76,8 @@
 				//收藏等按钮更新优化体验
 				touchStartTime: 0, // 触摸开始的时间
 				isTouchingMenu: false,
-				//拉取数据更新优化体验
+
+				//拉取数据更新优化体验（）
 				pullDownHeight: 0, // 下拉区域高度
 				touchStartY: 0, // 触摸开始的 Y 坐标
 				isPulling: false // 是否正在下拉
@@ -203,20 +201,20 @@
 				if (this.loading) return;
 				this.loading = true;
 
-					let filteredData = this.allResources.filter(item => item.url);
-					if (this.currentCategory !== '全部') {
-						filteredData = filteredData.filter(item => item.category === this.currentCategory);
-					}
-					const start = this.page * this.pageSize;
-					const moreData = filteredData.slice(start, start + this.pageSize);
-					if (moreData.length === 0) {
-						this.showToast('已经加载完所有资料了哦~', 0.6);
-						this.loading = false;
-						return;
-					}
-					this.resources = this.resources.concat(moreData);
-					this.page++;
+				let filteredData = this.allResources.filter(item => item.url);
+				if (this.currentCategory !== '全部') {
+					filteredData = filteredData.filter(item => item.category === this.currentCategory);
+				}
+				const start = this.page * this.pageSize;
+				const moreData = filteredData.slice(start, start + this.pageSize);
+				if (moreData.length === 0) {
+					this.showToast('已经加载完所有资料了哦~', 0.6);
 					this.loading = false;
+					return;
+				}
+				this.resources = this.resources.concat(moreData);
+				this.page++;
+				this.loading = false;
 
 			},
 			changeCategory(category) {
@@ -228,7 +226,9 @@
 			toggleMenu(id) {
 				this.resources = this.resources.map(item => ({
 					...item,
-					showMenu: item.id === id ? !item.showMenu : false
+					showMenu: item.id === id ? !item.showMenu : false,
+
+					
 				}));
 			},
 			toggleFavorite(item) {
@@ -258,24 +258,29 @@
 			handleTouchStart(e) {
 				const touch = e.touches[0];
 				this.touchStartTime = Date.now(); // 记录触摸开始时间
-				this.isTouchingMenu = false;
+				this.isTouchingMenu = true;
 
 				const menus = this.resources.filter(item => item.showMenu);
 				if (menus.length === 0) return;
 
 				const query = wx.createSelectorQuery();
 				query.selectAll('.menu-buttons').boundingClientRect(rects => {
-					this.isTouchingMenu = true;  //精妙设计之一
+					this.isTouchingMenu = false; //精妙设计之一
 					rects.forEach(rect => {
 						console.log(`用户点击区域：x: ${touch.clientX}, y: ${touch.clientY}`);
-						console.log(`按钮所在区域：left: ${rect.left}, right: ${rect.right},top: ${rect.top}, bottom: ${rect.bottom}`);
+						console.log(
+							`按钮所在区域：left: ${rect.left}, right: ${rect.right},top: ${rect.top}, bottom: ${rect.bottom}`
+						);
 						if (
-							touch.clientX < rect.left ||
-							touch.clientX > rect.right ||
 							touch.clientY < rect.top ||
 							touch.clientY > rect.bottom
 						) {
 							this.isTouchingMenu = false;
+							console.log('[info] 点击在按钮外部');
+						} else {
+							this.isTouchingMenu = true;
+							console.log('[info] 点击在按钮内部');
+
 						};
 					});
 				}).exec();
@@ -283,18 +288,15 @@
 			handleTouchEnd(e) {
 				const touch = e.changedTouches[0];
 				const duration = Date.now() - this.touchStartTime; // 计算触摸时长
-
-				if (duration < 100 && !this.isTouchingMenu) {
+				if (duration > 130) {
+					console.log('[info] 超过限制时间，不收起菜单');
+				} else if (duration < 130 && !this.isTouchingMenu) {
 					// 时长 < 200ms 且在外部，收起菜单
-					console.log('[info] 点击在按钮外部，收起菜单');
 					this.resources = this.resources.map(item => ({
 						...item,
 						showMenu: false
 					}));
-				}else{
-					console.log('[info] 点击在按钮内部');
 				}
-
 				// 重置状态
 				this.isTouchingMenu = false;
 			},
@@ -429,7 +431,7 @@
 		justify-content: space-between;
 		padding: 0 20rpx 10rpx 60rpx;
 		background-color: transparent;
-		z-index:10000;
+		z-index: 10000;
 	}
 
 	.menu-btn {
@@ -442,14 +444,14 @@
 		background-color: #fff;
 		border-radius: 8rpx;
 		box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-		z-index:10001;
+		z-index: 10001;
 	}
 
 	.btn-icon {
 		width: 40rpx;
 		height: 40rpx;
 		margin-right: 10rpx;
-		z-index:10001;
+		z-index: 10001;
 	}
 
 	.menu-btn text {
