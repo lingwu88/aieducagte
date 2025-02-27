@@ -75,7 +75,8 @@
 				touchStartY: 0,
 				isMoving: false,
 				isTouchingMenu: false,
-				hasMoved: false // 新增：记录整个操作是否发生过滑动
+				hasMoved: false ,// 新增：记录整个操作是否发生过滑动
+				isTouchActive: false // 新增：标记触摸是否激活
 			};
 		},
 		onLoad() {
@@ -238,36 +239,6 @@
 				});
 				console.log(`${item.isFavorited ? '取消收藏' : '收藏'}: ${item.title}`);
 			},
-			handleTouchStart(e) {
-				const touch = e.touches[0];
-				const menus = this.resources.filter(item => item.showMenu);
-				if (menus.length === 0) return;
-
-				const query = wx.createSelectorQuery();
-				let isOutside = true;
-
-				query.selectAll('.menu-buttons').boundingClientRect(rects => {
-					rects.forEach(rect => {
-						if (
-							touch.clientX >= rect.left &&
-							touch.clientX <= rect.right &&
-							touch.clientY >= rect.top &&
-							touch.clientY <= rect.bottom
-						) {
-							console.log('点击在菜单内');
-							isOutside = false;
-						}
-					});
-				}).exec(() => {
-					if (isOutside) {
-						console.log('点击在外部，收起菜单');
-						this.resources = this.resources.map(item => ({
-							...item,
-							showMenu: false
-						}));
-					}
-				});
-			},
 			navigateTo(url) {
 				if (this.isValidUrl(url)) {
 					uni.navigateTo({
@@ -285,8 +256,9 @@
 				this.touchStartX = touch.clientX;
 				this.touchStartY = touch.clientY;
 				this.isMoving = false;
-				this.hasMoved = false; // 重置为无滑动
+				this.hasMoved = false;
 				this.isTouchingMenu = false;
+				this.isTouchActive = true; // 标记触摸开始
 
 				const menus = this.resources.filter(item => item.showMenu);
 				if (menus.length === 0) return;
@@ -316,7 +288,7 @@
 				}
 			},
 			handleTouchEnd(e) {
-				if (!this.hasMoved && !this.isTouchingMenu) {
+				if (this.isTouchActive && !this.hasMoved && !this.isTouchingMenu) {
 					// 无滑动且点击在外部，收起菜单
 					console.log('点击在外部，收起菜单');
 					this.resources = this.resources.map(item => ({
@@ -328,6 +300,7 @@
 				this.isMoving = false;
 				this.hasMoved = false;
 				this.isTouchingMenu = false;
+				this.isTouchActive = false; // 标记触摸结束
 			}
 		}
 	};
