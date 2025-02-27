@@ -80,11 +80,11 @@
 				this.loadRemoteJson()
 					.then(data => {
 						this.processJsonData(data);
-						this.showToast('数据请求成功'); // 网络请求成功时弹出提示
+						this.showToast('数据请求成功',0.95); // 网络请求成功时弹出提示
 					})
 					.catch(err => {
 						console.error('远程JSON加载失败，使用静态数据:', err);
-						this.showToast('数据请求失败，现在用的是静态数据'); // 网络请求失败时弹出提示
+						this.showToast('数据请求失败，现在用的是静态数据',0.95); // 网络请求失败时弹出提示
 						this.loadStaticData(); // 请求失败时加载静态数据
 					});
 			},
@@ -182,7 +182,7 @@
 
 				filteredData.forEach(item => {
 					if (!this.isValidUrl(item.url)) {
-						this.showToast('url导向错误，联系开发者维护');
+						this.showToast('url导向错误，联系开发者维护',0.60);
 					}
 				});
 			},
@@ -198,7 +198,7 @@
 					const moreData = filteredData.slice(start, start + this.pageSize);
 					
 					if (moreData.length === 0) {
-						this.showToast('已经加载全部了哦~'); // 弹出提示
+						this.showToast('已经加载全部了哦~',0.60); // 弹出提示
 						this.loading = false;
 						return;
 					}
@@ -271,18 +271,8 @@
 					this.showToast('url导向错误，联系开发者维护');
 				}
 			},
-			showToast(message, heightPercent = 0.5) { // 默认值为 0.5，即屏幕中间
-			  const systemInfo = uni.getSystemInfoSync();
-			  const screenHeight = systemInfo.windowHeight; // 获取屏幕高度（单位：px）
-			  const toastHeight = 60; // 假设 Toast 高度为 60rpx，大约为 30px（根据样式调整）
-			  const initialTop = screenHeight * (1 - heightPercent) - toastHeight / 2; // 初始位置：屏幕顶部向下偏移
-			  const endTop = initialTop - 150; // 结束位置：向上移动 150rpx
-			
-			  this.$refs.toast.show({
-			    message: message,
-			    top: initialTop > 0 ? initialTop : 50, // 确保不超出顶部
-			    endTop: endTop > -100 ? endTop : -100 // 确保结束位置合理
-			  });
+			showToast(message, heightPercent = 0.5) {
+			  this.$refs.toast.show(message, heightPercent);
 			}
 		}
 	};

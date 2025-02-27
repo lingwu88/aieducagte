@@ -10,16 +10,22 @@ export default {
     return {
       visible: false,
       message: '',
-      top: 50 // 初始默认值，单位改为 px
+      top: 50 // 初始默认值，单位为 px
     };
   },
   methods: {
-    show({ message, top, endTop }) {
+    show(message, heightPercent = 0.5) {
+      const systemInfo = uni.getSystemInfoSync();
+      const screenHeight = systemInfo.windowHeight; // 获取屏幕高度（单位：px）
+      const toastHeight = 30; // 假设 Toast 高度为 60rpx，约为 30px（根据样式调整）
+      const initialTop = screenHeight * (1 - heightPercent) - toastHeight / 2; // 初始位置
+      const endTop = initialTop - 150; // 结束位置：向上移动 150px
+
       this.message = message;
-      this.top = top; // 使用传入的初始位置
+      this.top = initialTop > 0 ? initialTop : 50; // 确保不超出顶部
       this.visible = true;
       setTimeout(() => {
-        this.top = endTop; // 移动到结束位置
+        this.top = endTop > -100 ? endTop : -100; // 确保结束位置合理
         setTimeout(() => {
           this.visible = false;
         }, 500); // 动画结束后隐藏
