@@ -211,7 +211,7 @@ export default {
     },
     async handleSend() {
       if(!this.canSend) return
-
+      
       const userMessage = {
         type: 'user',
         contentType: 'text',
@@ -220,8 +220,8 @@ export default {
       }
       this.messageList.push(userMessage)
       this.scrollToBottom()
-
-      this.inputText = ''
+      
+      // this.inputText = ''
       
       // 显示AI输入状态
       try{
@@ -229,21 +229,24 @@ export default {
         const response = await this.sendToAI(userMessage.content)
         userMessage.status = 'sent'
         this.messageList.push({
-          type: 'ai',
-          contentType: 'text',
-          content: response
-        })
-        
-        //ai应答后跳转
-        uni.navigateTo({
-          url:"/pages/classManagement/searchResult"
-        })
+            type: 'ai',
+            contentType: 'text',
+            content: response
+          })
+          console.log(this.inputText);
+          
+          // ai应答后跳转
+          uni.navigateTo({
+            url:`/pages/classManagement/searchResult?query=${this.inputText}`
+          })
       } catch (error) {
         userMessage.status = 'failed'
         uni.showToast({
           title: '发送失败',
           icon: 'none'
         })
+        console.log(err);
+        
       } finally {
         this.isAiTyping = false
         this.scrollToBottom()
@@ -315,7 +318,7 @@ export default {
     },
     sendToAI(content) {
         // TODO: 实现实际的AI服务调用
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
         setTimeout(() => {
           resolve('这是AI的回复消息...')
         }, 1000)
