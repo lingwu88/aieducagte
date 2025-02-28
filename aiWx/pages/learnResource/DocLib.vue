@@ -86,7 +86,7 @@ export default {
 			page: 1,
 			loading: false,
 			defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
-			maxTitleLength: 20,
+			maxTitleLength: 17,
 			maxPreviewLength: 40,
 			// 加载更多相关
 			loadingHeight: 0, // 底部提示高度
