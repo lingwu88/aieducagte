@@ -1,5 +1,5 @@
 <template>
-	<view class="container" @touchstart="handleTouchStart" @touchend="handleTouchEnd">
+	<view class="container" @tap="handleContainerTap">
 		<!-- 弹窗组件 -->
 		<toast ref="toast"></toast>
 
@@ -10,6 +10,7 @@
 				</view>
 			</view>
 		</scroll-view>
+		
 		<scroll-view scroll-y class="resource-list" @scrolltolower="loadMore" enable-back-to-top scroll-with-animation :style="{ height: 'calc(100vh - 100rpx)' }">
 			<block v-for="item in resources" :key="item.id">
 				<view v-if="item.url" class="resource-item" @tap="navigateTo(item.url)">
@@ -72,12 +73,11 @@ export default {
 			asd: '/static/classroom/learnResource/ResourceLibrary/data/sourse.json',
 			maxTitleLength: 20, // 标题最大字符数（约一行）
 			maxPreviewLength: 40, // 描述最大字符数（约两行）
+
 			//收藏等按钮更新优化体验
-			touchStartTime: 0, // 触摸开始的时间
-			isTouchingMenu: false
+			touchStartTime: 0 // 触摸开始的时间
 
 			//拉取数据更新优化体验
-			
 		};
 	},
 	onLoad() {
@@ -88,12 +88,12 @@ export default {
 			this.loadRemoteJson()
 				.then((data) => {
 					this.processJsonData(data);
-					this.showToast('数据请求成功', 0.15, 'down'); // 网络请求成功时弹出提示
+					this.showToast('数据请求成功', 0.15, 'down');
 				})
 				.catch((err) => {
 					console.error('远程JSON加载失败，使用静态数据:', err);
-					this.showToast('数据请求失败，现在用的是静态数据', 0.15, 'down'); // 网络请求失败时弹出提示
-					this.loadStaticData(); // 请求失败时加载静态数据
+					this.showToast('数据请求失败，现在用的是静态数据', 0.15, 'down');
+					this.loadStaticData();
 				});
 		},
 		loadRemoteJson() {
@@ -104,15 +104,10 @@ export default {
 					method: 'GET',
 					timeout: 5000,
 					success: (res) => {
-						if (res.data && res.data.doc) {
-							resolve(res.data.doc);
-						} else {
-							reject(new Error('数据格式错误'));
-						}
+						if (res.data && res.data.doc) resolve(res.data.doc);
+						else reject(new Error('数据格式错误'));
 					},
-					fail: (err) => {
-						reject(err);
-					}
+					fail: (err) => reject(err)
 				});
 			});
 		},
@@ -134,29 +129,14 @@ export default {
 					url: 'https://waytoagi.feishu.cn/wiki/TNIRw7qsViYNVgkPaazcuaVfndc?table=tblolGx2mprs1EQz&view=vewgCZH6XZ',
 					category: '人工智能'
 				},
-				{
-					id: 3,
-					title: '世界地理概览',
-					preview: '了解全球地理',
-					img: 'https://via.placeholder.com/100',
-					url: 'https://example.com/geo',
-					category: '人文地理'
-				}
+				{ id: 3, title: '世界地理概览', preview: '了解全球地理', img: 'https://via.placeholder.com/100', url: 'https://example.com/geo', category: '人文地理' }
 			];
-			this.processJsonData({
-				人工智能: staticData.slice(0, 2),
-				人文地理: staticData.slice(2)
-			});
+			this.processJsonData({ 人工智能: staticData.slice(0, 2), 人文地理: staticData.slice(2) });
 		},
 		processJsonData(jsonData) {
 			const allItems = [];
 			for (const category in jsonData) {
-				jsonData[category].forEach((item) => {
-					allItems.push({
-						...item,
-						category
-					});
-				});
+				jsonData[category].forEach((item) => allItems.push({ ...item, category }));
 			}
 			this.allResources = allItems.map((item) => ({
 				id: item.id,
@@ -165,13 +145,12 @@ export default {
 				img: this.isValidUrl(item.img) ? item.img : this.defaultImg,
 				url: this.isValidUrl(item.url) ? item.url : null,
 				category: item.category,
-				showMenu: false
+				showMenu: false,
+				isFavorited: false
 			}));
-
 			const categoriesSet = new Set(['全部']);
 			allItems.forEach((item) => categoriesSet.add(item.category));
 			this.categories = Array.from(categoriesSet);
-
 			this.loadResources();
 		},
 		isValidUrl(str) {
@@ -188,17 +167,10 @@ export default {
 			const data = filteredData.slice(0, this.pageSize * this.page);
 			this.resources = data;
 			this.loading = false;
-
-			filteredData.forEach((item) => {
-				if (!this.isValidUrl(item.url)) {
-					this.showToast('url导向错误，联系开发者维护', 0.6);
-				}
-			});
 		},
 		loadMore() {
 			if (this.loading) return;
 			this.loading = true;
-
 			let filteredData = this.allResources.filter((item) => item.url);
 			if (this.currentCategory !== '全部') {
 				filteredData = filteredData.filter((item) => item.category === this.currentCategory);
@@ -228,69 +200,49 @@ export default {
 		},
 		toggleFavorite(item) {
 			this.resources = this.resources.map((res) => {
-				if (res.id === item.id) {
-					return {
-						...res,
-						isFavorited: !res.isFavorited
-					}; // 切换收藏状态
-				}
+				if (res.id === item.id) return { ...res, isFavorited: !res.isFavorited };
 				return res;
 			});
-			console.log(`${item.isFavorited ? '取消收藏' : '收藏'}: ${item.title}`);
 		},
 		navigateTo(url) {
-			if (this.isValidUrl(url)) {
-				uni.navigateTo({
-					url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}`
-				});
-			} else {
-				this.showToast('url导向错误，联系开发者_f维护!', 0.6);
-			}
+			uni.navigateTo({ url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}` });
 		},
 		showToast(message, heightPercent = 0.5, ...args) {
 			this.$refs.toast.show(message, heightPercent, ...args);
 		},
 		handleTouchStart(e) {
-			const touch = e.touches[0];
-			this.touchStartTime = Date.now(); // 记录触摸开始时间
-			this.isTouchingMenu = true;
+			this.touchStartTime = Date.now();
+		},
+		handleTouchEnd(e) {
+			const duration = Date.now() - this.touchStartTime;
+			const touch = e.changedTouches[0];
+			if (duration < 130) {
+				const query = wx.createSelectorQuery();
+				query
+					.selectAll('.menu-buttons')
+					.boundingClientRect((rects) => {
+						const isOutside = rects.every((rect) => touch.clientY < rect.top || touch.clientY > rect.bottom || touch.clientX < rect.left || touch.clientX > rect.right);
+						if (isOutside) {
+							this.resources = this.resources.map((item) => ({ ...item, showMenu: false }));
+						}
+					})
+					.exec();
+			}
+		},
 
-			const menus = this.resources.filter((item) => item.showMenu);
-			if (menus.length === 0) return;
-
+		handleContainerTap(e) {
 			const query = wx.createSelectorQuery();
 			query
 				.selectAll('.menu-buttons')
 				.boundingClientRect((rects) => {
-					this.isTouchingMenu = false; //精妙设计之一
-					rects.forEach((rect) => {
-						console.log(`用户点击区域：x: ${touch.clientX}, y: ${touch.clientY}`);
-						console.log(`按钮所在区域：left: ${rect.left}, right: ${rect.right},top: ${rect.top}, bottom: ${rect.bottom}`);
-						if (touch.clientY < rect.top || touch.clientY > rect.bottom) {
-							this.isTouchingMenu = false;
-							console.log('[info] 点击在按钮外部');
-						} else {
-							this.isTouchingMenu = true;
-							console.log('[info] 点击在按钮内部');
-						}
-					});
+					const touchX = e.detail.x;
+					const touchY = e.detail.y;
+					const isOutside = rects.every((rect) => touchX < rect.left || touchX > rect.right || touchY < rect.top || touchY > rect.bottom);
+					if (isOutside) {
+						this.resources = this.resources.map((item) => ({ ...item, showMenu: false }));
+					}
 				})
 				.exec();
-		},
-		handleTouchEnd(e) {
-			const touch = e.changedTouches[0];
-			const duration = Date.now() - this.touchStartTime; // 计算触摸时长
-			if (duration > 130) {
-				console.log('[info] 超过限制时间，不收起菜单');
-			} else if (duration < 130 && !this.isTouchingMenu) {
-				// 时长 < 200ms 且在外部，收起菜单
-				this.resources = this.resources.map((item) => ({
-					...item,
-					showMenu: false
-				}));
-			}
-			// 重置状态
-			this.isTouchingMenu = false;
 		}
 	}
 };
