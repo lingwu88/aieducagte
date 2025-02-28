@@ -148,7 +148,7 @@ export default {
 		},
 		loadRemoteJson() {
 			return new Promise((resolve, reject) => {
-				const jsonUrl = 'https://fugui.mynatapp.cc/fg/source.json';
+				const jsonUrl = 'https://fugui.mynatapp.cc/fg/DocLibSource.json'; //需要更改的接口
 				uni.request({
 					url: jsonUrl,
 					method: 'GET',
