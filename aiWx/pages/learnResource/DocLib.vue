@@ -49,8 +49,8 @@
 								<image src="/static/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
 								<text>下载</text>
 							</view>
-							<view class="menu-btn">
-								<button open-type="share" class="share-btn" :data-item="item" @share="handleShareButton(item)">
+							<view class="menu-btn" open-type="share" @tap.stop="handleShareButton(item)">
+								<button open-type="share" class="share-btn" :data-item="item" @tap.stop="handleShareButton(item)">
 									<image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
 									<text>分享</text>
 								</button>
@@ -356,55 +356,29 @@ export default {
 			});
 		},
 		/**===================================================分享转发模块===========================================**/
+		handleShareButton(item) {
+			console.log('123');
+			this.currentShareData = {
+				title: item.title || '学习资源分享',
+				path: '/pages/learnResource/DocLib',
+				imageUrl: item.img || this.defaultImg
+			};
+		},
 		onShareAppMessage(res) {
 			if (res.from === 'button') {
-				const item = res.target.dataset.item;
-				return {
-					title: item.title || '学习资源分享',
+				const shareData = this.currentShareData || {
+					title: '学习社区 - 资料库',
 					path: '/pages/learnResource/DocLib',
-					imageUrl: item.img || this.defaultImg
+					imageUrl: this.defaultImg
 				};
+				this.currentShareData = null; // 清空临时数据
+				return shareData;
 			}
 			return {
-				title: '学习社区 - 资料库',
-				path: '/pages/learnResource/DocLib'
-			};
-		},
-		shareResource(item) {
-			// 构造分享数据
-			const shareData = {
-				title: item.title || '学习资源分享',
-				path: '/pages/learnResource/DocLib', // 分享后打开的页面路径
-				imageUrl: item.img || this.defaultImg // 分享图片，fallback 到默认图片
-			};
-
-			// 调用小程序分享接口
-			wx.showShareMenu({
-				withShareTicket: true, // 启用分享票据
-				success: () => {
-					// 手动触发分享（模拟用户点击右上角后的行为）
-					this.handleShare(shareData);
-				},
-				fail: (err) => {
-					this.showToast('分享功能初始化失败: ' + err.errMsg, { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 2000 });
-				}
-			});
-		},
-		handleShare(shareData) {
-			// 模拟触发分享
-			this.currentShareData = shareData; // 临时存储分享数据
-			// 提示用户选择分享渠道（微信小程序无法直接弹出，只能依赖用户交互）
-			this.showToast('请在弹出的分享菜单中选择', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 1500 });
-		},
-
-		onShareAppMessage() {
-			// 从临时数据中获取分享内容
-			const shareData = this.currentShareData || {
 				title: '学习社区 - 资料库',
 				path: '/pages/learnResource/DocLib',
 				imageUrl: this.defaultImg
 			};
-			return shareData;
 		}
 		/**=============================================其他模块======================================**/
 	}
