@@ -15,7 +15,7 @@
 				@touchstart="handleTouchStart"
 				@touchmove="handleTouchMove"
 				@touchend="handleTouchEnd"
-				:style="{ height: 'calc(100vh - 100rpx)', transform: 'translateY(' + listOffset + 'rpx)' }"
+				:style="{ height: 'calc(100vh - 170rpx)', transform: 'translateY(' + listOffset + 'rpx)' }"
 			>
 				<view class="list-content">
 					<block v-for="item in resources" :key="item.id">
@@ -58,11 +58,11 @@
 					<view v-if="loading" class="loading">加载中...</view>
 					<view v-if="!resources.length && !loading" class="empty">暂无数据</view>
 					<view class="bottom-spacer"></view>
-					<!-- 新增底部占位 -->
+					<!-- 固定底部空白 -->
 				</view>
 			</scroll-view>
 			<view class="load-hint" :style="{ height: loadingHeight + 'rpx', opacity: loadingHeight / 150 }">
-				<text v-if="isLoadingMore">加载中...</text>
+				<text v-if="isLoadingMore">加载中</text>
 				<text v-else-if="loadingHeight < 150">上滑加载更多</text>
 				<text v-else>松手加载</text>
 			</view>
@@ -114,7 +114,7 @@ export default {
 			if (!this.isTouching || this.loading) return;
 			const touch = e.touches[0];
 			const deltaY = this.startY - touch.clientY; // 正值表示上滑
-			const maxScrollTop = this.scrollHeight - this.windowHeight;
+			//const maxScrollTop = this.scrollHeight - this.windowHeight;
 
 			// 判断是否到达底部
 			this.getScrollInfo().then(({ scrollTop, scrollHeight }) => {
@@ -174,15 +174,17 @@ export default {
 					this.listOffset = 0;
 					return;
 				}, 800); // 与复位动画一致
+			} else {
+				this.resources = this.resources.concat(moreData);
+				this.page++;
+				this.loading = false;
+				setTimeout(() => {
+					this.isLoadingMore = false; // 加载完成，复位状态
+					this.loadingHeight = 0;
+					this.listOffset = 0;
+					this.showToast('新内容已更新！', 0.6);
+				}, 1500); // 与复位动画一致
 			}
-			this.resources = this.resources.concat(moreData);
-			this.page++;
-			this.loading = false;
-			setTimeout(() => {
-				this.isLoadingMore = false; // 加载完成，复位状态
-				this.loadingHeight = 0;
-				this.listOffset = 0;
-			}, 1500); // 与复位动画一致
 		},
 
 		loadData() {
@@ -350,12 +352,12 @@ export default {
 }
 
 .bottom-spacer {
-	height: 85rpx; /* 固定底部空白高度 */
+	height: 45rpx; /* 固定底部空白高度 */
 }
 
 .load-hint {
-	position: fixed; /* 改为 fixed，固定在屏幕底边 */
-	bottom: 0; /* 下沿贴底 */
+	position: fixed;
+	bottom: 0; /* 固定在屏幕底边，位于 bottom-spacer 下方 */
 	left: 0;
 	width: 100%;
 	background-color: #f0f0f0;
@@ -365,7 +367,7 @@ export default {
 	text-align: center;
 	font-size: 28rpx;
 	color: #666;
-	transition: opacity 0.6s ease; /* 只过渡透明度 */
+	transition: opacity 0.2s ease;
 	z-index: 1;
 }
 
