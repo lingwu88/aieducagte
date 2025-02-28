@@ -167,7 +167,7 @@ export default {
 			const moreData = filteredData.slice(start, start + this.pageSize);
 			if (moreData.length === 0) {
 				setTimeout(() => {
-					this.showToast('已经加载完所有资料了哦~', 0.6);
+					this.showToast('已经加载完所有资料了哦~', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
 					this.loading = false;
 					this.isLoadingMore = false; // 复位加载状态
 					this.loadingHeight = 0;
@@ -182,7 +182,7 @@ export default {
 					this.isLoadingMore = false; // 加载完成，复位状态
 					this.loadingHeight = 0;
 					this.listOffset = 0;
-					this.showToast('新内容已更新！', 0.6);
+					this.showToast('新内容已更新！', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
 				}, 1500); // 与复位动画一致
 			}
 		},
@@ -191,11 +191,11 @@ export default {
 			this.loadRemoteJson()
 				.then((data) => {
 					this.processJsonData(data);
-					this.showToast('数据请求成功', 0.15, 'down');
+					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err) => {
 					console.error('远程JSON加载失败，使用静态数据:', err);
-					this.showToast('数据请求失败，现在用的是静态数据', 0.15, 'down');
+					this.showToast('数据请求失败，现在用的是静态数据', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					this.loadStaticData();
 				});
 		},
@@ -292,8 +292,8 @@ export default {
 		navigateTo(url) {
 			uni.navigateTo({ url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}` });
 		},
-		showToast(message, heightPercent = 0.5, ...args) {
-			this.$refs.toast.show(message, heightPercent, ...args);
+		showToast(context, ...args) {
+			this.$refs.toast.show(context, ...args);
 		},
 		handleContainerTap(e) {
 			const query = wx.createSelectorQuery();
