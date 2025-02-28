@@ -96,10 +96,10 @@
 			<view class="export" @click="controlExport">
 				导出文档
 				<view :class="{'export-dialog': true, 'show': showExport, 'hide': !showExport}">
-					<view @click="exportWord">
+					<view @click="exportFile('word')">
 						导出Word格式
 					</view>
-					<view @click="exportHtmlPdf">
+					<view @click="exportFile('pdf')">
 						导出PDF格式
 					</view>
 				</view>
@@ -118,6 +118,7 @@
 	import "highlight.js/scss/atom-one-dark.scss"
 	import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 	import {htmlToText} from '../../tools/tool'
+import { exportFile } from '../../api/learnResource'
 	// 上传图片方法
 	function upload(src, type) {
 		return new Promise((resolve, reject) => {
@@ -198,13 +199,13 @@
 			// })
 		},
 		mounted() {
-			this.initHighLight()
-			console.log(this.initHighLight);
-			//先处理essay中的换行符
-			this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
-			// console.log(this.mdEssay);
+			// this.initHighLight()
+			// console.log(this.initHighLight);
+			// //先处理essay中的换行符
+			// this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
+			// // console.log(this.mdEssay);
 			
-			this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
+			// this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
 			console.log(this.essay);
 		},
 		onReady() {
@@ -335,34 +336,88 @@
 					},
 				})
 			},
-			exportHtmlPdf(){
-				console.log(this.$refs.article);
-				const query = wx.createSelectorQuery();
-            query.select('.mphtml').boundingClientRect((rect) => {
-							console.log(rect);
+			// exportHtmlPdf(){
+			// 	console.log(this.$refs.article);
+			// 	const query = wx.createSelectorQuery();
+      //       query.select('.mphtml').boundingClientRect((rect) => {
+			// 				console.log(rect);
 							
-                const ctx = wx.createCanvasContext('myCanvas');
-                ctx.setFillStyle('#ffffff');
-                ctx.fillRect(0, 0, rect.width, rect.height);
-                ctx.draw();
+      //           const ctx = wx.createCanvasContext('myCanvas');
+      //           ctx.setFillStyle('#ffffff');
+      //           ctx.fillRect(0, 0, rect.width, rect.height);
+      //           ctx.draw();
 
-                // 导出为图片
-                wx.canvasToTempFilePath({
-                    canvasId: 'myCanvas',
-                    success: (res) => {
-                        const imgData = res.tempFilePath;
-                        const pdf = new jsPDF();
-                        pdf.addImage(imgData, 'PNG', 10, 10);
-                        pdf.save('document.pdf');
-                    },
-                    fail: (err) => {
-                        console.error(err);
-                    }
-                });
-            }).exec();
+      //           // 导出为图片
+      //           wx.canvasToTempFilePath({
+      //               canvasId: 'myCanvas',
+      //               success: (res) => {
+      //                   const imgData = res.tempFilePath;
+      //                   const pdf = new jsPDF();
+      //                   pdf.addImage(imgData, 'PNG', 10, 10);
+      //                   pdf.save('document.pdf');
+      //               },
+      //               fail: (err) => {
+      //                   console.error(err);
+      //               }
+      //           });
+      //       }).exec();
+			// },
+			// exportWord(){
+
+			// },
+			exportFile(format){
+				this.$api.learnResource.exportFile({format,text:this.essay}).then(res=>{
+					console.log(res.header['Content-Type']);
+					this.generateFile(res.data,res.header['Content-Type'])
+				})
 			},
-			exportWord(){
+			generateFile(res,type){
+				let fileName = ''
+				// const blob = new Blob([res.headers['content-type']])
+				const now = new Date()
+				if(type == 'application/word'){
+					console.log('这是word文件名');
+					
+					 fileName = now.toISOString()+'.word'
+				}
+				else
+						fileName = now.toISOString()+'.pdf'
+					
+				const arrayBuffer = res
+				const base64String = uni.arrayBufferToBase64(arrayBuffer)
+				const buffer = uni.base64ToArrayBuffer(base64String)
+				let fs = uni.getFileSystemManager()
+				const filePath = wx.env.USER_DATA_PATH+'/'+fileName
+				fs.writeFile({
+					filePath:filePath,
+					data:buffer,
+					encode:"binary",
+					success(res){
+						console.log('文件保存成功',res);
+						let file = (type == 'application/word')?"docx":"pdf"
+						console.log(file);
+						
+						uni.openDocument({
+									filePath: filePath,
+									showMenu: true,
+									fileType:(type == 'application/word')?"docx":"pdf",
+									success: (res) => {
+										console.log('文件预览成功');
+										// 构建分享内容
+									},
+									fail: (error) => {
+										console.error('文件保存失败', error);
+									}
+							})
+					},
+					fail(err){
+						console.log('文件保存失败',err);
+						
+					}
 
+				})
+				// console.log(blob);
+				
 			},
 			// 删除图片/视频/音频标签事件
 			remove(e) {
@@ -507,8 +562,12 @@
 			// 保存编辑器内容
 			save() {
 				setTimeout(() => {
+					console.log(this.editable);
+					
 					if (this.editable) {
 						var content = this.$refs.article.getContent()
+						console.log(content);
+						
 						uni.showModal({
 							title: '保存',
 							content,
@@ -558,14 +617,24 @@
 				this.$set(this,'showExport',!this.showExport)
 			},
 			turnEdit(){
+				//只有当其再点击时，触发退出编辑，才保存
+				if(this.editable){
+					this.save().then(
+
+						console.log( this.$refs.article.getContent())
+					)
+					
+					this.essay = this.$refs.article.getContent()
+				}
 				this.$set(this,'editable',!this.editable)
+				console.log( this.$refs.article.getContent());
 				console.log(this.editable);	
 			},
 			getConvert(){
 				if(this.snowId){
 					this.$api.learnResource.getConvert(this.snowId).then(res=>{
 						console.log(res);
-						
+						this.essay = res.data
 					})
 					.catch(err=>{
 						console.log(err);

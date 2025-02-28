@@ -7,7 +7,7 @@
 				ref="uForm"
         labelWidth="150"
 		>
-			<u-form-item
+			<!-- <u-form-item
 					label="标题"
 					prop="title"
 					borderBottom
@@ -34,7 +34,7 @@
           }"
 			>
         <u-textarea v-model="form.feature" count maxlength="400" height="200" placeholder="这里可以填写框架,也可以填写必要的主题～"></u-textarea>
-			</u-form-item>
+			</u-form-item> -->
       <u-form-item
 					label="内容 关键字"
 					prop="keyword"
@@ -50,7 +50,7 @@
         <u-textarea v-model="form.keyword" count maxlength="100" placeholder="请输入您的要求或关键词～"></u-textarea>
 			</u-form-item>
        <u-form-item
-					label="生成文本长度"
+					label="学习强度"
 					ref="item1"
           leftIcon="star-fill"
           :leftIconStyle="{
@@ -59,11 +59,12 @@
             'height':'30rpx'
           }"
 			>
-      <u-slider v-model="form.length" max="800" min="0" step="10" showValue></u-slider>
+        <u-slider v-model="form.length" max="800" min="0" step="10" showValue></u-slider>
 			</u-form-item>
+      <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
 		</u--form>
     </view>
-    <view class="navigate-box" @click="handleToProfession">
+    <view class="navigate-box" @click="handleToNormal">
       <image src="/static/classroom/classManagement/professional.png"></image>
       <view>普通模式</view>
     </view>
@@ -72,12 +73,56 @@
 </template>
 
 <script>
+import expectedSelect from '../../component/classManagement/expectedSelect.vue';
 export default{
+  components:{
+    expectedSelect
+  },
   data() {
     return {
+      list:[
+        {
+          id:1,
+          isSelect:true,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:2,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:3,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:4,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:5,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:6,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:7,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        },
+        {
+          id:8,
+          isSelect:false,
+          desc:"是您想要看见的内容吗？"
+        }
+      ],
       form:{
-        title:"",
-        feature:"",
         keyword:"",
         length:0
       }
@@ -88,6 +133,27 @@ export default{
       uni.navigateTo({
         url:"/pages/classManagement/searchResultProfession"
       })
+    },
+    handleToNormal(){
+      uni.navigateTo({
+        url:"/pages/classManagement/aiChats"
+      })
+    },
+    handleSelect(index){
+      const currentIndex = this.list.findIndex(item=>item.isSelect == true)
+      if(index == -1){
+        uni.showToast({
+          title:'出错',
+          icon:'none'
+        })
+      }
+      if(index == currentIndex)
+        return
+      this.$set(this.list[currentIndex],'isSelect',false)
+      this.$set(this.list[index],'isSelect',true)
+      //判断之前是否有元素
+      //判断是否选择的是当前元素
+      //
     }
   },
 }
@@ -107,6 +173,10 @@ export default{
         border: none;
         width: 90vw;
         margin: auto;
+    }
+    .select{
+      width: 100vw;
+      height: 600rpx;
     }
   }
 
