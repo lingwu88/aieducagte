@@ -62,7 +62,8 @@
 				</view>
 			</scroll-view>
 			<view class="load-hint" :style="{ height: loadingHeight + 'rpx', opacity: loadingHeight / 150 }">
-				<text v-if="loadingHeight < 150">上滑加载更多</text>
+				<text v-if="isLoadingMore">加载中...</text>
+				<text v-else-if="loadingHeight < 150">上滑加载更多</text>
 				<text v-else>松手加载</text>
 			</view>
 		</view>
@@ -93,7 +94,8 @@ export default {
 			isTouching: false, // 是否正在触摸
 			scrollTop: 0, // 当前滚动位置
 			scrollHeight: 0, // 列表内容高度
-			windowHeight: uni.getSystemInfoSync().windowHeight // 屏幕高度
+			windowHeight: uni.getSystemInfoSync().windowHeight, // 屏幕高度
+			isLoadingMore: false // 新增：标记是否正在加载更多
 		};
 	},
 	onLoad() {
@@ -118,7 +120,7 @@ export default {
 			this.getScrollInfo().then(({ scrollTop, scrollHeight }) => {
 				const isAtBottom = scrollTop + this.windowHeight >= scrollHeight - 10; // 底部容差 10px
 				if (deltaY > 0 && isAtBottom) {
-					const offset = Math.min(deltaY * 0.5, 300); // 阻尼效果，最大 300rpx
+					const offset = Math.min(deltaY * 0.5, 200); // 阻尼效果，最大 300rpx
 					this.loadingHeight = offset; // 只调整 load-hint 的高度
 					this.listOffset = -offset; // 列表向上移动
 				}
@@ -129,15 +131,12 @@ export default {
 			if (!this.isTouching || this.loading) return;
 			this.isTouching = false;
 
-			if (this.loadingHeight >= 150) {
+			if (this.loadingHeight >= 100) {
 				// 超出阈值触发加载
-				this.loadingHeight = 150;
-				this.listOffset = -150;
+				this.loadingHeight = 83;
+				this.listOffset = -83;
+				this.isLoadingMore = true; // 进入加载状态
 				this.loadMore();
-				setTimeout(() => {
-					this.loadingHeight = 0;
-					this.listOffset = 0;
-				}, 800); // 复位时间调整为 0.8秒
 			} else {
 				// 未达阈值，回弹
 				this.loadingHeight = 0;
@@ -167,13 +166,23 @@ export default {
 			const start = this.page * this.pageSize;
 			const moreData = filteredData.slice(start, start + this.pageSize);
 			if (moreData.length === 0) {
-				this.showToast('已经加载完所有资料了哦~', 0.6);
-				this.loading = false;
-				return;
+				setTimeout(() => {
+					this.showToast('已经加载完所有资料了哦~', 0.6);
+					this.loading = false;
+					this.isLoadingMore = false; // 复位加载状态
+					this.loadingHeight = 0;
+					this.listOffset = 0;
+					return;
+				}, 800); // 与复位动画一致
 			}
 			this.resources = this.resources.concat(moreData);
 			this.page++;
 			this.loading = false;
+			setTimeout(() => {
+				this.isLoadingMore = false; // 加载完成，复位状态
+				this.loadingHeight = 0;
+				this.listOffset = 0;
+			}, 1500); // 与复位动画一致
 		},
 
 		loadData() {
@@ -341,7 +350,7 @@ export default {
 }
 
 .bottom-spacer {
-	height: 150rpx; /* 固定底部空白高度 */
+	height: 85rpx; /* 固定底部空白高度 */
 }
 
 .load-hint {
@@ -356,7 +365,7 @@ export default {
 	text-align: center;
 	font-size: 28rpx;
 	color: #666;
-	transition: opacity 0.2s ease; /* 只过渡透明度 */
+	transition: opacity 0.6s ease; /* 只过渡透明度 */
 	z-index: 1;
 }
 
