@@ -43,20 +43,21 @@
 									"
 									class="btn-icon"
 								></image>
-								<text>{{ item.isFavorited ? '已收藏' : '收藏' }}</text>
+								<text>{{ item.isFavorited ? '已收藏' : '未收藏' }}</text>
 							</view>
 							<view class="menu-btn" @tap.stop="downloadFile(item)">
 								<image src="/static/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
 								<text>下载</text>
 							</view>
-							<view class="menu-btn" @tap.stop="shareResource(item)">
-								<image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
-								<text>分享转发</text>
+							<view class="menu-btn">
+								<button open-type="share" class="share-btn" :data-item="item" @share="handleShareButton(item)">
+									<image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
+									<text>分享</text>
+								</button>
 							</view>
 						</view>
 					</block>
-					<view v-if="loading" class="loading">加载中...</view>
-					<view v-if="!resources.length && !loading" class="empty">暂无数据</view>
+
 					<view class="bottom-spacer"></view>
 					<!-- 固定底部空白 -->
 				</view>
@@ -102,91 +103,37 @@ export default {
 		this.loadData();
 	},
 	methods: {
-		// ... 其他方法（loadData, loadRemoteJson, processJsonData 等保持不变） ...
-
-		handleTouchStart(e) {
-			if (this.loading) return;
-			const touch = e.touches[0];
-			this.startY = touch.clientY;
-			this.isTouching = true;
+		/**==============================================页面管理模块===========================================**/
+		changeCategory(category) {
+			this.currentCategory = category;
+			this.page = 1;
+			this.resources = [];
+			this.loadResources();
 		},
-		handleTouchMove(e) {
-			if (!this.isTouching || this.loading) return;
-			const touch = e.touches[0];
-			const deltaY = this.startY - touch.clientY; // 正值表示上滑
-			//const maxScrollTop = this.scrollHeight - this.windowHeight;
-
-			// 判断是否到达底部
-			this.getScrollInfo().then(({ scrollTop, scrollHeight }) => {
-				const isAtBottom = scrollTop + this.windowHeight >= scrollHeight - 10; // 底部容差 10px
-				if (deltaY > 0 && isAtBottom) {
-					const offset = Math.min(deltaY * 0.5, 200); // 阻尼效果，最大 300rpx
-					this.loadingHeight = offset; // 只调整 load-hint 的高度
-					this.listOffset = -offset; // 列表向上移动
-				}
-			});
+		toggleMenu(id) {
+			this.resources = this.resources.map((item) => ({
+				...item,
+				showMenu: item.id === id ? !item.showMenu : false
+			}));
 		},
-
-		handleTouchEnd(e) {
-			if (!this.isTouching || this.loading) return;
-			this.isTouching = false;
-
-			if (this.loadingHeight >= 100) {
-				// 超出阈值触发加载
-				this.loadingHeight = 83;
-				this.listOffset = -83;
-				this.isLoadingMore = true; // 进入加载状态
-				this.loadMore();
-			} else {
-				// 未达阈值，回弹
-				this.loadingHeight = 0;
-				this.listOffset = 0;
-			}
+		navigateTo(url) {
+			uni.navigateTo({ url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}` });
 		},
-
-		getScrollInfo() {
-			return new Promise((resolve) => {
-				const query = wx.createSelectorQuery();
-				query.select('.resource-list').scrollOffset();
-				query.select('.list-content').boundingClientRect();
-				query.exec((res) => {
-					this.scrollTop = res[0].scrollTop;
-					this.scrollHeight = res[1].height;
-					resolve({ scrollTop: this.scrollTop, scrollHeight: this.scrollHeight });
-				});
-			});
+		handleContainerTap(e) {
+			const query = wx.createSelectorQuery();
+			query
+				.selectAll('.menu-buttons')
+				.boundingClientRect((rects) => {
+					const touchX = e.detail.x;
+					const touchY = e.detail.y;
+					const isOutside = rects.every((rect) => touchX < rect.left || touchX > rect.right || touchY < rect.top || touchY > rect.bottom);
+					if (isOutside) {
+						this.resources = this.resources.map((item) => ({ ...item, showMenu: false }));
+					}
+				})
+				.exec();
 		},
-		loadMore() {
-			if (this.loading) return;
-			this.loading = true;
-			let filteredData = this.allResources.filter((item) => item.url);
-			if (this.currentCategory !== '全部') {
-				filteredData = filteredData.filter((item) => item.category === this.currentCategory);
-			}
-			const start = this.page * this.pageSize;
-			const moreData = filteredData.slice(start, start + this.pageSize);
-			if (moreData.length === 0) {
-				setTimeout(() => {
-					this.showToast('已经加载完所有资料了哦~', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
-					this.loading = false;
-					this.isLoadingMore = false; // 复位加载状态
-					this.loadingHeight = 0;
-					this.listOffset = 0;
-					return;
-				}, 800); // 与复位动画一致
-			} else {
-				this.resources = this.resources.concat(moreData);
-				this.page++;
-				this.loading = false;
-				setTimeout(() => {
-					this.isLoadingMore = false; // 加载完成，复位状态
-					this.loadingHeight = 0;
-					this.listOffset = 0;
-					this.showToast('新内容已更新！', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
-				}, 1500); // 与复位动画一致
-			}
-		},
-
+		/**================================================加载页面数据模块====================================**/
 		loadData() {
 			this.loadRemoteJson()
 				.then((data) => {
@@ -194,7 +141,7 @@ export default {
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err) => {
-					console.error('远程JSON加载失败，使用静态数据:', err);
+					console.log('[error] 远程JSON加载失败，使用静态数据:', err);
 					this.showToast('数据请求失败，现在用的是静态数据', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					this.loadStaticData();
 				});
@@ -286,44 +233,180 @@ export default {
 			this.resources = data;
 			this.loading = false;
 		},
-		changeCategory(category) {
-			this.currentCategory = category;
-			this.page = 1;
-			this.resources = [];
-			this.loadResources();
+		/**==============================================滑动加载数据模块========================================**/
+		handleTouchStart(e) {
+			if (this.loading) return;
+			const touch = e.touches[0];
+			this.startY = touch.clientY;
+			this.isTouching = true;
 		},
-		toggleMenu(id) {
-			this.resources = this.resources.map((item) => ({
-				...item,
-				showMenu: item.id === id ? !item.showMenu : false
-			}));
+		handleTouchMove(e) {
+			if (!this.isTouching || this.loading) return;
+			const touch = e.touches[0];
+			const deltaY = this.startY - touch.clientY; // 正值表示上滑
+			//const maxScrollTop = this.scrollHeight - this.windowHeight;
+
+			// 判断是否到达底部
+			this.getScrollInfo().then(({ scrollTop, scrollHeight }) => {
+				const isAtBottom = scrollTop + this.windowHeight >= scrollHeight - 10; // 底部容差 10px
+				if (deltaY > 0 && isAtBottom) {
+					const offset = Math.min(deltaY * 0.5, 200); // 阻尼效果，最大 300rpx
+					this.loadingHeight = offset; // 只调整 load-hint 的高度
+					this.listOffset = -offset; // 列表向上移动
+				}
+			});
 		},
+
+		handleTouchEnd(e) {
+			if (!this.isTouching || this.loading) return;
+			this.isTouching = false;
+
+			if (this.loadingHeight >= 100) {
+				// 超出阈值触发加载
+				this.loadingHeight = 83;
+				this.listOffset = -83;
+				this.isLoadingMore = true; // 进入加载状态
+				this.loadMore();
+			} else {
+				// 未达阈值，回弹
+				this.loadingHeight = 0;
+				this.listOffset = 0;
+			}
+		},
+
+		getScrollInfo() {
+			return new Promise((resolve) => {
+				const query = wx.createSelectorQuery();
+				query.select('.resource-list').scrollOffset();
+				query.select('.list-content').boundingClientRect();
+				query.exec((res) => {
+					this.scrollTop = res[0].scrollTop;
+					this.scrollHeight = res[1].height;
+					resolve({ scrollTop: this.scrollTop, scrollHeight: this.scrollHeight });
+				});
+			});
+		},
+		loadMore() {
+			if (this.loading) return;
+			this.loading = true;
+			let filteredData = this.allResources.filter((item) => item.url);
+			if (this.currentCategory !== '全部') {
+				filteredData = filteredData.filter((item) => item.category === this.currentCategory);
+			}
+			const start = this.page * this.pageSize;
+			const moreData = filteredData.slice(start, start + this.pageSize);
+			if (moreData.length === 0) {
+				setTimeout(() => {
+					this.showToast('已经加载完所有资料了哦~', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
+					this.loading = false;
+					this.isLoadingMore = false; // 复位加载状态
+					this.loadingHeight = 0;
+					this.listOffset = 0;
+					return;
+				}, 800); // 与复位动画一致
+			} else {
+				this.resources = this.resources.concat(moreData);
+				this.page++;
+				this.loading = false;
+				setTimeout(() => {
+					this.isLoadingMore = false; // 加载完成，复位状态
+					this.loadingHeight = 0;
+					this.listOffset = 0;
+					this.showToast('新内容已更新！', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 700 });
+				}, 1500); // 与复位动画一致
+			}
+		},
+		/**===============================================弹窗模块======================================**/
+		showToast(context, ...args) {
+			this.$refs.toast.show(context, ...args);
+		},
+		/**==============================================收藏模块=========================================**/
 		toggleFavorite(item) {
 			this.resources = this.resources.map((res) => {
 				if (res.id === item.id) return { ...res, isFavorited: !res.isFavorited };
 				return res;
 			});
 		},
-		navigateTo(url) {
-			uni.navigateTo({ url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}` });
-		},
-		showToast(context, ...args) {
-			this.$refs.toast.show(context, ...args);
-		},
-		handleContainerTap(e) {
-			const query = wx.createSelectorQuery();
-			query
-				.selectAll('.menu-buttons')
-				.boundingClientRect((rects) => {
-					const touchX = e.detail.x;
-					const touchY = e.detail.y;
-					const isOutside = rects.every((rect) => touchX < rect.left || touchX > rect.right || touchY < rect.top || touchY > rect.bottom);
-					if (isOutside) {
-						this.resources = this.resources.map((item) => ({ ...item, showMenu: false }));
+		/**===========================================下载模块===============================================**/
+		downloadFile(item) {
+			if (!item.url || !this.isValidUrl(item.url)) {
+				this.showToast('无效的下载链接', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 2000 });
+				return;
+			}
+			uni.downloadFile({
+				url: item.url,
+				success: (res) => {
+					if (res.statusCode === 200) {
+						uni.saveFile({
+							tempFilePath: res.tempFilePath,
+							success: () => {
+								this.showToast(`文件下载成功，已保存到本地${res.tempFilePath}`, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+							},
+							fail: (err) => {
+								this.showToast('文件保存失败: ' + err.errMsg, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+							}
+						});
+					} else {
+						this.showToast('下载失败，状态码: ' + res.statusCode, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					}
-				})
-				.exec();
+				},
+				fail: (err) => {
+					this.showToast('下载失败: ' + err.errMsg, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+				}
+			});
+		},
+		/**===================================================分享转发模块===========================================**/
+		onShareAppMessage(res) {
+			if (res.from === 'button') {
+				const item = res.target.dataset.item;
+				return {
+					title: item.title || '学习资源分享',
+					path: '/pages/learnResource/DocLib',
+					imageUrl: item.img || this.defaultImg
+				};
+			}
+			return {
+				title: '学习社区 - 资料库',
+				path: '/pages/learnResource/DocLib'
+			};
+		},
+		shareResource(item) {
+			// 构造分享数据
+			const shareData = {
+				title: item.title || '学习资源分享',
+				path: '/pages/learnResource/DocLib', // 分享后打开的页面路径
+				imageUrl: item.img || this.defaultImg // 分享图片，fallback 到默认图片
+			};
+
+			// 调用小程序分享接口
+			wx.showShareMenu({
+				withShareTicket: true, // 启用分享票据
+				success: () => {
+					// 手动触发分享（模拟用户点击右上角后的行为）
+					this.handleShare(shareData);
+				},
+				fail: (err) => {
+					this.showToast('分享功能初始化失败: ' + err.errMsg, { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 2000 });
+				}
+			});
+		},
+		handleShare(shareData) {
+			// 模拟触发分享
+			this.currentShareData = shareData; // 临时存储分享数据
+			// 提示用户选择分享渠道（微信小程序无法直接弹出，只能依赖用户交互）
+			this.showToast('请在弹出的分享菜单中选择', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 1500 });
+		},
+
+		onShareAppMessage() {
+			// 从临时数据中获取分享内容
+			const shareData = this.currentShareData || {
+				title: '学习社区 - 资料库',
+				path: '/pages/learnResource/DocLib',
+				imageUrl: this.defaultImg
+			};
+			return shareData;
 		}
+		/**=============================================其他模块======================================**/
 	}
 };
 </script>
@@ -375,7 +458,7 @@ export default {
 	bottom: 0; /* 固定在屏幕底边，位于 bottom-spacer 下方 */
 	left: 0;
 	width: 100%;
-	background-color: #f0f0f0;
+	background-color: #cecece;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -458,7 +541,7 @@ export default {
 	padding: 0 20rpx 10rpx 60rpx;
 	background-color: transparent;
 	z-index: 10000;
-	gap: 20rpx; // 添加按钮间距
+	gap: 20rpx;
 }
 .menu-btn {
 	display: flex;
@@ -467,10 +550,28 @@ export default {
 	flex: 1;
 	padding: 10rpx;
 	margin: 0 10rpx;
-	background-color: #fff;
-	border-radius: 8rpx;
-	box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.15);
+	background-color: transparent;
+	//box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.10);
 	z-index: 10001;
+	box-sizing: border-box;
+}
+.share-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	padding: 0;
+	margin: 0;
+	background-color: transparent;
+	border: none;
+	font-size: 28rpx;
+	color: #333;
+	line-height: 1;
+	width: 100%;
+	height: 100%;
+}
+.share-btn::after {
+	border: none;
 }
 .btn-icon {
 	width: 40rpx;
