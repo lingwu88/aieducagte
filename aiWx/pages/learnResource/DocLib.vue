@@ -219,22 +219,37 @@ export default {
 				{
 					id: 1,
 					title: '机器学习框架：scikit-learn',
-					preview: '学习AI的基本概念',
-					img: '/static/classroom/learnResource/ResourceLibrary/Pic/res1.jpg',
+					preview: '深入了解scikit-learn，这个强大的Python库简化了数据挖掘和数据分析。了解其核心算法和工具如何加速机器学习模型的开发与评估过程。',
+					img: '',
 					url: 'https://github.com/datawhalechina/machine-learning-toy-code',
 					category: '人工智能'
 				},
 				{
 					id: 2,
 					title: '稳定扩散是如何运作的',
-					preview: '深度学习基础',
-					img: '/static/classroom/learnResource/ResourceLibrary/Pic/res2.jpg',
+					preview: '探索稳定扩散模型背后的机制，学习它如何生成逼真的数据点，广泛应用于图像、文本等领域，实现创新的数据增强和模拟解决方案。',
+					img: '',
 					url: 'https://waytoagi.feishu.cn/wiki/TNIRw7qsViYNVgkPaazcuaVfndc?table=tblolGx2mprs1EQz&view=vewgCZH6XZ',
 					category: '人工智能'
 				},
-				{ id: 3, title: '世界地理概览', preview: '了解全球地理', img: 'https://via.placeholder.com/100', url: 'https://example.com/geo', category: '人文地理' }
+				{
+					id: 3,
+					title: '世界地理概览',
+					preview: '快速游览世界地理，涵盖自然地貌、气候类型及人文特色。这份概览提供了对地球多样性的深刻理解，从高峰到深海，一览无余。',
+					img: '',
+					url: 'https://www.acfun.cn/v/ac22306887',
+					category: '人文地理'
+				},
+				{
+					id: 4,
+					title: 'HWebBuilder',
+					preview: '适合初学者的复刻项目，让你3天内迅速内化前端三件套',
+					img: '',
+					url: 'https://fugui.mynatapp.cc/main',
+					category: '网站建设'
+				}
 			];
-			this.processJsonData({ 人工智能: staticData.slice(0, 2), 人文地理: staticData.slice(2) });
+			this.processJsonData({ 人工智能: staticData.slice(0, 2), 人文地理: staticData.slice(2, 3), 网站建设: staticData.slice(3) });
 		},
 		processJsonData(jsonData) {
 			const allItems = [];
