@@ -129,16 +129,13 @@
 </template>
 
 <script>
+import request from '../../tools/request';
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
   props: {
-    userAvatar: {
-      type: String,
-      default: '/static/my/user.png'
-    },
     aiAvatar: {
       type: String,
       default: '/static/my/avatar.png'
@@ -146,6 +143,7 @@ export default {
   },
   data() {
     return {
+      userAvatar:"",
       scrollTop: 0,
       lastMessageId: '',
       isLoading: false,
@@ -164,6 +162,18 @@ export default {
     this.initAudioContext()
   },
   methods: {
+    getAvatar(){
+      this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
+          console.log(res);
+					this.userAvatar = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
+					console.log(this.img);
+					
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+      },
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');

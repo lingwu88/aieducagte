@@ -81,6 +81,9 @@ import { marked } from 'marked'
 import hljs from "highlight.js"
 import "highlight.js/scss/atom-one-dark.scss"
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
+import request from '../../tools/request'
+import { regexSSE } from '../../tools/tool'
+import { getSessionId } from '../../api/classManagement'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
@@ -125,22 +128,10 @@ export default {
       
       this.form.userId = uni.getStorageSync('userId')
     }
-    console.log(options);
-    console.log(this.userId);
     
     if(options){
-      this.$api.classManagement.generalAi({
-        ...this.form,
-        query:options.query,
-      }).then(res=>{
-        console.log(res);
-        this.form.conversationId = res.data.conversationId
-        this.$set(this.result,'word',res.data.response)
-      })
-      .catch(err=>{
-        console.log(err);
-        
-      })
+      console.log(options.query);
+      this.generateAi(options.query)
     }
   },
   mounted() {
@@ -229,11 +220,25 @@ export default {
     handleBlur() {
       this.isVoiceMode = false
     },
-    async handleSend() {
-      if(!this.canSend) return
+    generateAi(query=''){
+      let text
+      if(query){
+        text = query
+      }
+      else{
+        text = this.inputText
+      }
+      console.log(this.form);
+      console.log({
+        ...this.form,
+        query:text
+      });
+      
+      //开启sse
+      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,this.closeSSE)
       this.$api.classManagement.generalAi({
         ...this.form,
-        query:this.inputText
+        query:text
       }).then(res=>{
         console.log(res);
         
@@ -242,35 +247,42 @@ export default {
         console.log(err);
         
       })
-      // const userMessage = {
-      //   type: 'user',
-      //   contentType: 'text',
-      //   content: this.inputText,
-      //   status: 'sending'
-      // }
-      // this.messageList.push(userMessage)
-      // this.inputText = ''
-      
-      // // 显示AI输入状态
-      // try{
-      //   this.isAiTyping = true
-      //   const response = await this.sendToAI(userMessage.content)
-      //   userMessage.status = 'sent'
-      //   this.messageList.push({
-      //     type: 'ai',
-      //     contentType: 'text',
-      //     content: response
-      //   })
-      // } catch (error) {
-      //   userMessage.status = 'failed'
-      //   uni.showToast({
-      //     title: '发送失败',
-      //     icon: 'none'
-      //   })
-      // } finally {
-      //   this.isAiTyping = false
-      //   this.scrollToBottom()
-      // }
+    },
+    closeSSE(){
+      this.$api.classManagement.endSSE(this.form.userId).then(res=>{
+        console.log(res);
+        console.log('关闭');
+        
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
+    },
+    //sse回调函数
+    logData(res) {
+        // 假设 res 是一个字符串，包含了 SSE 消息
+       const data = regexSSE(res)
+       if(data){
+        this.result.word +=data
+       }
+            // this.result.word += data; // 将提取的数据添加到 result.word
+    },
+    async handleSend() {
+      if(!this.canSend) return
+      this.result.word = ''
+      this.getSessionId()
+      this.generateAi()
+    },
+    getSessionId(){
+      this.$api.classManagement.getSessionId(this.form.userId).then(res=>{
+        console.log(res);
+        this.form.conversationId = res.data
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
     },
     handleCamera(){
       uni.chooseImage({
@@ -343,6 +355,17 @@ export default {
       }
       else{ 
         this.$set(this,"swtichStar",false)
+      }
+    },
+    sseResponse(){
+      eventSource = new EventSource(request.baseUrl+'/api/ai/general-learning-plan');
+      eventSource.onmessage = (event) => {
+        console.log("收到消息内容是:", event.data)
+      };
+  
+      eventSource.onerror = (error) => {
+          console.error("SSE 连接出错：", error);
+          eventSource.close();
       }
     }
     

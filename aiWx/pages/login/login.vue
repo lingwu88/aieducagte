@@ -60,7 +60,10 @@
 						uni.setStorageSync('userId',res.data.userId)
 						uni.setStorageSync('accessToken',res.data.accessToken)
 						uni.setStorageSync('refreshToken',res.data.refreshToken)
-
+						uni.showToast({
+							title:'登录成功',
+							icon:'none'
+						})
 						uni.switchTab({
 							url:'/pages/index/index'
 						})

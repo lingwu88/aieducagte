@@ -6,7 +6,7 @@
 		<u-list 
 			width="90vw"
 			@scrolltolower="handleLoad"
-			#>
+			>
       <u-list-item v-for="(item, index) in list" :key="index">
         <essay @click="handleTo(item)" :img="item.img" :title="item.title"></essay>
       </u-list-item>

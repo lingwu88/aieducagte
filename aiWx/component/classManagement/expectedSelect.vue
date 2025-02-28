@@ -1,7 +1,7 @@
 <template>
   <view class="select-box">
     <scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y" >
-          <view class="item" v-for="(item,index) in list" @click="handleChange(index)" :key="item.id">
+          <view class="item" v-for="(item,index) in list" @click="handleChange(index)" :key="item.desc">
             <view class="item-icon">
               <u-icon :name="item.isSelect?'checkmark-circle-fill':'checkmark-circle'"></u-icon>
             </view>
@@ -51,8 +51,8 @@ export default{
     width: 90%;
     background-color: #ffffff;
     border-radius: 40rpx;
-    margin: 10rpx auto;
-    padding:10rpx;
+    margin: 15rpx auto;
+    padding:20rpx;
 
     &-desc{
       margin:0 0 0 10rpx;

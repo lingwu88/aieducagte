@@ -17,6 +17,7 @@
     "highlight.js": "^11.11.1",
     "marked": "^15.0.7",
     "mp-html": "^2.5.0",
+    "text-encoding-shim": "^1.0.5",
     "uview-ui": "^2.0.38"
   }
 }
