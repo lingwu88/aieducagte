@@ -91,7 +91,7 @@ export default {
   transform: translate(0, -50%);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 
   .logo {
     width: 600rpx;
@@ -144,7 +144,7 @@ export default {
   position: relative;
   top: 20vh;
   width: 80%;
-  text-align: center;
+  text-align: left;
   transform: translate(0, 40%);
   z-index: 11;
 
