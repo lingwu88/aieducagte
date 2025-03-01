@@ -1,12 +1,18 @@
 <template>
 	<view class="container">
-    <view class="line"></view>
-    <view class="title">优质课程汇总</view>
+    <view class="header">
+      <view class="title-container">
+        <view class="title-line"></view>
+        <view class="title">优质课程汇总</view>
+      </view>
+      <view class="subtitle">探索精选课程，提升你的学习体验</view>
+    </view>
     <view class="course-list">
-      <view  v-for="(item,index) in list" :key="index" class="course-item">
-        <courseCard :img="item.img" :title="item.title" class="course-item"></courseCard>
+      <view v-for="(item,index) in list" :key="index" class="course-item">
+        <courseCard :img="item.img" :title="item.title" class="course-card"></courseCard>
       </view>
     </view>
+    <view class="empty-block"></view>
 	</view>
 </template>
 
@@ -57,28 +63,79 @@ import courseCard from './components/courseCard.vue';
 </script>
 
 <style lang="scss" scoped>
-.line{
-  width: 100%;
-  height: 40rpx;
-  background-color: #f1f1f1;
+.container {
+  background-color: #f8f9fd;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
 }
-.title{
+
+.header {
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #eef2ff 0%, #e6ecfd 100%);
+  border-radius: 0 0 30rpx 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.title-line {
+  width: 8rpx;
+  height: 40rpx;
+  background: linear-gradient(to bottom, #5b6af0, #7b89ff);
+  border-radius: 4rpx;
+  margin-right: 20rpx;
+}
+
+.title {
   font-size: 40rpx;
   font-weight: 700;
-  text-align: center;
-  margin-top: 50rpx;
+  color: #2d3748;
+  letter-spacing: 2rpx;
 }
-.course-list{
-  width: 100vw;
-  min-height: 400rpx;
+
+.subtitle {
+  font-size: 28rpx;
+  color: #8a94a6;
+  margin-left: 28rpx;
+  margin-top: 10rpx;
+}
+
+.course-list {
+  width: 100%;
+  padding: 20rpx;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
-.course-item{
-  margin:auto 30rpx;
-  width: 40vw;
+
+.course-item {
+  width: 46%;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  }
+}
+
+.course-card {
+  width: 100%;
+}
+
+.empty-block {
+  height: 100rpx;
 }
 </style>
