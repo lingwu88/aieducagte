@@ -2,27 +2,40 @@
 	<view>
     <view :class="['card',isLogin?'login-style':'noLogin-style']">
      <view class="image-border">
-      <u--image src="/static/my/user.png" class="user-img" height="160rpx" width="160rpx"  shape="circle"></u--image>
+      <image :src="img" class="user-img" height="160rpx" width="160rpx"  shape="circle"></image>
      </view>
-     <text :class="['description']" selectable="false" @click="handleTo">点击登录/注册</text>
+     <text :class="['description']" selectable="false" @click="handleTo">{{isLogin?name:'点击登录/注册'}}</text>
      <div :class="['background',isLogin?'login-background':'noLogin-background']"></div>
     </view>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
+import request from '../../tools/request';
+export default {
+    props:{
+      isLogin:{
+        type:Boolean,
+        required:true,
+        default:false
+      },
+      img:{
+        type:String,
+        required:true
+      },
+      name:{
+        type:String,
+        default:"未填写昵称"
+      }
+    },
+    data() {
 			return {
 				title: 'Hello',
-        isLogin:false
 			}
 		},
-		onLoad() {
-      if(uni.getStorageSync('userId')&&uni.getStorageSync('access_token')){
-        this.$set(this,'isLogin',true) 
-      }
-		},
+    onShow(){
+      console.log(request.baseUrl);
+    },
 		methods: {
       handleTo(){
         uni.navigateTo({
@@ -66,6 +79,9 @@
 
     .user-img{
       margin:auto 0;
+      width: 160rpx;
+      height: 160rpx;
+      border-radius: 50rpx; 
     }
   }
   .description{

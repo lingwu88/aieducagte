@@ -1,18 +1,18 @@
 <template>
-  <view class="container">
+	<view class="container">
     <view class="aiessay" @tap="handleto(1)">
       <image src="/static/classroom/learnResource/aiWrite.png" class="aiWrite"></image>
-      <text class="aiWrite-text" selectable="false" space="false" decode="false">
-        AI变文
-      </text>
+			<text class="aiWrite-text" selectable="false" space="false" decode="false">
+				AI变文
+			</text>
     </view>
     <view class="footer">
-      <view class="footer-item" v-for="(item, index) in list" :key="index">
-        <image :src="item.img" alt="无法加载出图片" class="item-img" @click="navigateTo(item)"></image>
-        <text class="item-description">{{ item.description }}</text>
-      </view>
-    </view>
-  </view>
+			<view class="footer-item" v-for="(item,index) in list" :key="index">
+				<image :src="item.img" alt="无法加载出图片" class="item-img" @click="navigateTo(item)"></image>
+				<text class="item-description">{{item.description}}</text>
+			</view>
+		</view>
+	</view>
 </template>
 
 <script>

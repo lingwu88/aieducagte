@@ -129,16 +129,13 @@
 </template>
 
 <script>
+import request from '../../tools/request';
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
   props: {
-    userAvatar: {
-      type: String,
-      default: '/static/my/user.png'
-    },
     aiAvatar: {
       type: String,
       default: '/static/my/avatar.png'
@@ -146,6 +143,7 @@ export default {
   },
   data() {
     return {
+      userAvatar:"",
       scrollTop: 0,
       lastMessageId: '',
       isLoading: false,
@@ -164,6 +162,18 @@ export default {
     this.initAudioContext()
   },
   methods: {
+    getAvatar(){
+      this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
+          console.log(res);
+					this.userAvatar = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
+					console.log(this.img);
+					
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+      },
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');
@@ -211,7 +221,7 @@ export default {
     },
     async handleSend() {
       if(!this.canSend) return
-
+      
       const userMessage = {
         type: 'user',
         contentType: 'text',
@@ -220,8 +230,8 @@ export default {
       }
       this.messageList.push(userMessage)
       this.scrollToBottom()
-
-      this.inputText = ''
+      
+      // this.inputText = ''
       
       // 显示AI输入状态
       try{
@@ -229,21 +239,24 @@ export default {
         const response = await this.sendToAI(userMessage.content)
         userMessage.status = 'sent'
         this.messageList.push({
-          type: 'ai',
-          contentType: 'text',
-          content: response
-        })
-        
-        //ai应答后跳转
-        uni.navigateTo({
-          url:"/pages/classManagement/searchResult"
-        })
+            type: 'ai',
+            contentType: 'text',
+            content: response
+          })
+          console.log(this.inputText);
+          
+          // ai应答后跳转
+          uni.navigateTo({
+            url:`/pages/classManagement/searchResult?query=${this.inputText}`
+          })
       } catch (error) {
         userMessage.status = 'failed'
         uni.showToast({
           title: '发送失败',
           icon: 'none'
         })
+        console.log(err);
+        
       } finally {
         this.isAiTyping = false
         this.scrollToBottom()
@@ -315,7 +328,7 @@ export default {
     },
     sendToAI(content) {
         // TODO: 实现实际的AI服务调用
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
         setTimeout(() => {
           resolve('这是AI的回复消息...')
         }, 1000)

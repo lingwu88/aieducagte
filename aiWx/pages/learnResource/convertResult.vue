@@ -96,10 +96,10 @@
 			<view class="export" @click="controlExport">
 				导出文档
 				<view :class="{'export-dialog': true, 'show': showExport, 'hide': !showExport}">
-					<view @click="exportWord">
+					<view @click="exportFile('word')">
 						导出Word格式
 					</view>
-					<view @click="exportHtmlPdf">
+					<view @click="exportFile('pdf')">
 						导出PDF格式
 					</view>
 				</view>
@@ -118,6 +118,7 @@
 	import "highlight.js/scss/atom-one-dark.scss"
 	import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 	import {htmlToText} from '../../tools/tool'
+import { exportFile } from '../../api/learnResource'
 	// 上传图片方法
 	function upload(src, type) {
 		return new Promise((resolve, reject) => {
@@ -148,9 +149,11 @@
 		},
 		data() {
 			return {
+				snowId:"",
 				showExport:false,
 				essay:"",
-				mdEssay:"\"introduce\":\"1. **计算机科学导论**：这是入门课程，介绍计算机科学的基本概念和原理，包括编程基础、计算机系统组成和基本算法。目标是为学生建立对计算机科学领域的整体理解，为后续更深入的学习打下坚实的基础。\\n\\n2. **数据结构与算法**：基于导论中获得的编程和逻辑思维能力，本课程深入探讨各种数据结构（如数组、链表、树等）和经典算法（排序、搜索等）。学习目标是掌握高效的数据管理和问题解决技巧，这些技能在操作系统、网络和数据库等后续课程中至关重要。\\n\\n3. **操作系统原理**：在此阶段，学生将学习操作系统如何管理硬件资源和提供服务给应用程序。课程内容涵盖进程管理、内存管理、文件系统等。此课程直接依赖于之前所学的数据结构知识，并为理解和设计复杂的软件系统奠定基础。\\n\\n4. **计算机网络基础**：该课程讲解计算机网络的工作原理，从物理层到应用层的各层协议，以及网络安全基础。它结合了操作系统中关于通信机制的知识，并为分布式系统和互联网应用开发提供了必要背景。\\n\\n5. **数据库系统设计**：专注于关系型数据库的设计、实现和优化，包括SQL语言、事务处理、并发控制等内容。这门课利用了之前学到的数据结构和算法知识，同时也涉及到操作系统的存储管理和网络中的数据传输。\\n\\n6. **人工智能与机器学习**：作为高级课程，它探索智能系统的设计与实现，重点在于机器学习算法及其应用。此课程整合了前面所有课程的知识——编程、数据处理、计算资源管理、网络通信和大规模数据存储，使学生能够构建复杂的人工智能解决方案。\"",
+				mdEssay:"",
+				// mdEssay:"\"introduce\":\"1. **计算机科学导论**：这是入门课程，介绍计算机科学的基本概念和原理，包括编程基础、计算机系统组成和基本算法。目标是为学生建立对计算机科学领域的整体理解，为后续更深入的学习打下坚实的基础。\\n\\n2. **数据结构与算法**：基于导论中获得的编程和逻辑思维能力，本课程深入探讨各种数据结构（如数组、链表、树等）和经典算法（排序、搜索等）。学习目标是掌握高效的数据管理和问题解决技巧，这些技能在操作系统、网络和数据库等后续课程中至关重要。\\n\\n3. **操作系统原理**：在此阶段，学生将学习操作系统如何管理硬件资源和提供服务给应用程序。课程内容涵盖进程管理、内存管理、文件系统等。此课程直接依赖于之前所学的数据结构知识，并为理解和设计复杂的软件系统奠定基础。\\n\\n4. **计算机网络基础**：该课程讲解计算机网络的工作原理，从物理层到应用层的各层协议，以及网络安全基础。它结合了操作系统中关于通信机制的知识，并为分布式系统和互联网应用开发提供了必要背景。\\n\\n5. **数据库系统设计**：专注于关系型数据库的设计、实现和优化，包括SQL语言、事务处理、并发控制等内容。这门课利用了之前学到的数据结构和算法知识，同时也涉及到操作系统的存储管理和网络中的数据传输。\\n\\n6. **人工智能与机器学习**：作为高级课程，它探索智能系统的设计与实现，重点在于机器学习算法及其应用。此课程整合了前面所有课程的知识——编程、数据处理、计算资源管理、网络通信和大规模数据存储，使学生能够构建复杂的人工智能解决方案。\"",
 				modal: null,
 				dialog: false,
 				editable: false,
@@ -177,7 +180,12 @@
 				]
 			}
 		},
-		onLoad() {
+		onLoad(options) {
+			if(options){
+				this.snowId = options.snowId
+			}
+			console.log(this.snowId);
+			this.getConvert()
 			// uni.showActionSheet({
 			// 	itemList: ['简易模式', '正常模式'],
 			// 	success: e => {
@@ -191,13 +199,13 @@
 			// })
 		},
 		mounted() {
-			this.initHighLight()
-			console.log(this.initHighLight);
-			//先处理essay中的换行符
-			this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
-			// console.log(this.mdEssay);
+			// this.initHighLight()
+			// console.log(this.initHighLight);
+			// //先处理essay中的换行符
+			// this.mdEssay = this.mdEssay.replace(/\\n/g, '<br>')
+			// // console.log(this.mdEssay);
 			
-			this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
+			// this.essay = marked(this.mdEssay).replace(/<pre>/g, "<pre class='hljs'>")
 			console.log(this.essay);
 		},
 		onReady() {
@@ -328,34 +336,88 @@
 					},
 				})
 			},
-			exportHtmlPdf(){
-				console.log(this.$refs.article);
-				const query = wx.createSelectorQuery();
-            query.select('.mphtml').boundingClientRect((rect) => {
-							console.log(rect);
+			// exportHtmlPdf(){
+			// 	console.log(this.$refs.article);
+			// 	const query = wx.createSelectorQuery();
+      //       query.select('.mphtml').boundingClientRect((rect) => {
+			// 				console.log(rect);
 							
-                const ctx = wx.createCanvasContext('myCanvas');
-                ctx.setFillStyle('#ffffff');
-                ctx.fillRect(0, 0, rect.width, rect.height);
-                ctx.draw();
+      //           const ctx = wx.createCanvasContext('myCanvas');
+      //           ctx.setFillStyle('#ffffff');
+      //           ctx.fillRect(0, 0, rect.width, rect.height);
+      //           ctx.draw();
 
-                // 导出为图片
-                wx.canvasToTempFilePath({
-                    canvasId: 'myCanvas',
-                    success: (res) => {
-                        const imgData = res.tempFilePath;
-                        const pdf = new jsPDF();
-                        pdf.addImage(imgData, 'PNG', 10, 10);
-                        pdf.save('document.pdf');
-                    },
-                    fail: (err) => {
-                        console.error(err);
-                    }
-                });
-            }).exec();
+      //           // 导出为图片
+      //           wx.canvasToTempFilePath({
+      //               canvasId: 'myCanvas',
+      //               success: (res) => {
+      //                   const imgData = res.tempFilePath;
+      //                   const pdf = new jsPDF();
+      //                   pdf.addImage(imgData, 'PNG', 10, 10);
+      //                   pdf.save('document.pdf');
+      //               },
+      //               fail: (err) => {
+      //                   console.error(err);
+      //               }
+      //           });
+      //       }).exec();
+			// },
+			// exportWord(){
+
+			// },
+			exportFile(format){
+				this.$api.learnResource.exportFile({format,text:this.essay}).then(res=>{
+					console.log(res.header['Content-Type']);
+					this.generateFile(res.data,res.header['Content-Type'])
+				})
 			},
-			exportWord(){
+			generateFile(res,type){
+				let fileName = ''
+				// const blob = new Blob([res.headers['content-type']])
+				const now = new Date()
+				if(type == 'application/word'){
+					console.log('这是word文件名');
+					
+					 fileName = now.toISOString()+'.word'
+				}
+				else
+						fileName = now.toISOString()+'.pdf'
+					
+				const arrayBuffer = res
+				const base64String = uni.arrayBufferToBase64(arrayBuffer)
+				const buffer = uni.base64ToArrayBuffer(base64String)
+				let fs = uni.getFileSystemManager()
+				const filePath = wx.env.USER_DATA_PATH+'/'+fileName
+				fs.writeFile({
+					filePath:filePath,
+					data:buffer,
+					encode:"binary",
+					success(res){
+						console.log('文件保存成功',res);
+						let file = (type == 'application/word')?"docx":"pdf"
+						console.log(file);
+						
+						uni.openDocument({
+									filePath: filePath,
+									showMenu: true,
+									fileType:(type == 'application/word')?"docx":"pdf",
+									success: (res) => {
+										console.log('文件预览成功');
+										// 构建分享内容
+									},
+									fail: (error) => {
+										console.error('文件保存失败', error);
+									}
+							})
+					},
+					fail(err){
+						console.log('文件保存失败',err);
+						
+					}
 
+				})
+				// console.log(blob);
+				
 			},
 			// 删除图片/视频/音频标签事件
 			remove(e) {
@@ -500,8 +562,12 @@
 			// 保存编辑器内容
 			save() {
 				setTimeout(() => {
+					console.log(this.editable);
+					
 					if (this.editable) {
 						var content = this.$refs.article.getContent()
+						console.log(content);
+						
 						uni.showModal({
 							title: '保存',
 							content,
@@ -551,8 +617,30 @@
 				this.$set(this,'showExport',!this.showExport)
 			},
 			turnEdit(){
+				//只有当其再点击时，触发退出编辑，才保存
+				if(this.editable){
+					this.save().then(
+
+						console.log( this.$refs.article.getContent())
+					)
+					
+					this.essay = this.$refs.article.getContent()
+				}
 				this.$set(this,'editable',!this.editable)
+				console.log( this.$refs.article.getContent());
 				console.log(this.editable);	
+			},
+			getConvert(){
+				if(this.snowId){
+					this.$api.learnResource.getConvert(this.snowId).then(res=>{
+						console.log(res);
+						this.essay = res.data
+					})
+					.catch(err=>{
+						console.log(err);
+						
+					})
+				}
 			}
 		}
 	}

@@ -1,13 +1,13 @@
 <template>
   <view class="content">
     <view class="card" @click="handleClick">
-      <text class="title">{{ title }}</text>
       <view class="img-list">
         <u--image :src="img" :lazy-load="true" height="250rpx" mode="widthFix"></u--image>
       </view>
       <view class="footer">
-        <uni-icons type="eye-filled" size="20"></uni-icons>
-        <text class="read">{{ number }}</text> 
+        <text class="title">{{ title }}</text>
+        <!-- <uni-icons type="eye-filled" size="20"></uni-icons> -->
+        <!-- <text class="read">{{ number }}</text>  -->
       </view>
     </view>
   </view>
@@ -16,20 +16,20 @@
 <script>
 	export default {
     props:{
-      // title:{
-      //   type:String,
-      //   required:true
-      // },
-      // img:{
-      //   type:String,
-      //   required:true
-      // }
+      title:{
+        type:String,
+        required:true
+      },
+      img:{
+        type:String,
+        required:true
+      }
     },
 		data() {
 			return {
-        title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-        img:"/static/classroom/eassyImg1.png",
-        number:10000,
+        // title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+        // img:"/static/classroom/eassyImg1.png",
+        // number:10000,
         // url:'https://mp.weixin.qq.com/s/ckxVWOXCFWBk9ivXYmrwDA'
 			}
 		},

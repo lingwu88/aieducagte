@@ -14,6 +14,12 @@
 
 // export default install
 import * as personal from "./personal"
+import * as square from "./square"
+import * as learnResource from './learnResource'
+import * as classManagement from './classManagement'
 export default{
-  personal
+  personal,
+  square,
+  learnResource,
+  classManagement
 }

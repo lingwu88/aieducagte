@@ -81,6 +81,9 @@ import { marked } from 'marked'
 import hljs from "highlight.js"
 import "highlight.js/scss/atom-one-dark.scss"
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
+import request from '../../tools/request'
+import { regexSSE } from '../../tools/tool'
+import { getSessionId } from '../../api/classManagement'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
@@ -93,10 +96,15 @@ export default {
   },
   data() {
     return {
+      form:{
+        userId:'',
+        query:"",
+        conversationId:""
+      },
       result:{
-        title:"这是搜索标题",
-        base:"8",
-        word:"\"introduce\":\"1. **计算机科学导论**：这是入门课程，介绍计算机科学的基本概念和原理，包括编程基础、计算机系统组成和基本算法。目标是为学生建立对计算机科学领域的整体理解，为后续更深入的学习打下坚实的基础。\\n\\n2. **数据结构与算法**：基于导论中获得的编程和逻辑思维能力，本课程深入探讨各种数据结构（如数组、链表、树等）和经典算法（排序、搜索等）。学习目标是掌握高效的数据管理和问题解决技巧，这些技能在操作系统、网络和数据库等后续课程中至关重要。\\n\\n3. **操作系统原理**：在此阶段，学生将学习操作系统如何管理硬件资源和提供服务给应用程序。课程内容涵盖进程管理、内存管理、文件系统等。此课程直接依赖于之前所学的数据结构知识，并为理解和设计复杂的软件系统奠定基础。\\n\\n4. **计算机网络基础**：该课程讲解计算机网络的工作原理，从物理层到应用层的各层协议，以及网络安全基础。它结合了操作系统中关于通信机制的知识，并为分布式系统和互联网应用开发提供了必要背景。\\n\\n5. **数据库系统设计**：专注于关系型数据库的设计、实现和优化，包括SQL语言、事务处理、并发控制等内容。这门课利用了之前学到的数据结构和算法知识，同时也涉及到操作系统的存储管理和网络中的数据传输。\\n\\n6. **人工智能与机器学习**：作为高级课程，它探索智能系统的设计与实现，重点在于机器学习算法及其应用。此课程整合了前面所有课程的知识——编程、数据处理、计算资源管理、网络通信和大规模数据存储，使学生能够构建复杂的人工智能解决方案。\""
+        base:0,
+        title:"",
+        word:""
       },
       value: 0,
       range: [
@@ -111,7 +119,19 @@ export default {
       isVoiceMode: false,
       inputText: '',
       isRecording: false,
-      swtichStar:false
+      swtichStar:false,
+    }
+  },
+  onLoad(options){
+    if(uni.getStorageSync('userId')){
+      console.log(uni.getStorageSync('userId'));
+      
+      this.form.userId = uni.getStorageSync('userId')
+    }
+    
+    if(options){
+      console.log(options.query);
+      this.generateAi(options.query)
     }
   },
   mounted() {
@@ -200,38 +220,69 @@ export default {
     handleBlur() {
       this.isVoiceMode = false
     },
+    generateAi(query=''){
+      let text
+      if(query){
+        text = query
+      }
+      else{
+        text = this.inputText
+      }
+      console.log(this.form);
+      console.log({
+        ...this.form,
+        query:text
+      });
+      
+      //开启sse
+      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,this.closeSSE)
+      this.$api.classManagement.generalAi({
+        ...this.form,
+        query:text
+      }).then(res=>{
+        console.log(res);
+        
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
+    },
+    closeSSE(){
+      this.$api.classManagement.endSSE(this.form.userId).then(res=>{
+        console.log(res);
+        console.log('关闭');
+        
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
+    },
+    //sse回调函数
+    logData(res) {
+        // 假设 res 是一个字符串，包含了 SSE 消息
+       const data = regexSSE(res)
+       if(data){
+        this.result.word +=data
+       }
+            // this.result.word += data; // 将提取的数据添加到 result.word
+    },
     async handleSend() {
       if(!this.canSend) return
-
-      const userMessage = {
-        type: 'user',
-        contentType: 'text',
-        content: this.inputText,
-        status: 'sending'
-      }
-      this.messageList.push(userMessage)
-      this.inputText = ''
-      
-      // 显示AI输入状态
-      try{
-        this.isAiTyping = true
-        const response = await this.sendToAI(userMessage.content)
-        userMessage.status = 'sent'
-        this.messageList.push({
-          type: 'ai',
-          contentType: 'text',
-          content: response
-        })
-      } catch (error) {
-        userMessage.status = 'failed'
-        uni.showToast({
-          title: '发送失败',
-          icon: 'none'
-        })
-      } finally {
-        this.isAiTyping = false
-        this.scrollToBottom()
-      }
+      this.result.word = ''
+      this.getSessionId()
+      this.generateAi()
+    },
+    getSessionId(){
+      this.$api.classManagement.getSessionId(this.form.userId).then(res=>{
+        console.log(res);
+        this.form.conversationId = res.data
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
     },
     handleCamera(){
       uni.chooseImage({
@@ -304,6 +355,17 @@ export default {
       }
       else{ 
         this.$set(this,"swtichStar",false)
+      }
+    },
+    sseResponse(){
+      eventSource = new EventSource(request.baseUrl+'/api/ai/general-learning-plan');
+      eventSource.onmessage = (event) => {
+        console.log("收到消息内容是:", event.data)
+      };
+  
+      eventSource.onerror = (error) => {
+          console.error("SSE 连接出错：", error);
+          eventSource.close();
       }
     }
     

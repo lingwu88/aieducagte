@@ -1,9 +1,11 @@
 <template>
   <view class="comment-box">
     <view class="comment-list">
-      <view class="comment-item" v-for="(item,index) in commentList">
+      <view class="comment-item" v-for="(item,index) in commentList" :key="item.author">
         <view class="comment-item-author">{{ item.author }}:</view>
         <view class="comment-item-content">{{ item.content }}</view>
+        <view class="comment-item-time">{{ item.createTime }}</view>
+
       </view>
     </view>
   </view>
@@ -11,27 +13,14 @@
 
 <script>
 export default{
+  props:{
+    commentList:{
+      type:Array,
+      default:[]
+    }
+  },
   data() {
     return {
-      commentList:[
-        {
-          author:"lingwu",
-          content:"我靠，真是太牛逼了，我真的是对你无话可说,仰慕崇拜阿啊阿啊阿啊阿啊阿啊阿啊阿啊"
-        },
-        {
-          author:"lingwu",
-          content:"我靠，真是太牛逼了"
-        },
-        {
-          author:"lingwu",
-          content:"我靠，真是太牛逼了"
-        },
-        {
-          author:"lingwu",
-          content:"我靠，真是太牛逼了"
-        }
-      ]
-        
     }
   },
 }
@@ -54,12 +43,19 @@ export default{
     &-item{
       display:flex;
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       font-size: 30rpx;
 
       &-author{
         margin-right: 10rpx;
         color:#3704f9;
+      }
+      &-content{
+        flex: 1;
+        margin:0 10rpx;
+      }
+      &-time{
+        font-size: 20rpx;
       }
     }
   }

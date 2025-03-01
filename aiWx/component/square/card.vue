@@ -49,61 +49,65 @@ export default{
 </script>
 
 <style scoped lang="scss">
-.container{
+.container {
   width: 100%;
-  height:100%;
-  background-color: #ffc3c3;
-  border-radius:20px 20px 0 0;
+  height: 100%;
+  background-color: #FBFBFD;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  overflow: hidden; 
 
-  .image{
-    width:100%;
-    border:1px solid #eee;
-    border-radius:20px;
+  .image {
+    width: 100%;
+    border: 1px solid #eee;
+    border-radius: 20rpx 20rpx 0 0;
   }
 
-  .footer{
-    padding:12rpx;
+  .footer {
+    padding: 12rpx;
     font-size: 14px;
 
-    .title{
-      margin-bottom:8rpx;
+    .title {
+      margin-bottom: 8rpx;
       word-break: break-all;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
-      color:rgba(51,51,51,0.8)
+      color: rgba(51,51,51,0.8);
     }
     
-    .author{
-     font-size: 13rpx;
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     gap:5rpx;
-     
-     .author-info{
-      flex:1;
+    .author {
+      font-size: 13rpx;
       display: flex;
-      align-items: centr;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      .avatar{
-        margin-right: 6rpx;
-        width: 20rpx;
-        height: 20rpx;
-        border-radius: 20px;
-        border:1px solid rgba(0,0,0,0.08);
-      }
-      .name{
-        width:80%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5rpx;
+     
+      .author-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        color:rgba(51,51,51,0.8);
+        
+        .avatar {
+          margin-right: 6rpx;
+          width: 20rpx;
+          height: 20rpx;
+          border-radius: 20rpx;
+          border: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .name {
+          width: 80%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: rgba(51,51,51,0.8);
+        }
       }
-     }
     }
   }
 }
