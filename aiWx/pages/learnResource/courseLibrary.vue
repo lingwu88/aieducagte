@@ -8,7 +8,7 @@
       <view class="subtitle">探索精选课程，提升你的学习体验</view>
     </view>
     <view class="course-list">
-      <view v-for="(item,index) in list" :key="index" class="course-item">
+      <view v-for="(item,index) in list" :key="index" class="course-item" @longpress.stop.prevent="handleLongPress">
         <courseCard :img="item.img" :title="item.title" class="course-card"></courseCard>
       </view>
     </view>
@@ -58,6 +58,12 @@ import courseCard from './components/courseCard.vue';
 
 		},
 		methods: {
+      handleLongPress(e) {
+        // 阻止长按默认行为
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      }
 		}
 	}
 </script>
@@ -67,6 +73,9 @@ import courseCard from './components/courseCard.vue';
   background-color: #f8f9fd;
   min-height: 100vh;
   padding-bottom: 40rpx;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none; /* Standard */
 }
 
 .header {
@@ -75,6 +84,7 @@ import courseCard from './components/courseCard.vue';
   border-radius: 0 0 30rpx 30rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
   margin-bottom: 30rpx;
+  will-change: transform; /* 优化渲染性能 */
 }
 
 .title-container {
@@ -117,13 +127,13 @@ import courseCard from './components/courseCard.vue';
 }
 
 .course-item {
-  width: 46%;
+  width: 48%; /* 从46%增加到48% */
   margin-bottom: 30rpx;
   border-radius: 20rpx;
   overflow: hidden;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   background-color: #fff;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   
   &:active {
     transform: scale(0.98);

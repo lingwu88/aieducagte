@@ -2,7 +2,7 @@
 	<view>
 		<view class="card-box">
 			<view class="img-box">
-				<image :src="img" class="img" mode="aspectFill"></image>
+				<image :src="img" class="img" mode="aspectFill" :show-menu-by-longpress="false"></image>
 				<view class="overlay"></view>
 			</view>
 			<view class="content">
@@ -39,10 +39,13 @@ export default {
   border-radius: 20rpx;
   overflow: hidden;
   position: relative;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  user-select: none; /* Standard */
   
   .img-box {
     width: 100%;
-    height: 220rpx;
+    height: 240rpx;
     position: relative;
     overflow: hidden;
     
@@ -50,7 +53,8 @@ export default {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
+      transition: transform 0.3s ease;
+      will-change: transform;
       
       &:active {
         transform: scale(1.05);
@@ -64,11 +68,12 @@ export default {
       width: 100%;
       height: 60rpx;
       background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+      pointer-events: none;
     }
   }
   
   .content {
-    padding: 20rpx;
+    padding: 24rpx;
   }
   
   .title {
