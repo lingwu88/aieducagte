@@ -95,7 +95,7 @@ import list from "../../config/index.js"
 		justify-content: center;
 		width:700rpx;
 		height:95vh;
-		background-color: #fff1d0a1;
+		background-color: transparent;
 		margin: 2vh 2.5vw 0 2.5vw;
 		
 		.fall{
@@ -107,12 +107,12 @@ import list from "../../config/index.js"
 		}
 
 		.check-img{
-			width: 200rpx;
-			height: 200rpx;
+			width: 180rpx;
+			height: 180rpx;
 			position:absolute;
 			right:10rpx;
 			bottom: 20rpx;
-			background-color: #ffffff;
+			background-color: transparent;
 		}
 	}
 
