@@ -101,3 +101,10 @@ export function getUserAvatar(userId){
     `/api/user/getAvatar?userId=${userId}`,
   )
 }
+
+export function logout(data){
+  return request.post(
+    '/api/user/logout',
+    data
+  )
+}

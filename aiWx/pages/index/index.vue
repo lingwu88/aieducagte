@@ -3,9 +3,12 @@
 		<text class="header" selectable="false" >学习自足，答疑解惑</text>			
 		<iconList class="list" ></iconList>
 		<u-search placeholder="请输入关键词进行查找" v-model="keyword"></u-search>
-		<u-list width="90vw">
+		<u-list 
+			width="90vw"
+			@scrolltolower="handleLoad"
+			>
       <u-list-item v-for="(item, index) in list" :key="index">
-        <essay @click="handleTo"></essay>
+        <essay @click="handleTo(item)" :img="item.img" :title="item.title"></essay>
       </u-list-item>
     </u-list>
 		
@@ -13,6 +16,7 @@
 </template>
 
 <script>
+import {indexList} from '../../config'
 import iconList from '../../component/classroom/iconList.vue';
 import essay from '../../component/classroom/essay.vue';
 	export default {
@@ -22,7 +26,9 @@ import essay from '../../component/classroom/essay.vue';
 		},
 		data() {
 			return {
-				title: 'Hello',
+				// title: 'Hello',
+				page:1,
+				pageSize:5,
 				inputStyle1:{
 					height:"50rpx",
 					width:"90vw"
@@ -33,39 +39,47 @@ import essay from '../../component/classroom/essay.vue';
 					{ value: 2, text: "游泳" },
       ],
 				list:[
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
-					{
-						title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-						img:"/static/classroom/eassyImg1.png"
-					},
 				],
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},					{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// 	{
+				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
+				// 		img:"/static/classroom/eassyImg1.png",
+				// 		url:""
+				// 	},
+				// ],
 				keyword:""
 			}
 		},
 		onLoad() {
-
+			this.getInfo(this.page,this.pageSize)
 		},
 		methods: {
 			search(){
@@ -73,6 +87,47 @@ import essay from '../../component/classroom/essay.vue';
 			},
 			handleClick(){
 				
+			},
+			handleTo(item){
+				uni.navigateTo({
+						url: `/pages/learnResource/webview?url=${encodeURIComponent(item.url)}`
+					});
+			},
+			getInfo(page,pageSize){
+				uni.showLoading({
+					title:'加载中'
+				})
+				this.getInfoData(page,pageSize).then(res=>{
+					this.list.push(...res)
+					console.log(res);
+					
+				})
+				.catch(err=>{
+
+				})
+				.finally(
+					uni.hideLoading()
+				)
+			},
+			//模拟数据接口
+			getInfoData(page,pageSize){
+				return new Promise((resolve,reject)=>{
+					setTimeout(()=>{
+						resolve(indexList.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
+					})
+				})
+			},
+			handleLoad(){
+				this.page = this.page+1
+				//如果没有更多数据
+				if((this.page-1)>=indexList.length){
+					uni.showToast({
+						title:"已经没有更多数据了",
+						icon:'none'
+					})
+					return
+				}
+				this.getInfo(this.page,this.pageSize)
 			}
 		}
 	}

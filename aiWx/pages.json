@@ -70,7 +70,7 @@
 				{
 					"path": "searchResultProfession",
 					"style": {
-						"navigationBarTitleText": "搜索结果[专业版]"
+						"navigationStyle": "custom"
 					}
 				}
 			]

@@ -11,7 +11,7 @@
 			uni.navigateBack({
 				delta: 1
 			});
-			return true; // 拦截默认返回
+			// return true; // 拦截默认返回
 		},
 		data() {
 			return {

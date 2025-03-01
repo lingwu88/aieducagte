@@ -114,7 +114,7 @@
 						title: 'AI基础教程',
 						preview: '学习AI的基本概念',
 						img: '/static/classroom/learnResource/res1.jpg',
-						url: 'https://www.datawhale.cn/learn/content/30/1833',
+						url: 'https://mp.weixin.qq.com/s/MlGBDFaSr6qPq2sk-cI4FA',
 						category: '人工智能'
 					},
 					{

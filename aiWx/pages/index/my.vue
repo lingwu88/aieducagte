@@ -2,7 +2,7 @@
 	<view class="container main">
     <myHeader :isLogin="isLogin" :img="img" :name="userName"></myHeader>
 		<list></list>
-		<view class="btn">登出</view>
+		<view class="btn" @click="logout" v-if="isLogin">登出</view>
 	</view>
 </template>
 
@@ -40,6 +40,22 @@ import request from '../../tools/request';
 				this.$api.personal.getUserInfo(this.userId).then(res=>{
 										// this.$set(this,'img',res.data.avatar)
 					this.$set(this,'userName',res.data.userName)
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			logout(){
+				this.$api.personal.logout({userId:this.userId}).then(res=>{
+					console.log(res);
+					this.$set(this,'isLogin',false)
+					this.$set(this,'img',request.baseUrl+'/avatars/defaultAvatar.jpg')
+					uni.removeStorageSync('userId')
+					uni.removeStorageSync('accessToken')
+					uni.removeStorageSync('refreshToken')
+					uni.showToast({
+						title:"成功登出"
+					})
 				})
 				.catch(err=>{
 					console.log(err);

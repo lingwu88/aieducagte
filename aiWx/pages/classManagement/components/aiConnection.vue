@@ -17,38 +17,54 @@
         <text>加载中...</text>
       </view>
 
+      <view class="content">
+      <!-- <view class="content-title">{{ result.title }}</view> -->
+      <!-- <view class="second">
+        <view class="base">基于{{ result.base }}篇参考资料</view>
+        <view class="select">
+          <uni-data-select
+            v-model="value"
+            :localdata="range"
+            @change="change"
+          ></uni-data-select>
+        </view>
+      </view> -->
+      <view class="word">
+        <mp-html :content="content"/>
+      </view>
+    </view>
       <!-- 消息列表 -->
-      <view class="message-list">
+      <!-- <view class="message-list">
         <view
           v-for="(item, index) in messageList"
           :key="index"
           :id="'msg-' + index"
           class="message-item"
           :class="item.type"
-        >
+        > -->
           <!-- 头像 -->
-          <image 
+          <!-- <image 
             :src="item.type === 'user' ? userAvatar : aiAvatar" 
             class="avatar" 
-          />
+          /> -->
           <!-- 消息内容 -->
-          <view class="message-content">
+          <!-- <view class="message-content"> -->
             <!-- 文本消息 -->
-            <view v-if="item.contentType === 'text'" class="text-content">
+            <!-- <view v-if="item.contentType === 'text'" class="text-content">
               {{ item.content }}
-            </view>
+            </view> -->
 
             <!-- 图片消息 -->
-             <image 
+             <!-- <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
-            />
+            /> -->
 
             <!-- 语音消息 -->
-            <view 
+            <!-- <view 
               v-else-if="item.contentType === 'voice'"
               class="voice-content"
               @tap="playVoice(item.content)"
@@ -56,25 +72,25 @@
               <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"></uni-icons>
               <text>{{ item.duration }}″</text>
             </view>
-          </view>
+          </view> -->
 
         <!-- 消息状态 -->
-          <view class="message-status" v-if="item.type === 'user'">
+          <!-- <view class="message-status" v-if="item.type === 'user'">
             <text v-if="item.status === 'sending'">发送中...</text>
             <text v-else-if="item.status === 'failed'" class="error">发送失败</text>
           </view>
-        </view>
+        </view> -->
 
         <!-- AI 输入中状态 -->
-        <view class="ai-typing" v-if="isAiTyping">
+        <!-- <view class="ai-typing" v-if="isAiTyping">
           <image class="avatar" :src="aiAvatar"/>
           <view class="typing-indicator">
             <view class="dot"></view>
             <view class="dot"></view>
             <view class="dot"></view>
           </view>
-        </view>
-      </view>
+        </view> -->
+      <!-- </view> -->
     </scroll-view>
 
 
@@ -83,7 +99,7 @@
       <view>专业模式</view>
     </view> -->
 
-    <view class="input-area">
+    <!-- <view class="input-area">
       <view class="input">
         <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
@@ -123,7 +139,7 @@
         >
           发送
         </view>
-    </view>
+    </view> -->
   </view>
 
 </template>
@@ -143,6 +159,15 @@ export default {
     aiAvatar: {
       type: String,
       default: '/static/my/avatar.png'
+    },
+    messageList:{
+      type:Array,
+      default:[]
+    },
+    content:{
+      type:String,
+      default:"",
+      required:true
     }
   },
   data() {
@@ -150,7 +175,6 @@ export default {
       scrollTop: 0,
       lastMessageId: '',
       isLoading: false,
-      messageList: [],
       isPlaying: false,
       currentVoice: '',
       isVoiceMode: false,
@@ -158,13 +182,29 @@ export default {
       isRecording: false,
       page: 1,
       isAiTyping: false,
+      requestbody:{}
     }
   },
   created() {
     this.initRecorder(),
     this.initAudioContext()
   },
+  onShow(){
+    this.initRequest()
+  },
   methods: {
+    initRequest(){
+      let body = uni.getStorageSync('aiSetting')
+      this.requestbody = {
+        ...body,
+        userId:uni.getStorageSync('userId'),
+        courses:body.courses.map(item=>(
+          item.desc
+        ))
+        
+      }
+      console.log(this.requestbody);
+    },
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');
@@ -219,7 +259,8 @@ export default {
         content: this.inputText,
         status: 'sending'
       }
-      this.messageList.push(userMessage)
+      this.$emit('push',userMessage)
+      // this.messageList.push(userMessage)
       this.scrollToBottom()
 
       this.inputText = ''
@@ -229,11 +270,12 @@ export default {
         this.isAiTyping = true
         const response = await this.sendToAI(userMessage.content)
         userMessage.status = 'sent'
-        this.messageList.push({
+        this.$emit('push',{
           type: 'ai',
           contentType: 'text',
           content: response
         })
+        // this.messageList.push()
         
         //ai应答后跳转
         // uni.navigateTo({
@@ -296,12 +338,18 @@ export default {
 
     sendVoiceMessage(tempFilePath, duration) {
       console.log('sendVoiceMessage', tempFilePath, duration)
-      this.messageList.push({
+      this.$emit('push',{
         type: 'user',
         contentType: 'voice',
         content: tempFilePath,
         duration: Math.round(duration / 1000)
       })
+      // this.messageList.push({
+      //   type: 'user',
+      //   contentType: 'voice',
+      //   content: tempFilePath,
+      //   duration: Math.round(duration / 1000)
+      // })
       this.scrollToBottom()
       
       //发送完语音后
@@ -310,17 +358,39 @@ export default {
       })
     },
     scrollToBottom() {
+      console.log(this.messageList.length);
+      
       this.$nextTick(() => {
         this.lastMessageId = 'msg-' + (this.messageList.length - 1)
       })
     },
     sendToAI(content) {
-        // TODO: 实现实际的AI服务调用
-        return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve('这是AI的回复消息...')
-        }, 1000)
+      // let body = uni.getStorageSync('aiSetting')
+      // let form = {
+      //   ...body,
+      //   userId:uni.getStorageSync('userId'),
+      //   courses:body.courses.map(item=>(
+      //     item.desc
+      //   ))
+        
+      // }
+      return new Promise((resolve,reject)=>{
+
+        // this.$api.classManagement.learnSchedule(this.form).then(res=>{
+        //   console.log(res);
+        //   resolve(res)
+        // })
+        // .catch(err=>{
+        //   console.log(err);
+        //   reject(err)
+        // })
       })
+        // TODO: 实现实际的AI服务调用
+      //   return new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve('这是AI的回复消息...')
+      //   }, 1000)
+      // })
     }
     
   },

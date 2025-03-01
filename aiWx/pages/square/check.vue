@@ -345,6 +345,12 @@ import request from '../../tools/request';
 					articleId:this.list[this.currentIndex].articleId
 				}).then(res=>{
 					console.log(res);
+					this.$set(this.commentList,this.commentList.length,{
+						content:res.data.content,
+						author:res.data.fromName,
+						createTime:res.data.createTime
+					})
+					this.commentList
 					uni.showToast({
 						title:"成功评论"
 					})

@@ -10,6 +10,16 @@ export function convert(data){
 
 export function getConvert(snowId){
   return request.get(
-    `api/ai/get-text?snowId=${snowId}`,
+    `/api/ai/get-text?snowId=${snowId}`,
+  )
+}
+
+export function exportFile(data){
+  return request.postFile(
+    '/api/ai/change-format',
+    data,
+    undefined,
+    undefined,
+    'blob'
   )
 }

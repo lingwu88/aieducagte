@@ -1,16 +1,28 @@
 <template>
   <view class="result-box">
-    <menuNavigate v-if="showNavigator" class="menu-navigator"></menuNavigate>
-    <view class="control">
-      <image src="/static/classroom/classManagement/control.png" class="control-icon" @click="showNavigator=!showNavigator"></image>
+    <view class="header">
+      <view class="navigation-icon" @click="back"></view>
+      <view class="title">课程规划与建议</view>
+      <view class="play">
+        <u-icon name="grid-fill" size="28" @click="handleSetting"></u-icon>
+      </view>
+      <!-- <view class="collection">
+        <uni-icons :type="swtichStar==false?'star':'star-filled'" size="28" @click="swtichStars"></uni-icons>
+      </view> -->
     </view>
-    <aiConnection class="connection"></aiConnection>  
+    <!-- <menuNavigate v-if="showNavigator" class="menu-navigator"></menuNavigate> -->
+    <view class="control">
+      <!-- <image src="/static/classroom/classManagement/control.png" class="control-icon" @click="showNavigator=!showNavigator"></image> -->
+    </view>
+    <aiConnection :content="result" class="connection" :messageList="list" @push="handlePush" :userAvatar="img"></aiConnection>  
   </view>
 </template>
 
 <script>
 import menuNavigate from './components/menuNavigate.vue';
 import aiConnection from './components/aiConnection.vue';
+import request from '../../tools/request';
+import { regexSSE } from '../../tools/tool'
 // import AiConnection from './components/aiConnection.vue';
 export default{
   components:{
@@ -19,9 +31,87 @@ export default{
   },
   data() {
     return {
-      showNavigator:false
+      showNavigator:false,
+      list:[],
+      img:"",
+      result:""
     }
-  }            
+  },
+  onLoad(){
+    this.getAvatar()
+  },
+  onShow(){
+    this.result = ''
+    this.generateAi()
+  },
+  methods: {
+    generateAi(){
+      let body = uni.getStorageSync('aiSetting')
+      let form = {
+        ...body,
+        userId:uni.getStorageSync('userId'),
+        courses:body.courses.map(item=>(
+        item.desc
+        ))
+      }
+
+      console.log(form);
+      
+      
+      //开启sse
+      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${form.userId}`,this.logData,this.closeSSE)
+      this.$api.classManagement.learnSchedule(form).then(res=>{
+        console.log(res);
+        
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
+    },
+    closeSSE(){
+      this.$api.classManagement.endSSE(this.form.userId).then(res=>{
+        console.log(res);
+        console.log('关闭');
+        
+      })
+      .catch(err=>{
+        console.log(err);
+        
+      })
+    },
+    //sse回调函数
+    logData(res) {
+        // 假设 res 是一个字符串，包含了 SSE 消息
+       const data = regexSSE(res)
+       if(data){
+        this.result +=data
+       }
+            // this.result.word += data; // 将提取的数据添加到 result.word
+    },
+    handlePush(item){
+      console.log(item);
+      
+      this.list.push(item)
+    },
+    handleSetting(){
+      uni.navigateTo({
+        url:"/pages/classManagement/aiChatProfession?type=setting"
+      })
+    },
+    getAvatar(){
+        this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
+          console.log(res);
+					this.img = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
+					console.log(this.img);
+					
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+      },
+  },            
 }
 </script>
 
@@ -30,11 +120,52 @@ export default{
   width: 100vw;
   min-height: 100vh;
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  // flex-direction: row;
+  // flex-wrap: nowrap;
+  // justify-content: flex-start;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   
+  .header{
+    position:sticky;
+    top: 0;
+    left: 0;
+    display: flex;
+    width:100vw;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top:80rpx;
+    padding-left: 40rpx;
+    height: 100rpx;
+    background-color: #fff;
+
+    .navigation-icon{
+      width:20rpx;
+      height: 20rpx;
+      border-left: 3px solid #000000;
+      border-top: 3px solid #000000;
+      transform: rotate(-45deg);
+    }
+
+    .title{
+      text-align: center;
+      flex:1;
+      font-size:38rpx;
+      font-weight: 600;
+      color:#000000;
+    }
+
+    .collection{
+      margin-right: 30vw;
+    }
+
+  }
+
+  .play{
+    width: 40vw;
+  }
 
   .menu-navigator{
     // visibility: hidden;
@@ -63,6 +194,7 @@ export default{
 .connection{
   flex: 1;
   min-height: 100vh;
+  width: 100vw;
 }
 .hidden{
   display: none;
