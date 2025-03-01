@@ -1,3 +1,4 @@
+<!-- version:1.0.0.1 -->
 <template>
 	<view class="webview-container">
 		<web-view :src="url" class="webview"></web-view>
@@ -21,14 +22,14 @@
 		onLoad(options) {
 			console.log('webview onLoad, options:', options);
 			this.url = decodeURIComponent(options.url);
-			console.log('当前页面栈:', getCurrentPages());
+			console.log('f当前页面栈:', getCurrentPages());
 		},
 		onUnload() {
-			console.log('webview onUnload, 当前页面栈:', getCurrentPages());
+			console.log('webview onUnload_f, 当前页面栈:', getCurrentPages());
 		},
 		methods: {
 			goBack() {
-				console.log('尝试返回, 当前页面栈:', getCurrentPages());
+				console.log('f尝试返回, 当前页面栈:', getCurrentPages());
 				uni.navigateBack({
 					delta: 1
 				});
@@ -59,7 +60,7 @@
 		font-size: 32rpx;
 		padding: 20rpx;
 		border-radius: 10rpx;
-		z-index: 9999;
+		z-index: 999999;
 		/* 确保在web-view之上 */
 	}
 </style>
