@@ -45,7 +45,7 @@
 				<text>清空文本</text>
 			</view>
 		</view>
-		<view class="preview">
+		<view class="preview" v-if="images.length > 0">
 			<view class="image-container">
 				<view v-for="(image, index) in images" :key="index" class="image-preview">
 					<image :src="image" class="image" @click="previewImage(image)" />
@@ -59,8 +59,8 @@
 		<view class="publish-btn" @click="handlePublish">
 			<text>发表</text>
 		</view>
-		</view>	
-	</view>
+	</view>	
+</view>
 </template>
 
 <script>
@@ -81,7 +81,7 @@
 	},
 	methods: {
 		uploadImage() {
-			// 这里可以使用 uni.chooseImage 来选择图片
+
 			uni.chooseImage({
 				count: 1,
 				success: (res) => {
@@ -146,7 +146,8 @@
 	display: flex;
 	flex-direction: column;
 	padding: 20rpx;
-	background-color: #ffffff;
+	background-color: #f8f9fd;
+	position: relative;
 }
 
 .input-area {
@@ -154,7 +155,13 @@
 	flex-direction: column;
 	margin-bottom: 20rpx;
 	min-height: 100vh;
-
+	background-color: rgba(255, 255, 255, 0.9);
+	border-radius: 15rpx;
+	padding: 30rpx;
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.08);
+	border: 1rpx solid rgba(255, 255, 255, 0.3);
+	position: relative;
+	z-index: 1;
 }
 
 .input-box {
@@ -173,21 +180,46 @@
 }
 
 .clear-btn {
-	background-color: #ef8c87;
+	background: linear-gradient(135deg, #ff5252 0%, #ff7676 50%, #ef8c87 100%);
 	color: #fff;
 	text-align: center;
 	padding: 10rpx;
-	border-radius: 5rpx;
 	cursor: pointer;
-	margin-top: 10rpx;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
+	margin-top: 30rpx;
+	height: 70rpx;
+	border-radius: 35rpx;
+	line-height: 70rpx;
+	box-shadow: 0 4rpx 12rpx rgba(239, 140, 135, 0.3);
+	position: relative;
+	overflow: hidden;
+	transition: box-shadow 0.2s ease, filter 0.2s ease;
+	
+	&:active {
+		box-shadow: 0 2rpx 6rpx rgba(239, 140, 135, 0.2);
+		filter: brightness(0.95);
+	}
+	
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50%;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+		border-radius: 35rpx 35rpx 0 0;
+	}
 }
 
 .preview {
-	margin-top: 20rpx;
-	
+	margin-top: 30rpx;
+	background-color: rgba(255, 255, 255, 0.9);
+	border-radius: 15rpx;
+	padding: 30rpx;
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.08);
+	border: 1rpx solid rgba(255, 255, 255, 0.3);
+	position: relative;
+	z-index: 1;
 }
 
 .image-container {
@@ -196,83 +228,153 @@
 }
 
 .image-preview {
-	margin: 5rpx;
+	margin: 10rpx;
 	position: relative;
+	transition: transform 0.2s ease;
+	
+	&:active {
+		transform: scale(0.98);
+	}
 }
 
 .image {
-	width: 100px;
-	height: 100px;
-	border-radius: 5rpx;
+	width: 150rpx;
+	height: 150rpx;
+	border-radius: 10rpx;
+	object-fit: cover;
+	box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 
 .delete-btn {
 	position: absolute;
 	top: 0;
 	right: 0;
-	// background-color: rgba(255, 0, 0, 0.7);
-  border-bottom: 1px solid #000000;
-	// color: white;
-	padding: 2rpx 5rpx;
-	border-radius: 3rpx;
+	background-color: rgba(255, 255, 255, 0.9);
+	color: #ef8c87;
+	padding: 2rpx 10rpx;
+	border-radius: 20rpx;
 	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
+	font-size: 24rpx;
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
 }
 
 .upload-btn {
-	background-color: #007AFF;
+	background: linear-gradient(135deg, #4a59e5 0%, #5b6af0 50%, #7b89ff 100%);
 	color: #fff;
 	text-align: center;
 	padding: 10rpx;
-	border-radius: 5rpx;
 	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
+	height: 70rpx;
+	border-radius: 35rpx;
+	line-height: 70rpx;
+	margin-top: 30rpx;
+	box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.3);
+	position: relative;
+	overflow: hidden;
+	z-index: 1;
+	transition: box-shadow 0.2s ease, filter 0.2s ease;
+	
+	&:active {
+		box-shadow: 0 2rpx 6rpx rgba(91, 106, 240, 0.2);
+		filter: brightness(0.95);
+	}
+	
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50%;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+		border-radius: 35rpx 35rpx 0 0;
+	}
 }
-.publish-btn{
-	background-color: #6984a0;
+
+.publish-btn {
+	background: linear-gradient(135deg, #4a59e5 0%, #5b6af0 50%, #7b89ff 100%);
 	color: #fff;
 	text-align: center;
 	padding: 10rpx;
-	border-radius: 5rpx;
 	cursor: pointer;
-	height: 60rpx;
-	border-radius: 60rpx;
-	line-height: 60rpx;
-	margin-top:20rpx;
+	height: 70rpx;
+	border-radius: 35rpx;
+	line-height: 70rpx;
+	margin-top: 30rpx;
+	box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.3);
+	position: relative;
+	overflow: hidden;
+	z-index: 1;
+	transition: box-shadow 0.2s ease, filter 0.2s ease;
+	
+	&:active {
+		box-shadow: 0 2rpx 6rpx rgba(91, 106, 240, 0.2);
+		filter: brightness(0.95);
+	}
+	
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50%;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+		border-radius: 35rpx 35rpx 0 0;
+	}
 }
-.box{
 
-  .form{
-    min-height: 50vh;
+.box {
+	.form {
+		min-height: 50vh;
 
-    /deep/.u-textarea.data-v-81cd9d32 {
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        border: none;
-        width: 90vw;
-        margin: auto;
-    }
-  }
+		/deep/.u-textarea.data-v-81cd9d32 {
+			border-radius: 8rpx;
+			background-color: rgba(249, 249, 249, 0.8);
+			backdrop-filter: blur(5px);
+			-webkit-backdrop-filter: blur(5px);
+			border: none;
+			width: 80vw;
+			margin: auto;
+			padding: 10rpx;
+			text-align: left;
+		}
+		
+		/deep/ .u-textarea__field {
+			text-align: left;
+		}
+		
+		/deep/ .u-form-item__body {
+			padding: 10rpx 20rpx;
+		}
+		
+		/deep/ input {
+			background-color: rgba(249, 249, 249, 0.8);
+			backdrop-filter: blur(5px);
+			-webkit-backdrop-filter: blur(5px);
+			border-radius: 8rpx;
+			padding: 10rpx 20rpx;
+		}
+	}
 
-  .navigate-box{
-    position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 30vw;
-    height: auto;
-    image{
-      width:30rpx;
-      height: 30rpx;
-    }
-  }
+	.navigate-box {
+		position: relative;
+		margin: 0 0 20rpx 0;
+		left: 50%;
+		transform: translate(-50%,-20%);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		width: 30vw;
+		height: auto;
+		
+		image {
+			width: 30rpx;
+			height: 30rpx;
+		}
+	}
 }
 </style>
