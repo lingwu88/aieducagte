@@ -13,18 +13,18 @@
     </view>
 
     <view class="content">
-      <view class="content-title">{{ result.title }}</view>
+      <view class="content-title">搜索:{{ result.title }}</view>
       <view class="second">
-        <view class="base">基于{{ result.base }}篇参考资料</view>
-        <view class="select">
+        <!-- <view class="base">基于{{ result.base }}篇参考资料</view> -->
+        <!-- <view class="select">
           <uni-data-select
             v-model="value"
             :localdata="range"
             @change="change"
           ></uni-data-select>
-        </view>
+        </view> -->
       </view>
-      <view class="word">
+      <view :class="{'word':true,'word-finish':isFinish}">
         <mp-html :content="result.word"/>
       </view>
     </view>
@@ -77,13 +77,11 @@
 </template>
 
 <script>
-import { marked } from 'marked'
-import hljs from "highlight.js"
-import "highlight.js/scss/atom-one-dark.scss"
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 import request from '../../tools/request'
 import { regexSSE } from '../../tools/tool'
 import { getSessionId } from '../../api/classManagement'
+import { convertMarkdown } from '../../tools/markdownUtils'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
@@ -120,6 +118,7 @@ export default {
       inputText: '',
       isRecording: false,
       swtichStar:false,
+      isFinish:false
     }
   },
   onLoad(options){
@@ -135,15 +134,15 @@ export default {
     }
   },
   mounted() {
-			this.initHighLight()
-			console.log(this.initHighLight);
-			//先处理essay中的换行符
-			this.result.word = this.result.word.replace(/\\n/g, '<br>')
-			// console.log(this.mdEssay);
+			// this.initHighLight()
+			// console.log(this.initHighLight);
+			// //先处理essay中的换行符
+			// this.result.word = this.result.word.replace(/\\n/g, '<br>')
+			// // console.log(this.mdEssay);
 			
-			const word = marked(this.result.word).replace(/<pre>/g, "<pre class='hljs'>")
-			this.$set(this.result,"word",word)
-      console.log(this.result.word);
+			// const word = marked(this.result.word).replace(/<pre>/g, "<pre class='hljs'>")
+			// this.$set(this.result,"word",word)
+      // console.log(this.result.word);
 
 		},
   created() {
@@ -156,27 +155,6 @@ export default {
           delta:1
         })
       },
-    	//初始化highlight和转换md
-			initHighLight(){
-				hljs.configure({
-        	useBR: true,
-        	tabReplace: " ",
-      	});
-				marked.setOptions({
-					renderer: new marked.Renderer(),
-					gfm: true,
-					tables: true,
-					breaks: true,
-					pedantic: false,
-					highlight: function (code, lang) {
-						if (lang && hljs.getLanguage(lang)) {
-							return hljs.highlightAuto(code, { language: lang }).value;
-						} else {
-							return hljs.highlightAuto(code).value;
-						}
-					},
-				})
-			},
     change(e) {
       console.log("e:", e);
     },
@@ -222,11 +200,13 @@ export default {
     },
     generateAi(query=''){
       let text
-      if(query){
+      if(query!=''){
         text = query
+        this.result.title = query
       }
       else{
         text = this.inputText
+        this.result.title = text
       }
       console.log(this.form);
       console.log({
@@ -235,24 +215,27 @@ export default {
       });
       
       //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,this.closeSSE)
+      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,undefined,this.closeSSE)
       this.$api.classManagement.generalAi({
         ...this.form,
         query:text
       }).then(res=>{
         console.log(res);
-        
+        this.inputText = ''
       })
       .catch(err=>{
         console.log(err);
         
       })
     },
-    closeSSE(){
-      this.$api.classManagement.endSSE(this.form.userId).then(res=>{
-        console.log(res);
+    //SSE结束回调
+    closeSSE(id){
+      this.$api.classManagement.endSSE(id).then(res=>{
         console.log('关闭');
-        
+        const word = convertMarkdown(this.result.word)
+        this.$set(this.result,'word',word)
+        this.inputText = ''
+        this.isFinish = true
       })
       .catch(err=>{
         console.log(err);
@@ -261,20 +244,31 @@ export default {
     },
     //sse回调函数
     logData(res) {
+      console.log(res);
+      // console.log("返回数据类型"+typeof res);
+      
         // 假设 res 是一个字符串，包含了 SSE 消息
        const data = regexSSE(res)
+      //  console.log(data);
+       
        if(data){
         this.result.word +=data
+        // console.log(this.result.word);
+        
        }
             // this.result.word += data; // 将提取的数据添加到 result.word
     },
     async handleSend() {
       if(!this.canSend) return
       this.result.word = ''
+      this.isFinish = false
       this.getSessionId()
       this.generateAi()
     },
     getSessionId(){
+      if(this.form.conversationId!=''){
+        return 
+      }
       this.$api.classManagement.getSessionId(this.form.userId).then(res=>{
         console.log(res);
         this.form.conversationId = res.data
@@ -356,19 +350,7 @@ export default {
       else{ 
         this.$set(this,"swtichStar",false)
       }
-    },
-    sseResponse(){
-      eventSource = new EventSource(request.baseUrl+'/api/ai/general-learning-plan');
-      eventSource.onmessage = (event) => {
-        console.log("收到消息内容是:", event.data)
-      };
-  
-      eventSource.onerror = (error) => {
-          console.error("SSE 连接出错：", error);
-          eventSource.close();
-      }
     }
-    
   },
   computed: {
     canSend() {
@@ -451,6 +433,10 @@ export default {
     .word{
       width: 90vw;
       margin:0 auto;
+    }
+    .word-finish{
+      padding: 20rpx;
+      background-color: #8282821f;
     }
   }
 
