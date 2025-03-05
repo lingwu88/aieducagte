@@ -1,4 +1,5 @@
 import App from './App'
+import { initHighLight } from './tools/markdownUtils';
 
 // #ifndef VUE3
 import Vue from 'vue'
@@ -24,3 +25,6 @@ export function createApp() {
   }
 }
 // #endif
+
+//初始化高亮md设置
+initHighLight()
