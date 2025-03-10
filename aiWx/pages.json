@@ -126,6 +126,18 @@
 					"style": {
 						"navigationBarTitleText": "进度反馈"
 					}
+				},
+				{
+					"path":"learningProgress",
+					"style":{
+						"navigationBarTitleText":"学习进度"
+					}
+				},
+				{
+					"path":"learningSituation",
+					"style":{
+						"navigationBarTitleText":"学习情况"
+					}
 				}
 			]
 		},
