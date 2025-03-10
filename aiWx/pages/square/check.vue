@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import post from '../../component/square/post.vue'
+import post from '../../component/square/post.vue';
 import request from '../../tools/request';
 
 	export default {

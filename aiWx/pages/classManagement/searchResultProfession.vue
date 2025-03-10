@@ -171,17 +171,17 @@ export default{
     width: 40vw;
   }
 
-  .menu-navigator{
-    // visibility: hidden;
-    // display: none;
-    position: relative;
-    width: 40vw;
-    min-height: 100vh;
-    // background-color: #f3f3f378;
-    background-color: #e8e8e878;
-    border-radius: 0 50rpx 50rpx 0;
-    transition:opacity 0.5s ease;
-  }
+  // .menu-navigator{
+  //   // visibility: hidden;
+  //   // display: none;
+  //   position: relative;
+  //   width: 40vw;
+  //   min-height: 100vh;
+  //   // background-color: #f3f3f378;
+  //   background-color: #e8e8e878;
+  //   border-radius: 0 50rpx 50rpx 0;
+  //   transition:opacity 0.5s ease;
+  // }
   
   .control{
     top: 50%;
