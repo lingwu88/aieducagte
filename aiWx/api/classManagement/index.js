@@ -34,8 +34,35 @@ function decode(data) {
 
 //创建sse会话
 export function createSSE(url, onData, onError = null, onComplete = null) {
+  //维护的定时器id
+  let timeoutId = null
+  //五秒
+  const TIMEOUT_DURATION = 10000
+
+  // console.log(onComplete);
+  
+
+  function resetTimeout(){
+    if(timeoutId){
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(()=>{
+      console.log('超时,无数据,主动断开连接');
+      // requestTask.abort()   //终止SSE
+      onComplete(uni.getStorageSync('userId'))
+    },TIMEOUT_DURATION)
+  }
+
+  // 在 complete 回调中清理定时器
+  function handleComplete() {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (onComplete) onComplete();
+  }
+  
+
   function onChunkReceived(res) {
     onData(decode(res.data))
+    resetTimeout()
   }
 
   function onHeadersReceived(res) {
@@ -62,6 +89,10 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
       console.error('SSE failed:', error)
     },
     complete: () => { // 完成接收
+      console.log('完成接收');
+
+      handleComplete()
+
       if (onComplete) {
         onComplete()
       }

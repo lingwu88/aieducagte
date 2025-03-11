@@ -19,14 +19,15 @@
 </template>
 
 <script>
-import menuNavigate from './components/menuNavigate.vue';
+// import menuNavigate from './components/menuNavigate.vue';
 import aiConnection from './components/aiConnection.vue';
 import request from '../../tools/request';
 import { regexSSE } from '../../tools/tool'
+import { convertMarkdown } from '../../tools/markdownUtils';
 // import AiConnection from './components/aiConnection.vue';
 export default{
   components:{
-    menuNavigate,
+    // menuNavigate,
     aiConnection
   },
   data() {
@@ -59,7 +60,7 @@ export default{
       
       
       //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${form.userId}`,this.logData,this.closeSSE)
+      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${form.userId}`,this.logData,undefined,this.closeSSE)
       this.$api.classManagement.learnSchedule(form).then(res=>{
         console.log(res);
         
@@ -70,10 +71,11 @@ export default{
       })
     },
     closeSSE(){
-      this.$api.classManagement.endSSE(this.form.userId).then(res=>{
+      this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
         console.log(res);
         console.log('关闭');
-        
+        const word = convertMarkdown(this.result)
+        this.$set(this,'result',word)
       })
       .catch(err=>{
         console.log(err);
@@ -83,6 +85,8 @@ export default{
     //sse回调函数
     logData(res) {
         // 假设 res 是一个字符串，包含了 SSE 消息
+        console.log(res);
+        
        const data = regexSSE(res)
        if(data){
         this.result +=data
@@ -167,17 +171,17 @@ export default{
     width: 40vw;
   }
 
-  .menu-navigator{
-    // visibility: hidden;
-    // display: none;
-    position: relative;
-    width: 40vw;
-    min-height: 100vh;
-    // background-color: #f3f3f378;
-    background-color: #e8e8e878;
-    border-radius: 0 50rpx 50rpx 0;
-    transition:opacity 0.5s ease;
-  }
+  // .menu-navigator{
+  //   // visibility: hidden;
+  //   // display: none;
+  //   position: relative;
+  //   width: 40vw;
+  //   min-height: 100vh;
+  //   // background-color: #f3f3f378;
+  //   background-color: #e8e8e878;
+  //   border-radius: 0 50rpx 50rpx 0;
+  //   transition:opacity 0.5s ease;
+  // }
   
   .control{
     top: 50%;
