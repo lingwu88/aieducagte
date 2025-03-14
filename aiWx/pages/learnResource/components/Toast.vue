@@ -134,7 +134,7 @@ export default {
 							this.animateDismiss(newToast);
 							setTimeout(() => {
 								this.toastQueue = this.toastQueue.filter((t) => t.id !== newToast.id);
-							}, 500); // 固定 500ms 渐隐动画
+							}, 600); // 固定 500ms 渐隐动画
 						}, mergedParams.StayTime);
 						
 					})
