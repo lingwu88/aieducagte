@@ -60,6 +60,7 @@ export default {
 	},
 	methods: {
 		show(context, ...args) {
+			
 			if (typeof context !== 'string') {
 				throw new Error('Toast context must be a string');
 			}
@@ -124,6 +125,7 @@ export default {
 								adjustedTop = newToast.top + (0 - rect.top) + topMargin;
 							}
 							newToast.top = adjustedTop;
+							
 						}
 						// 调整完毕后显示 toast
 						newToast.opacity = 1;
@@ -134,6 +136,7 @@ export default {
 								this.toastQueue = this.toastQueue.filter((t) => t.id !== newToast.id);
 							}, 500); // 固定 500ms 渐隐动画
 						}, mergedParams.StayTime);
+						
 					})
 					.exec();
 			});
@@ -178,7 +181,7 @@ export default {
 	top: 0;
 	left: 0;
 	width: 100%;
-	z-index: 9999;
+	z-index: 9999999999999;
 	pointer-events: none;
 }
 .toast {

@@ -118,7 +118,20 @@ export default {
 			}));
 		},
 		navigateTo(url) {
-			uni.navigateTo({ url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}` });
+			uni.navigateTo({
+				url: `/pages/learnResource/webview?url=${encodeURIComponent(url)}`,
+				events: {
+					// 监听 webview 返回的数据
+					returnData: (data) => {
+						console.log('从 webview 返回的数据:', data);
+						if (data.status == 'Timeout') {
+							this.showToast('当前页面响应超时，自动退出！', { heightPercent: 0.6 }, { direction: 'right' }, { StayTime: 2000 });
+						} else if(data.status == 'Error'){
+							this.showToast('当前页面响应错误，自动退出！', { heightPercent: 0.6 }, { direction: 'right' }, { StayTime: 2000 });
+						}
+					}
+				}
+			});
 		},
 		handleContainerTap(e) {
 			const query = wx.createSelectorQuery();
@@ -142,9 +155,9 @@ export default {
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err) => {
-					let info='[error] 远程JSON加载失败，使用静态数据';
+					let info = '[error] 远程JSON加载失败，使用静态数据';
 					console.log(info, err);
-					this.showToast(this.DEBUG?`${info}\n[BEGUG] ${err}`:info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+					this.showToast(this.DEBUG ? `${info}\n[BEGUG] ${err}` : info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					this.loadStaticData();
 				});
 		},
@@ -186,7 +199,7 @@ export default {
 					title: '世界地理概览',
 					preview: '快速游览世界地理，涵盖自然地貌、气候类型及人文特色。这份概览提供了对地球多样性的深刻理解，从高峰到深海，一览无余。',
 					img: '',
-					url: 'https://www.acfun.cn/v/ac22306887',
+					url: 'https://www.youtube.com/watch?v=DasQ-GIkEeQ&feature=youtu.be',
 					category: '人文地理'
 				},
 				{
