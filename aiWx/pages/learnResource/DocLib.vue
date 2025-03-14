@@ -78,6 +78,7 @@ export default {
 	components: { Toast },
 	data() {
 		return {
+			DEBUG: true,
 			categories: ['全部'],
 			currentCategory: '全部',
 			allResources: [],
@@ -141,8 +142,9 @@ export default {
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err) => {
-					console.log('[error] 远程JSON加载失败，使用静态数据:', err);
-					this.showToast('数据请求失败，现在用的是静态数据', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+					let info='[error] 远程JSON加载失败，使用静态数据';
+					console.log(info, err);
+					this.showToast(this.DEBUG?`${info}\n[BEGUG] ${err}`:info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					this.loadStaticData();
 				});
 		},
@@ -155,7 +157,7 @@ export default {
 					timeout: 5000,
 					success: (res) => {
 						if (res.data && res.data.doc) resolve(res.data.doc);
-						else reject(new Error('数据格式错误'));
+						else reject(`${jsonUrl}`);
 					},
 					fail: (err) => reject(err)
 				});
