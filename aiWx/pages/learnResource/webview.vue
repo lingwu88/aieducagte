@@ -1,4 +1,4 @@
-<!-- version:1.0.0.1 -->
+<!-- version:1.0.0.2 -->
 <template>
 	<view class="webview-container">
 		<web-view :src="url" class="webview" @error="handleWebviewError" @load="handleWebviewLoad"></web-view>
@@ -10,7 +10,8 @@ export default {
 		return {
 			url: '',
 			pageLoaded: false,
-			pageError: false
+			pageError: false,
+			isUsingVPN: false
 		};
 	},
 	//传入函数
@@ -32,24 +33,93 @@ export default {
 				delta: 1
 			});
 		},
-		envTest() {
-			setTimeout(() => {
-				const eventChannel = this.getOpenerEventChannel();
-				if (this.pageError) {
-					this.returnStatus('Error');
-				} else if (!this.pageLoaded) {
-					this.returnStatus('Timeout');
-				}
-			}, 3000); // 3秒超时
-		},
-		returnStatus(status) {
+		envTest(interval = 100, timeout = 4500) {
 			const eventChannel = this.getOpenerEventChannel();
+
+			const startTime = Date.now();
+
+			const poll = async () => {
+				if (!this.checkInWebView()) {
+					return;
+				}
+				if (this.pageError == true) {
+					setTimeout(() => {
+						this.goBack();
+						this.returnStatus('ERROR');
+					}, 1000);
+					return;
+				}
+
+				if (Date.now() - startTime >= timeout && this.pageLoaded == false) {
+					let Vresult = await this.checkVPN();
+					setTimeout(() => {
+						let Status = 'TIMEOUT';
+						if (this.isUsingVPN) {
+							Status += 'INVPN';
+						}
+						this.goBack();
+						this.returnStatus(Status, Vresult);
+					}, 1000);
+					return;
+				}
+
+				setTimeout(poll, interval);
+			};
+
+			poll();
+		},
+		returnStatus(status, ...args) {
+			const eventChannel = this.getOpenerEventChannel();
+
+			if (typeof status !== 'string') {
+				throw new Error('status must be a string');
+			}
+
+			if (this.checkInWebView()) {
+				eventChannel.emit('returnData', { status: status, ...args });
+			}
+		},
+		checkInWebView() {
 			const pages = getCurrentPages();
 			const currentPage = pages[pages.length - 1]; // 当前页面
 			if (currentPage.options.url) {
-				this.goBack();
-				eventChannel.emit('returnData', { status: status });
+				return true;
+			} else {
+				return false;
 			}
+		},
+		checkVPN() {
+			// 使用 ip-api.com 获取 IP 信息
+			return new Promise((resolve, reject) => {
+				uni.request({
+					url: 'http://ip-api.com/json/?fields=status,message,country,isp,proxy',
+					success: (res) => {
+						console.log('IP 信息:', res.data);
+						if (res.data.status === 'success') {
+							// 检查 proxy 字段（包括 VPN 和代理）
+							this.isUsingVPN = res.data.proxy;
+							if (this.isUsingVPN) {
+								console.log('检测到用户使用 VPN');
+								this.returnStatus('VPNDetected');
+							} else {
+								console.log('未检测到 VPN');
+							}
+							resolve(res.data);
+						} else {
+							this.isUsingVPN = false;
+							const error = new Error(`IP查询失败: ${res.data.message}`);
+							//console.error('获取 IP 信息失败:', res.data.message);
+							resolve(error);
+						}
+					},
+					fail: (err) => {
+						const error = new Error(`请求失败: ${err.errMsg}`);
+						this.isUsingVPN = false;
+						//console.error('请求 IP 信息失败:', err);
+						resolve(error);
+					}
+				});
+			});
 		},
 		handleWebviewError(event) {
 			this.pageError = true;
@@ -80,20 +150,5 @@ export default {
 .webview {
 	width: 100%;
 	height: 100%;
-}
-
-.back-btn {
-	position: fixed;
-	bottom: 20rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 200rpx;
-	background-color: #007aff;
-	color: #fff;
-	font-size: 32rpx;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	z-index: 999999;
-	/* 确保在web-view之上 */
 }
 </style>

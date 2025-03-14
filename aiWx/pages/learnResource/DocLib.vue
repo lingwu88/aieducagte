@@ -123,10 +123,16 @@ export default {
 				events: {
 					// 监听 webview 返回的数据
 					returnData: (data) => {
-						console.log('从 webview 返回的数据:', data);
-						if (data.status == 'Timeout') {
-							this.showToast('当前页面响应超时，自动退出！', { heightPercent: 0.6 }, { direction: 'right' }, { StayTime: 2000 });
-						} else if(data.status == 'Error'){
+						if (data.status == 'TIMEOUT') {
+							this.showToast('当前页面响应超时，自动退出！或许你可以尝试使用VPN?', { heightPercent: 0.6 }, { direction: 'right' }, { StayTime: 4000 });
+						} else if (data.status == 'TIMEOUTINVPN') {
+							this.showToast(
+								`当前页面响应超时!\n检测到当前VPN节点为 \n  ${data[0].country}!\n或许可以切换节点或者关闭VPN后再重试！`,
+								{ heightPercent: 0.6 },
+								{ direction: 'right' },
+								{ StayTime: 12000 }
+							);
+						} else if (data.status == 'ERROR') {
 							this.showToast('当前页面响应错误，自动退出！', { heightPercent: 0.6 }, { direction: 'right' }, { StayTime: 2000 });
 						}
 					}
@@ -170,9 +176,9 @@ export default {
 					timeout: 5000,
 					success: (res) => {
 						if (res.data && res.data.doc) resolve(res.data.doc);
-						else reject(`${jsonUrl}`);
+						else reject(`code:success ${jsonUrl}`);
 					},
-					fail: (err) => reject(err)
+					fail: (err) => reject(`code:fail ${jsonUrl}`)
 				});
 			});
 		},
