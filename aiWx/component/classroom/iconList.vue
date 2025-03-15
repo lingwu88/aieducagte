@@ -28,8 +28,8 @@
           },
           {
             img:"/static/classroom/learningSuggestion.png",
-            content:"学习建议",
-            path:"/pages/learnSuggestion/index"
+            content:"学能图谱",
+            path:"/pages/learnDashboard/learnDashboard"
           },
           {
             img:"/static/classroom/progessFeedback.png",
