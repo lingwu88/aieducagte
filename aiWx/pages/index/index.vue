@@ -2,14 +2,28 @@
 	<view class="container content">
 		<text class="header" selectable="false" >学习自足，答疑解惑</text>			
 		<iconList class="list" ></iconList>
-		<u-search placeholder="请输入关键词进行查找" v-model="keyword"></u-search>
+		<u-search 
+			placeholder="请输入关键词进行查找" 
+			v-model="keyword"
+			@search="handleSearch"
+			@custom="handleSearch"
+		></u-search>
 		<u-list 
 			width="90vw"
 			@scrolltolower="handleLoad"
 			>
-      <u-list-item v-for="(item, index) in list" :key="index">
-        <essay @click="handleTo(item)" :img="item.img" :title="item.title"></essay>
-      </u-list-item>
+			<view v-if="renderList.length!=0">
+				<u-list-item v-for="(item, index) in renderList" :key="id">
+					<essay @click="handleTo(item)" :img="item.img" :title="item.title"></essay>
+				</u-list-item>
+			</view>
+			<view v-else>
+				<view>
+					暂无资源~
+				</view>
+					
+			</view>
+				
     </u-list>
 		
 	</view>
@@ -40,41 +54,7 @@ import essay from '../../component/classroom/essay.vue';
       ],
 				list:[
 				],
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},					{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// 	{
-				// 		title:"2024秋冬季学习宝典|掌握规则,轻松学习",
-				// 		img:"/static/classroom/eassyImg1.png",
-				// 		url:""
-				// 	},
-				// ],
+				renderList:[],
 				keyword:""
 			}
 		},
@@ -98,6 +78,7 @@ import essay from '../../component/classroom/essay.vue';
 					title:'加载中'
 				})
 				this.getInfoData(page,pageSize).then(res=>{
+					this.renderList.push(...res)
 					this.list.push(...res)
 					console.log(res);
 					
@@ -128,6 +109,11 @@ import essay from '../../component/classroom/essay.vue';
 					return
 				}
 				this.getInfo(this.page,this.pageSize)
+			},
+			handleSearch(){
+				const arr = this.list.filter(item=>item.title.includes(this.keyword))
+				console.log(arr);
+				this.$set(this,'renderList',arr)
 			}
 		}
 	}

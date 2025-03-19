@@ -52,7 +52,7 @@ export default {
 }
 .login-style{
   box-shadow: 1px 2px 2px 0px #404696;
-  color:#616060;
+  color:#f7f7f7;
 }
 .noLogin-style{
   color:#ffffff ;
