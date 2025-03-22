@@ -2,9 +2,6 @@
   <view class="content-preference">
     <!-- 顶部标题区域 -->
     <view class="header">
-      <view class="back-button" @tap="goBack">
-        <text class="back-icon">←</text>
-      </view>
       <view class="title-container">
         <text class="title">内容偏好</text>
         <text class="subtitle">了解您喜欢的学习内容类型</text>
@@ -142,10 +139,6 @@ export default {
     this.fetchPreferenceData();
   },
   methods: {
-    goBack() {
-      uni.navigateBack();
-    },
-    
     getCurrentDate() {
       const now = new Date();
       const year = now.getFullYear();
@@ -259,22 +252,6 @@ export default {
   box-shadow: 0 4rpx 20rpx rgba(91, 106, 240, 0.3);
   display: flex;
   align-items: center;
-}
-
-.back-button {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  margin-right: 20rpx;
-}
-
-.back-icon {
-  font-size: 36rpx;
-  color: #fff;
 }
 
 .title-container {
