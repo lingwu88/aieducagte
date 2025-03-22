@@ -26,7 +26,8 @@
         <view class="report-content">
           <!-- 学习领域与兴趣方向 -->
           <view class="section">
-            <view class="section-header">
+            <view class="section-header" style="background: linear-gradient(to right, rgba(91, 106, 240, 0.1), rgba(123, 137, 255, 0.05));">
+              <view class="header-left-border" style="background: linear-gradient(to bottom, #5b6af0, #7b89ff);"></view>
               <text class="section-title">学习领域与兴趣方向</text>
             </view>
             <view class="section-content">
@@ -43,7 +44,8 @@
 
           <!-- 学习习惯与效率提升 -->
           <view class="section">
-            <view class="section-header">
+            <view class="section-header" style="background: linear-gradient(to right, rgba(255, 107, 107, 0.1), rgba(255, 159, 159, 0.05));">
+              <view class="header-left-border" style="background: linear-gradient(to bottom, #ff6b6b, #ff9f9f);"></view>
               <text class="section-title">学习习惯与效率提升</text>
             </view>
             <view class="section-content">
@@ -60,7 +62,8 @@
 
           <!-- 薄弱点与改进建议 -->
           <view class="section">
-            <view class="section-header">
+            <view class="section-header" style="background: linear-gradient(to right, rgba(78, 205, 196, 0.1), rgba(126, 232, 223, 0.05));">
+              <view class="header-left-border" style="background: linear-gradient(to bottom, #4ecdc4, #7ee8df);"></view>
               <text class="section-title">薄弱点与改进建议</text>
             </view>
             <view class="section-content">
@@ -77,7 +80,8 @@
 
           <!-- 目标导向与路径规划 -->
           <view class="section">
-            <view class="section-header">
+            <view class="section-header" style="background: linear-gradient(to right, rgba(255, 209, 102, 0.1), rgba(255, 229, 157, 0.05));">
+              <view class="header-left-border" style="background: linear-gradient(to bottom, #ffd166, #ffe59d);"></view>
               <text class="section-title">目标导向与路径规划</text>
             </view>
             <view class="section-content">
@@ -94,7 +98,8 @@
 
           <!-- 综合发展建议 -->
           <view class="section">
-            <view class="section-header">
+            <view class="section-header" style="background: linear-gradient(to right, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.05));">
+              <view class="header-left-border" style="background: linear-gradient(to bottom, #6c5ce7, #a29bfe);"></view>
               <text class="section-title">综合发展建议</text>
             </view>
             <view class="section-content">
@@ -308,13 +313,37 @@ export default {
 .report-header {
   padding: 30rpx;
   border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.report-header:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 30rpx;
+  right: 30rpx;
+  height: 2rpx;
+  background: linear-gradient(to right, #5b6af0, #7b89ff, transparent);
 }
 
 .report-title {
   font-size: 36rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 10rpx;
+  margin-bottom: 16rpx;
+  position: relative;
+  display: inline-block;
+}
+
+.report-title:after {
+  content: "";
+  position: absolute;
+  bottom: -8rpx;
+  left: 0;
+  width: 60rpx;
+  height: 4rpx;
+  background: linear-gradient(to right, #5b6af0, #7b89ff);
+  border-radius: 2rpx;
 }
 
 .report-date {
@@ -328,29 +357,43 @@ export default {
 
 .section {
   margin-bottom: 40rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
+  background-color: #fff;
 }
 
 .section-header {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  padding: 24rpx 20rpx;
+  position: relative;
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.header-left-border {
+  width: 8rpx;
+  height: 36rpx;
+  border-radius: 4rpx;
+  margin-right: 16rpx;
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
-  margin-left: 16rpx;
 }
 
 .section-content {
-  padding-left: 16rpx;
-  padding-right: 30rpx;
+  padding: 24rpx 30rpx;
+  background-color: #fff;
+  border-radius: 0 0 12rpx 12rpx;
 }
 
 .point {
   display: flex;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
+  position: relative;
 }
 
 .point-bullet {
@@ -361,6 +404,7 @@ export default {
   margin-top: 14rpx;
   margin-right: 16rpx;
   flex-shrink: 0;
+  box-shadow: 0 0 6rpx rgba(91, 106, 240, 0.4);
 }
 
 .point-text {
