@@ -29,7 +29,7 @@
           {
             img:"/static/classroom/learningSuggestion.png",
             content:"学能图谱",
-            path:"/pages/learnDashboard/learnDashboard"
+            path:"/pages/learnDashboard/index"
           },
           {
             img:"/static/classroom/progessFeedback.png",

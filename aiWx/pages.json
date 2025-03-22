@@ -138,9 +138,9 @@
 		{
 			"root": "pages/learnDashboard",
 			"pages": [{
-					"path": "learnDashboard",
+					"path": "index",
 					"style": {
-						"navigationBarTitleText": "学习图谱"
+						"navigationBarTitleText": "学能图谱"
 					}
 				},
 				{
