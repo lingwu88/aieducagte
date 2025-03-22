@@ -4,7 +4,7 @@
     <view class="header">
       <view class="title-container">
         <text class="title">学习分析</text>
-        <text class="subtitle">基于您的聊天记录生成的学习数据</text>
+        <text class="subtitle">基于您的使用智趣学坊的学习数据</text>
       </view>
       
       <!-- 添加装饰元素 -->
