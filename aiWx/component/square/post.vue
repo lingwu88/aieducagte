@@ -11,6 +11,10 @@
       </view>
       <view class="header-title" selectable="false" space="false" decode="false">{{ title }}</view>
       <view class="content">{{ content }}</view>
+      <view class="tag-list">
+        <view class="tag-item" v-for="(item,index) in tagList" :key="item">#{{ item }}</view>
+      </view>
+      <text class="content-type">{{ contentType }}</text>
       <view class="footer">
         <icon :img="showStar?'/static/square/star-fill.png':'/static/square/star.png'" @click="handleStar" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
@@ -34,6 +38,11 @@ export default{
     likeCount:{
       type:Number,
       required:true
+    },
+    tagList:{
+      type:Array,
+      required:false,
+      default:[]
     },
     commentCount:{
       type:Number,
@@ -69,6 +78,10 @@ export default{
     },
     showStar:{
       type:Boolean,
+      required:true
+    },
+    contentType:{
+      type:String,
       required:true
     }
   },
@@ -142,11 +155,33 @@ export default{
     padding: 30rpx 20rpx 0 60rpx;
     font-size: 30rpx;
   }
+  .tag{
+    &-list{
+      width: 95%;
+      min-height: 40rpx;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      margin:30rpx 0 20rpx 0;
+    }
+    &-item{
+      margin:0 10rpx;
+      color: #4f79da;
+    }
+  }
+  .content-type{
+    font-size: 28rpx;
+    padding: 10rpx;
+    color: #ffffff;
+    margin-left: 10rpx;
+    background-color: #7a6b9e;
+  }
+  }
   .footer{
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     margin-right: 30rpx;
   }
-}
 </style>

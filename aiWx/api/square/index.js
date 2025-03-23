@@ -1,9 +1,9 @@
 import request from "../../tools/request";
 
 //获取文章列表
-export function getArticleList({articleId,limit,userId}){
+export function getArticleList({articleId,limit,userId,orderMode,type=0}){
   return request.get(
-    '/api/square/getArticleList?limit='+limit+'&userId='+userId+'&articleId='+articleId
+    '/api/square/getArticleList?limit='+limit+'&userId='+userId+'&articleId='+articleId+'&orderMode='+orderMode+"&type="+type
   )
 }
 

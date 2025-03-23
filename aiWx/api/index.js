@@ -17,9 +17,11 @@ import * as personal from "./personal"
 import * as square from "./square"
 import * as learnResource from './learnResource'
 import * as classManagement from './classManagement'
+import * as selfStudy from './selfStudy'
 export default{
   personal,
   square,
   learnResource,
-  classManagement
+  classManagement,
+  selfStudy
 }

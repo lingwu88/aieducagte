@@ -1,6 +1,6 @@
 <template>
 	<view class="container main">
-    <myHeader :isLogin="isLogin" :img="img" :name="userName"></myHeader>
+    <myHeader class="header" :isLogin="isLogin" :img="img" :name="userName"></myHeader>
 		<list></list>
 		<view class="btn" @click="logout" v-if="isLogin">登出</view>
 	</view>
@@ -28,12 +28,13 @@ import request from '../../tools/request';
 			this.img = request.baseUrl+'/avatars/defaultAvatar.jpg'
 		},
 		onShow(){
+			//有id才请求
 			if(uni.getStorageSync('userId')){
 				this.userId = uni.getStorageSync('userId')
 				this.isLogin = true
+				this.getInfo()	
+				this.getAvatar()
 			}
-			this.getInfo()	
-			this.getAvatar()
 		},
 		methods: {
 			getInfo(){
@@ -83,6 +84,10 @@ import request from '../../tools/request';
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
+
+	.header{
+		margin-top: 30rpx;
+	}
 }
 .btn{
 	position:sticky;

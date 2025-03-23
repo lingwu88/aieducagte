@@ -1,10 +1,29 @@
 <template>
   <view class="time">
-    <view style="width:750rpx; height:550rpx">
-      <l-echart ref="chartRef" @finished="init"></l-echart>
+    <view class="header">
+        <u-tabs
+        :scrollable="false"
+        :list="list4"
+        lineWidth="30"
+        lineColor="#f56c6c"
+        :activeStyle="{
+            color: '#303133',
+            fontWeight: 'bold',
+            transform: 'scale(1.05)'
+        }"
+        :inactiveStyle="{
+            color: '#606266',
+            transform: 'scale(1)'
+        }"
+        itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
+        >
+        </u-tabs>
     </view>
     <view>
-      <l-echart ref="chartRef2" @finished="init"></l-echart>
+      <l-echart ref="chartRef" @finished="setChart"></l-echart>
+    </view>
+    <view>
+      <l-echart ref="chartRef2" @finished="setChart2"></l-echart>
     </view>
       
   </view>
@@ -15,6 +34,13 @@ import * as echarts from 'echarts'
 export default {
     data() {
         return {
+            list4: [
+                {
+                    name: '每天'
+                }, 
+                {
+                    name: '近三日',
+                }],
             // option: {
             //     tooltip: {
             //         trigger: 'axis',
@@ -98,82 +124,82 @@ export default {
             //         }
             //     ]
             // },
-            option1:{
-                tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                type: 'shadow'
-                }
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            xAxis: [
-                {
-                type: 'category',
-                data: ['0时','6时','12时','18时', '24时'],
-                splitNumber:5,
-                boundaryGap:true,
-                show: true, // 是否显示X轴刻度
-                // alignWithLabel: true // 刻度是否与标签对齐
-                }
-            ],
-            yAxis: [
-                {
-                    type: 'value',
-                    max:2,
-                    min:0,
-                    axisLabel:{
-                        formatter:'{value}h'
-                    }
-                }
-            ],
-            series: [
-                {
-                    name: '在线时间',
-                    type: 'bar',
-                    barWidth: '28%',
-                    itemStyle:{
-                        // borderColor:"#000000",
-                        borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
-                        // borderRadius: 15,
-                        // borderType:'dashed'
-                    },
-                    data: ['1.6', '2', '0', '1', '2','0.5','1','0.3','0.3']
-                },
-                //i+1[i=0,3,6,9,...]
-                {
-                    name: '在线时间',
-                    type: 'bar',
-                    barWidth: '28%',
-                    stack:"i+1",
-                    itemStyle:{
-                        // borderColor:"#000000",
-                        borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
-                        // borderRadius: 15,
-                        // borderType:'dashed'
-                    },
-                    data: ['1.0', '1.5', '3', '2', '4','2.5','3.1','1.8','2.0']
-                },
-                //i+2
-                {
-                    name: '在线时间',
-                    type: 'bar',
-                    barWidth: '28%',
-                    stack:"i+2",
-                    itemStyle:{
-                        // borderColor:"#000000",
-                        borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
-                        // borderRadius: 15,
-                        // borderType:'dashed'
-                    },
-                    data: ['1', '0.5', '1.7', '0', '1','1.5','0.25','1.34','1.56']
-                }
-            ]
-            },
+            // option1:{
+            //     tooltip: {
+            //     trigger: 'axis',
+            //     axisPointer: {
+            //     type: 'shadow'
+            //     }
+            // },
+            // grid: {
+            //     left: '3%',
+            //     right: '4%',
+            //     bottom: '3%',
+            //     containLabel: true
+            // },
+            // xAxis: [
+            //     {
+            //     type: 'category',
+            //     data: ['0时','6时','12时','18时', '24时'],
+            //     splitNumber:5,
+            //     boundaryGap:true,
+            //     show: true, // 是否显示X轴刻度
+            //     // alignWithLabel: true // 刻度是否与标签对齐
+            //     }
+            // ],
+            // yAxis: [
+            //     {
+            //         type: 'value',
+            //         max:2,
+            //         min:0,
+            //         axisLabel:{
+            //             formatter:'{value}h'
+            //         }
+            //     }
+            // ],
+            // series: [
+            //     {
+            //         name: '在线时间',
+            //         type: 'bar',
+            //         barWidth: '28%',
+            //         itemStyle:{
+            //             // borderColor:"#000000",
+            //             borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
+            //             // borderRadius: 15,
+            //             // borderType:'dashed'
+            //         },
+            //         data: ['1.6', '2', '0', '1', '2','0.5','1','0.3','0.3']
+            //     },
+            //     //i+1[i=0,3,6,9,...]
+            //     {
+            //         name: '在线时间',
+            //         type: 'bar',
+            //         barWidth: '28%',
+            //         stack:"i+1",
+            //         itemStyle:{
+            //             // borderColor:"#000000",
+            //             borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
+            //             // borderRadius: 15,
+            //             // borderType:'dashed'
+            //         },
+            //         data: ['1.0', '1.5', '3', '2', '4','2.5','3.1','1.8','2.0']
+            //     },
+            //     //i+2
+            //     {
+            //         name: '在线时间',
+            //         type: 'bar',
+            //         barWidth: '28%',
+            //         stack:"i+2",
+            //         itemStyle:{
+            //             // borderColor:"#000000",
+            //             borderRadius: [25, 25, 0, 0] //（顺时针左上，右上，右下，左下）
+            //             // borderRadius: 15,
+            //             // borderType:'dashed'
+            //         },
+            //         data: ['1', '0.5', '1.7', '0', '1','1.5','0.25','1.34','1.56']
+            //     }
+            // ]
+            // },
             option2:{
                 title: {
                     text: 'World Population'
@@ -227,6 +253,102 @@ export default {
     },
     // 组件能被调用必须是组件的节点已经被渲染到页面上
     methods: {
+        async setChart(customOption) {
+            // chart 图表实例不能存在data里
+           const chart = await this.$refs.chartRef.init(echarts);
+           let defaultoption={
+                    // title: {
+                    //     text: 'Basic Radar Chart'
+                    // },
+                    legend: {
+                        data: ['Allocated Budget']
+                    },
+                    radar: {
+                        // shape: 'circle',
+                        indicator: [
+                        { name: '专业度', max: 6500 },
+                        { name: '交流活跃度', max: 16000 },
+                        { name: '复习积极性', max: 30000 },
+                        { name: '拓展度', max: 38000 },
+                        { name: '多样性', max: 52000 },
+                        ]
+                    },
+                    series: [
+                        {
+                        name: 'Budget',
+                        type: 'radar',
+                        data: [
+                            {
+                            value: [4200, 3000, 20000, 35000, 50000, 18000],
+                            // name: 'Allocated Budget'
+                            }
+                        ]
+                        }
+                    ]
+                }
+           let finalOption = {...defaultoption,...customOption}
+            chart.setOption(finalOption)
+            // chart.setOption({
+            //   series:[
+            //     {
+            //       data:[{value:66,name:'交互问答时长'},{value:22,name:'查阅资料时长'},{value:12,name:"创作文章时长"}]
+            //     }
+            //   ]
+            // })
+            // chart2.setOption(this.option2)
+        },
+        async setChart2(customOption){
+            const chart = await this.$refs.chartRef2.init(echarts);
+            let defaultoption = {
+                    legend: {
+                        top:'bottom',
+                    },
+                    series: [
+                        {
+                            label:{
+                                show:false
+                            },
+                            labelLine:{
+                                show:false
+                            },
+                            name: 'Nightingale Chart',
+                            type: 'pie',
+                            center: ['50%', '50%'],
+                            roseType: 'radius',
+                            itemStyle: {
+                                borderRadius: 8
+                            },
+                            data: [
+                                { value: 40, name: '专业度' },
+                                { value: 38, name: '多样性' },
+                                { value: 32, name: '拓展度' },
+                                { value: 30, name: '复习积极性' },
+                                { value: 28, name: '交流活跃度' },
+                            ],
+                            emphasis: {
+                                itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+           let finalOption = {...defaultoption,...customOption}
+            chart.setOption(finalOption)
+           const data = this.$refs.chartRef2.resize({width:400,height:300})
+        //    console.log(data);
+           
+            // chart.setOption({
+            //   series:[
+            //     {
+            //       data:[{value:66,name:'交互问答时长'},{value:22,name:'查阅资料时长'},{value:12,name:"创作文章时长"}]
+            //     }
+            //   ]
+            // })
+            // chart2.setOption(this.option2)
+        },
         async init() {
             // chart 图表实例不能存在data里
             const chart = await this.$refs.chartRef.init(echarts);
@@ -241,5 +363,8 @@ export default {
 <style scoped lang="scss">
 .content{
     border: #000000;
+}
+.header{
+    margin:0 0 20rpx 0;
 }
 </style>
