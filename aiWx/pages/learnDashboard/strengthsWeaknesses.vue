@@ -6,10 +6,16 @@
       <text class="subtitle">了解您的学习特点，优化学习策略。</text>
     </view>
 
+    <!-- 加载提示 -->
+    <view v-if="loading" class="loading">
+      <view class="loading-spinner"></view>
+      <text>正在为您加载分析结果...</text>
+    </view>
+
     <!-- 内容区域 -->
-    <view class="content">
+    <view class="content" v-else>
       <!-- 优势部分 -->
-      <view class="section">
+      <view class="section" v-if="strengths.length > 0">
         <text class="section-title">优势</text>
         <view
           v-for="(item, index) in strengths"
@@ -23,7 +29,7 @@
           </view>
           <view class="card-content" v-if="item.expanded">
             <text class="card-description">{{ item.description }}</text>
-            <view class="suggestions">
+            <view class="suggestions" v-if="item.suggestions.length > 0">
               <text class="suggestion-title">建议：</text>
               <text
                 v-for="(suggestion, sIndex) in item.suggestions"
@@ -38,7 +44,7 @@
       </view>
 
       <!-- 劣势部分 -->
-      <view class="section">
+      <view class="section" v-if="weaknesses.length > 0">
         <text class="section-title">劣势</text>
         <view
           v-for="(item, index) in weaknesses"
@@ -52,7 +58,7 @@
           </view>
           <view class="card-content" v-if="item.expanded">
             <text class="card-description">{{ item.description }}</text>
-            <view class="suggestions">
+            <view class="suggestions" v-if="item.suggestions.length > 0">
               <text class="suggestion-title">建议：</text>
               <text
                 v-for="(suggestion, sIndex) in item.suggestions"
@@ -80,118 +86,211 @@ export default {
     return {
       strengths: [],
       weaknesses: [],
-      currentDate: ''
+      currentDate: '',
+      loading: true
     };
   },
   onLoad() {
-    // 设置当前日期
     const date = new Date();
     this.currentDate = `${date.getFullYear()}-${(date.getMonth() + 1)
       .toString()
       .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-
-    // 初始化静态数据（未来可替换为 API 调用）
-    this.strengths = [
-      {
-        title: '跨学科优势',
-        description:
-          '您目前的专业是“机械”，但学习领域涉及“计算机科学”、“Rust”等编程相关内容。这种跨学科背景为您提供了独特的竞争力，尤其是在工业4.0、智能制造、机器人等领域，这些行业需要既懂机械又懂编程的复合型人才。',
-        suggestions: [
-          '在考研复习中，可以结合机械与计算机的知识点（如嵌入式系统、自动化控制），展现您对交叉学科的理解。'
-        ],
-        expanded: false
-      },
-      {
-        title: '扎实的数学基础',
-        description:
-          '您提到的学习领域包括“概率论”和“高等数学”，这是计算机科学（尤其是人工智能、机器学习方向）的重要基础。扎实的数学能力将帮助您更轻松地理解算法原理和优化方法。',
-        suggestions: [
-          '针对考研中的数学部分，您可以利用已有的知识体系进行强化训练，特别是线性代数和概率统计相关的题目。'
-        ],
-        expanded: false
-      },
-      {
-        title: '明确的目标驱动',
-        description:
-          '您已经明确了目标院校（广东工业大学计算机专业）和目标（考研）。这种清晰的方向感有助于制定长期计划并保持动力。',
-        suggestions: [
-          '将大目标拆解为阶段性小目标，例如每月完成一个核心科目的复习，并定期评估进度。'
-        ],
-        expanded: false
-      },
-      {
-        title: '新兴技术兴趣（Rust语言）',
-        description:
-          'Rust作为一种高效且安全的编程语言，在系统开发、区块链、嵌入式等领域有广泛应用。您选择学习Rust表明您对前沿技术感兴趣，这不仅有助于提升个人技能，还可能成为未来求职或研究的亮点。',
-        suggestions: [
-          '尝试用Rust实现一些小型项目（如数据结构练习或算法实现），以增强实践能力，同时为研究生阶段的研究积累经验。'
-        ],
-        expanded: false
-      },
-      {
-        title: '良好的学习习惯',
-        description:
-          '您的学习领域涵盖了多个难度较高的学科（如计算机科学、高等数学），说明您具备较强的学习能力和自律性。',
-        suggestions: [
-          '继续保持规律的学习节奏，同时探索适合自己的高效学习方法，例如使用费曼技巧讲解复杂概念，或者通过刷题平台（如Leetcode）提高编程水平。'
-        ],
-        expanded: false
-      }
-    ];
-
-    this.weaknesses = [
-      {
-        title: '跨领域学习挑战',
-        description:
-          '您的学习领域涉及“计算机科学”和“Rust”，但您的本科专业是“机械”。这表明您正在尝试跨领域学习，可能会面临基础知识不足的问题（如数据结构、算法等计算机科学核心概念）。',
-        suggestions: [
-          '系统性补充计算机科学的基础知识，例如通过在线课程（如Coursera、edX）或教材（如《算法导论》）。'
-        ],
-        expanded: false
-      },
-      {
-        title: '数学与编程结合能力',
-        description:
-          '您提到学习“概率论 中心极限定理”和“高等数学下 高斯定理”，这些内容在机器学习、数据分析等领域非常重要。然而，如何将数学理论应用到编程实践中可能是您的薄弱点。',
-        suggestions: [
-          '尝试完成一些结合数学与编程的小项目，例如用Python实现中心极限定理的模拟，或用Rust编写数值计算程序。'
-        ],
-        expanded: false
-      },
-      {
-        title: '考研目标与时间管理',
-        description:
-          '您的目标是考研到“广东工业大学”，但目前的学习领域较为分散（计算机科学、数学、机械）。如果不能有效聚焦于考研科目（如数学、英语、专业课），可能会影响备考效率。',
-        suggestions: [
-          '制定明确的学习计划，优先复习考研相关科目，并定期评估进度。'
-        ],
-        expanded: false
-      },
-      {
-        title: '实践与理论平衡',
-        description:
-          '您对“Rust”表现出兴趣，但Rust是一门注重实践的编程语言。如果仅停留在理论学习而缺乏实际项目经验，可能难以深入掌握其特性（如内存安全、并发处理）。',
-        suggestions: [
-          '参与开源项目或自己动手开发小工具，积累实践经验。'
-        ],
-        expanded: false
-      },
-      {
-        title: '机械专业背景的利用',
-        description:
-          '您的本科专业是“机械”，但在学习领域中并未体现与机械相关的深度学习方向（如机器人学、控制工程）。如果您希望未来从事跨学科研究，可能需要进一步挖掘机械专业的优势。',
-        suggestions: [
-          '探索机械与计算机科学的交叉领域，例如智能制造、工业自动化等。'
-        ],
-        expanded: false
-      }
-    ];
+    this.fetchStrengthsWeaknessesData();
   },
   methods: {
+    fetchStrengthsWeaknessesData() {
+      const keywordsArray = [
+        '土木工程',
+        '计算机科学',
+        '人工智能',
+        '数据结构与算法',
+        '材料力学',
+        '工程制图',
+        '房屋建筑学',
+        '深圳大学考研',
+        '广东工业大学土木工程'
+      ];
+
+      wx.request({
+        url: 'https://fugui.mynatapp.cc/ai/analyze',
+        method: 'POST',
+        data: {
+          inputArray: keywordsArray,
+          type: 'strengthsWeaknesses'
+        },
+        header: {
+          'content-type': 'application/json'
+        },
+        success: (res) => {
+          if (res.statusCode === 200 && res.data.success) {
+            console.log('后端返回数据:', res.data);
+            const text = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
+            this.parseStrengthsWeaknesses(text);
+          } else {
+            console.error('服务器返回错误', res);
+            this.loadFallbackData();
+          }
+        },
+        fail: (err) => {
+          console.error('请求失败', err);
+          this.loadFallbackData();
+        },
+        complete: () => {
+          setTimeout(() => {
+            this.loading = false;
+          }, 800);
+        }
+      });
+    },
+
+    parseStrengthsWeaknesses(text) {
+      let strengths = [];
+      let weaknesses = [];
+
+      console.log('原始数据:', text);
+
+      // 假设数据可能为完整 Markdown 或纯文本片段，尝试两种解析方式
+      if (text.includes('#')) {
+        // Markdown 格式解析
+        const lines = text.split('\n');
+        let minHashCount = Infinity;
+        const headings = [];
+
+        // 扫描标题
+        lines.forEach(line => {
+          const match = line.match(/^(#+)\s+(.+)$/);
+          if (match) {
+            const hashCount = match[1].length;
+            const title = match[2].trim();
+            minHashCount = Math.min(minHashCount, hashCount);
+            headings.push({ hashCount, title, line });
+          }
+        });
+
+        console.log('检测到的标题:', headings);
+
+        const topLevelHeading = headings.find(h => h.hashCount === minHashCount);
+        if (!topLevelHeading) {
+          console.error('未找到顶层标题');
+        }
+
+        const strengthsHeading = headings.find(h => h.hashCount > minHashCount && /优点/.test(h.title));
+        const weaknessesHeading = headings.find(h => h.hashCount > minHashCount && /缺点/.test(h.title));
+        const summaryHeading = headings.find(h => h.hashCount === minHashCount && /总结/.test(h.title));
+
+        if (strengthsHeading && weaknessesHeading) {
+          const strengthsStart = text.indexOf(strengthsHeading.line) + strengthsHeading.line.length;
+          const weaknessesStart = text.indexOf(weaknessesHeading.line);
+          const summaryStart = summaryHeading ? text.indexOf(summaryHeading.line) : text.length;
+
+          const strengthsText = text.substring(strengthsStart, weaknessesStart).trim();
+          const weaknessesText = text.substring(weaknessesStart + weaknessesHeading.line.length, summaryStart).trim();
+
+          console.log('优点文本:', strengthsText);
+          console.log('缺点文本:', weaknessesText);
+
+          const itemRegex = /(\d+)\.\s+\*\*(.*?)\*\*：?\s*([\s\S]*?)(?=\n\n\d+\.|$)/g;
+          let match;
+
+          // 解析优点
+          while ((match = itemRegex.exec(strengthsText)) !== null) {
+            const title = match[2].trim();
+            const description = match[3].trim();
+            strengths.push({
+              title,
+              description,
+              suggestions: [],
+              expanded: false
+            });
+          }
+
+          // 解析缺点
+          while ((match = itemRegex.exec(weaknessesText)) !== null) {
+            const title = match[2].trim();
+            const description = match[3].trim();
+            weaknesses.push({
+              title,
+              description,
+              suggestions: [],
+              expanded: false
+            });
+          }
+        }
+      }
+
+      // 如果 Markdown 解析失败，尝试纯文本片段解析
+      if (strengths.length === 0 && weaknesses.length === 0) {
+        console.log('尝试纯文本解析...');
+        const sections = text.split('缺点文本:');
+        const strengthsText = sections[0].includes('优点文本:') ? sections[0].replace('优点文本:', '').trim() : text;
+        const weaknessesText = sections.length > 1 ? sections[1].trim() : '';
+
+        console.log('纯文本 - 优点:', strengthsText);
+        console.log('纯文本 - 缺点:', weaknessesText);
+
+        const itemRegex = /(\d+)\.\s+\*\*(.*?)\*\*：?\s*([\s\S]*?)(?=\n\n\d+\.|$)/g;
+        let match;
+
+        // 解析优点
+        while ((match = itemRegex.exec(strengthsText)) !== null) {
+          const title = match[2].trim();
+          const description = match[3].trim();
+          strengths.push({
+            title,
+            description,
+            suggestions: [],
+            expanded: false
+          });
+        }
+
+        // 解析缺点
+        while ((match = itemRegex.exec(weaknessesText)) !== null) {
+          const title = match[2].trim();
+          const description = match[3].trim();
+          weaknesses.push({
+            title,
+            description,
+            suggestions: [],
+            expanded: false
+          });
+        }
+      }
+
+      console.log('解析后的优点:', strengths);
+      console.log('解析后的缺点:', weaknesses);
+
+      this.strengths = strengths;
+      this.weaknesses = weaknesses;
+
+      if (strengths.length === 0 && weaknesses.length === 0) {
+        console.error('未解析到任何优点或缺点数据');
+        this.loadFallbackData();
+      }
+    },
+
+    loadFallbackData() {
+      this.strengths = [
+        {
+          title: '跨学科学习能力强',
+          description: '您在土木工程和计算机科学领域都有涉猎。',
+          suggestions: [],
+          expanded: false
+        }
+      ];
+      this.weaknesses = [
+        {
+          title: '实践项目经验不足',
+          description: '缺乏具体项目经验。',
+          suggestions: [],
+          expanded: false
+        }
+      ];
+    },
+
     toggleAccordion(index, type) {
       const items = type === 'strengths' ? this.strengths : this.weaknesses;
       items[index].expanded = !items[index].expanded;
-      this.$forceUpdate(); // 强制更新视图
+      this.$forceUpdate();
     }
   }
 };
@@ -220,6 +319,32 @@ export default {
   font-size: 28rpx;
   color: #666666;
   margin-top: 10rpx;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300rpx;
+}
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid rgba(76, 110, 245, 0.1);
+  border-left-color: #4c6ef5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.loading text {
+  font-size: 28rpx;
+  color: #666;
 }
 
 .content {
@@ -299,7 +424,6 @@ export default {
   color: #999;
 }
 
-/* 动画效果 */
 @keyframes slideIn {
   from {
     opacity: 0;
