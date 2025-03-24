@@ -80,12 +80,12 @@
 	<view class="null-box" v-else>
 		<view class="null">暂无数据~</view>
 	</view>
-	<image src='/static/square/edit.png' class="image" @click="handleClick"></image>
+	<image :src="this.$request.baseUrl+'/square/edit.png'" class="image" @click="handleClick"></image>
 </view>
 </template>
 
 <script>
-import post from '../../component/square/post.vue';
+import post from './post.vue';
 import request from '../../tools/request';
 
 	export default {
@@ -107,7 +107,7 @@ import request from '../../tools/request';
 						{ value: 1, text: "高分推荐" },
 						{ value: 2, text: "最热发布" }
 				],
-				bgImg:"/static/square/checkIn2.png",
+				bgImg:this.$request.baseUrl+"/square/checkIn2.png",
 				inputStyle:{
 					width: "500rpx",
 				},
@@ -396,14 +396,48 @@ import request from '../../tools/request';
 					fromId:this.userId,
 					content:this.inputText,
 					articleId:this.list[this.currentIndex].articleId
-				}).then(res=>{
+				})
+				.then(res=>{
 					console.log(res);
 					this.$set(this.commentList,this.commentList.length,{
 						content:res.data.content,
 						author:res.data.fromName,
 						createTime:res.data.createTime
 					})
-					this.commentList
+
+					//动态添加评论数
+
+				// 	const index = this.list.findIndex(article=>article.articleId == item.articleId)
+				// console.log(this.list[index]);
+				
+				// this.$api.square.star({
+				// 	...this.starBody,
+				// 	approved:!approved,
+				// 	userId:this.userId,
+				// 	articleId:item.articleId
+				// }).then(res=>{
+				// 	console.log(res)
+					
+				// 	//如果为真，则为点赞
+				// 	if(this.list[index].approved){
+				// 		this.$set(this.list[index],'likeCount',item.likeCount+1)
+				// 		uni.showToast({
+				// 			title:'点赞成功'
+				// 		})
+				// 	}
+				// 	else{
+				// 		this.$set(this.list[index],'likeCount',item.likeCount-1)
+				// 		uni.showToast({
+				// 			title:'取消点赞成功'
+				// 		})
+				// 	}
+				// 	console.log(index);
+					
+				// })
+				// .catch(err=>{
+				// 	console.log(err);
+					
+				// })
 					uni.showToast({
 						title:"成功评论"
 					})
@@ -412,6 +446,7 @@ import request from '../../tools/request';
 					console.log(err);
 					
 				})
+				this.inputText = ""
 			}
 		}
 	}
@@ -482,7 +517,7 @@ import request from '../../tools/request';
 		position:sticky;
 		bottom: 0;
 		left: 0;
-		width: 100vw;
+		// width: 95vw;
     display: flex;
     align-items: flex-end;
     padding: 20rpx;

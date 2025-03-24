@@ -61,3 +61,18 @@ export function searchArticle({userId,content}){
     'application/x-www-form-urlencoded;charset=utf-8'
   )
 }
+
+//id获取文章
+export function queryIdArticle({userId,articleId}){
+  return request.get(
+    `/api/square/queryArticle?userId=${userId}&articleId=${articleId}`
+  )
+}
+
+//删除文章
+export function deleteArticle(data){
+  return request.post(
+    '/api/square/deleteArticle',
+    data
+  )
+}

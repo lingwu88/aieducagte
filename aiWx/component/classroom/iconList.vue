@@ -17,22 +17,22 @@
 			return {
 				menu:[
           {
-            img:"/static/classroom/learningResource.png",
+            img:this.$request.baseUrl+"/classroom/learningResource.png",
             content:"学习资源",
             path:"/pages/learnResource/index"
           },
           {
-            img:"/static/classroom/classroomManagement.png",
+            img:this.$request.baseUrl+"/classroom/classroomManagement.png",
             content:"课堂管理",
             path:"/pages/classManagement/aiChats"
           },
           {
-            img:"/static/classroom/learningSuggestion.png",
+            img:this.$request.baseUrl+"/classroom/learningSuggestion.png",
             content:"学习建议",
             path:"/pages/learnSuggestion/index"
           },
           {
-            img:"/static/classroom/progessFeedback.png",
+            img:this.$request.baseUrl+"/classroom/progessFeedback.png",
             content:"进度反馈",
             path:"/pages/progressFeedback/index"
           },

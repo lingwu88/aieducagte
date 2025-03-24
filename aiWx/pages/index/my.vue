@@ -40,7 +40,7 @@ import request from '../../tools/request';
 			getInfo(){
 				this.$api.personal.getUserInfo(this.userId).then(res=>{
 										// this.$set(this,'img',res.data.avatar)
-					this.$set(this,'userName',res.data.userName)
+					this.$set(this,'userName',res.data.userName?res.data.userName:"请填写昵称")
 				})
 				.catch(err=>{
 					console.log(err);

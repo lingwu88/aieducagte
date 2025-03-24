@@ -79,7 +79,7 @@
 
 
     <view class="navigate-box" @click="handleToProfession">
-      <image src="/static/classroom/classManagement/professional.png"></image>
+      <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
       <view>专业模式</view>
     </view>
 
@@ -138,7 +138,7 @@ export default {
   props: {
     aiAvatar: {
       type: String,
-      default: '/static/my/avatar.png'
+      default: 'http://120.26.132.46:8091/my/avatar.png'
     }
   },
   data() {
@@ -161,12 +161,15 @@ export default {
     this.initRecorder(),
     this.initAudioContext()
   },
+  onLoad(){
+    this.getAvatar()
+  },
   methods: {
     getAvatar(){
       this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
           console.log(res);
 					this.userAvatar = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
-					console.log(this.img);
+					console.log(this.userAvatar);
 					
         })
         .catch(err=>{

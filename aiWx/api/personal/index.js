@@ -36,18 +36,6 @@ export function userLogin(data){
     undefined,
     false
   )
-  // return new Promise((resolve,reject)=>{
-  //   wx.request({
-  //     url:request.baseUrl+'api/user/info',
-  //     data,
-  //     success(res){
-  //       console.log(res);
-  //     },
-  //     fail(err){
-  //       console.log(err);
-  //     }
-  //   })
-  // })
 }
 
 export function getUserInfo(userId){
@@ -89,6 +77,7 @@ export function uploadAvatar(data){
   })
 }
 
+//修改信息
 export function changeInfo(data){
   return request.post(
     '/api/user/modifyInfo',
@@ -96,6 +85,7 @@ export function changeInfo(data){
   )
 }
 
+//获取头像
 export function getUserAvatar(userId){
   return request.get(
     `/api/user/getAvatar?userId=${userId}`,
@@ -106,5 +96,12 @@ export function logout(data){
   return request.post(
     '/api/user/logout',
     data
+  )
+}
+
+//获取个人帖子
+export function myArticleList(userId){
+  return request.get(
+    `/api/square/queryMyArticleList?userId=${userId}`,
   )
 }

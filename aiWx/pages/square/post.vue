@@ -11,14 +11,14 @@
       </view>
       <view class="header-title" selectable="false" space="false" decode="false">{{ title }}</view>
       <view class="content">{{ content }}</view>
-      <view class="tag-list">
+      <view class="tag-list" v-if="tagList.length!=0">
         <view class="tag-item" v-for="(item,index) in tagList" :key="item">#{{ item }}</view>
       </view>
       <text class="content-type">{{ contentType }}</text>
       <view class="footer">
-        <icon :img="showStar?'/static/square/star-fill.png':'/static/square/star.png'" @click="handleStar" :number="likeCount"></icon>
+        <icon :img="starSrc" @click="handleStar" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
-        <icon img="/static/square/comment.png" :number="commentCount" @click="handleShow"></icon>
+        <icon :img="commentSrc" :number="commentCount" @click="handleShow"></icon>
       </view>
     </view>
     <commentSection v-if="showComment" :commentList="commentList"></commentSection>
@@ -95,6 +95,17 @@ export default{
       showComment:false
     }
   },
+  computed:{
+    starSrc(){
+      return this.$request.baseUrl + this.star
+    },
+    star(){
+     return this.showStar?'/square/star-fill.png':'/square/star.png'
+    },
+    commentSrc(){
+      return this.$request.baseUrl + '/square/comment.png'
+    }
+  },
   methods: {
     handleStar(){
       console.log(this.showStar);
@@ -119,7 +130,7 @@ export default{
   // border: 2px solid #000000;
   border-radius: 10rpx;
   margin:40rpx 0 0 0;
-  box-shadow: #d2d2ef 7px -5px 1px 0px;
+  box-shadow: #d2d2ef -2px -3px 1px 0px;
   
 
   .header{

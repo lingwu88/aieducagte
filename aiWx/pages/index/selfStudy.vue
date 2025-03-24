@@ -5,7 +5,13 @@
 			<view class="control" :class="{'control-selected':showNavigator}">
 				<image src="/static/classroom/classManagement/control.png" class="control-icon" @click="toggleShow" ></image>
 			</view> -->
-			<chat class="connection" :setting="model1" :messageList="list" @push="handlePush" :userAvatar="img" :show="showNavigator"></chat>  
+			<chat class="connection" 
+				:setting="model1" 
+				:messageList="list" 
+				:userAvatar="img" 
+				:show="showNavigator"
+				@controlSetting="showSetting = true"
+				></chat>  
 	</view>
 		
 	<u-popup 
@@ -18,7 +24,7 @@
 			}"
 		:closeable="true"
 		:closeOnClickOverlay="true"
-		@close="showSetting=false"
+		@close="handleClose"
 		>
 		<view class="box">
 			<view class="header">
@@ -135,6 +141,7 @@
 							title="请选择"
 							@close="show.study = false"
 							@select="select($event,'studyStyle')"
+							:key="'name'"
 					>
 					</u-action-sheet>
 					<u-action-sheet
@@ -143,6 +150,7 @@
 							title="请选择"
 							@close="show.communication = false"
 							@select="select($event,'communicationStyle')"
+							:key="'name'"
 					>
 					</u-action-sheet>
 					<u-action-sheet
@@ -151,6 +159,7 @@
 							title="请选择"
 							@close="show.tone = false"
 							@select="select($event,'toneStyle')"
+							:key="'name'"
 					>
 					</u-action-sheet>
 					<u-action-sheet
@@ -159,6 +168,7 @@
 							title="请选择"
 							@close="show.depth = false"
 							@select="select($event,'depth')"
+							:key="'name'"
 					>
 					</u-action-sheet>
 					<u-action-sheet
@@ -167,10 +177,11 @@
 							title="请选择"
 							@close="show.frame = false"
 							@select="select($event,'inferenceFramework')"
+							:key="'name'"
 					>
 					</u-action-sheet>
 
-					<view class="btn" @click="handleSetting">开始对话</view>
+					<view class="btn"  @click="handleSetting">开始对话</view>
 				</u--form>
 			</view>
 		</view>
@@ -208,8 +219,7 @@ export default{
 				inferenceFramework:""
 			},
 			showSex:false,
-			actions: [
-			],
+			userId:"",
 			setting:{
 				// userId:"",
 				// query:"",
@@ -265,6 +275,11 @@ export default{
   },
   onLoad(){
     this.getAvatar()
+		if(uni.getStorageSync('setting'))
+			this.model1 = uni.getStorageSync('setting')
+		this.getSession()
+		if(uni.getStorageSync('userId'))
+			this.userId = uni.getStorageSync('userId')
   },
   onShow(){
     this.result = ''
@@ -276,63 +291,15 @@ export default{
 			
 			// this.$refs.uForm.validateField('userInfo.sex')
 		},
-    generateAi(){
-      // let body = uni.getStorageSync('aiSetting')
-      let form = {
-        ...body,
-        userId:uni.getStorageSync('userId'),
-        courses:body.courses.map(item=>(
-        item.desc
-        ))
-      }
-
-      console.log(form);
-      
-      
-      //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${form.userId}`,this.logData,undefined,this.closeSSE)
-      this.$api.classManagement.learnSchedule(form).then(res=>{
+		getSession(){
+			this.$api.classManagement.getSessionId({userId:this.userId,type:1}).then(res=>{
         console.log(res);
-        
+        this.form.conversationId = res.data
       })
       .catch(err=>{
         console.log(err);
-        
       })
-    },
-    closeSSE(){
-      this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
-        console.log(res);
-        console.log('关闭');
-        const word = convertMarkdown(this.result)
-        this.$set(this,'result',word)
-      })
-      .catch(err=>{
-        console.log(err);
-        
-      })
-    },
-    //sse回调函数
-    logData(res) {
-        // 假设 res 是一个字符串，包含了 SSE 消息
-        console.log(res);
-        
-       const data = regexSSE(res)
-       if(data){
-        this.result +=data
-       }
-            // this.result.word += data; // 将提取的数据添加到 result.word
-    },
-    handlePush(item){
-      console.log(item);
-      
-      this.list.push(item)
-    },
-    handleSetting(){
-      uni.navigateTo({
-        url:"/pages/classManagement/aiChatProfession?type=setting"
-      })
-    },
+		},
     getAvatar(){
         this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
           console.log(res);
@@ -358,7 +325,7 @@ export default{
 		handleSetting(){
 			this.$refs.uForm.validate().then(res => {
 				this.setting = {...this.setting,...this.model1}
-				this.showSetting = false
+				this.showSetting = false	
 			}).catch(errors => {
 				// uni.$u.toast('校验失败')
 				console.log(errors);
@@ -368,6 +335,11 @@ export default{
 					icon:"none"
 				})
 			})
+		},
+		//存储设置
+		handleClose(){
+			this.showSetting = false
+			uni.setStorageSync('setting',this.model1)
 		}
   },            
 }

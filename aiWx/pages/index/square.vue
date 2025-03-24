@@ -16,7 +16,7 @@ import list from "../../config/index.js"
 					column:2,
 					userId:"",
 					fContainerObserver:null,
-					bgImg:"/static/square/checkIn2.png",
+					bgImg:this.$request.baseUrl+"/square/checkIn2.png",
 					list:[
 								{
 									title:"我是自律博主",

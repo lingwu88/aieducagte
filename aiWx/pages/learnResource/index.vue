@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
     <view class="aiessay" @tap="handleto(1)">
-      <image src="/static/classroom/learnResource/aiWrite.png" class="aiWrite"></image>
+      <image :src="'http://120.26.132.46:8091/classroom/learnResource/aiWrite.png'" class="aiWrite"></image>
 			<text class="aiWrite-text" selectable="false" space="false" decode="false">
 				AI变文
 			</text>
@@ -22,12 +22,12 @@ export default {
       list: [
         {
           description: "课件库",
-          img: "/static/classroom/learnResource/book.png",
+          img: this.$request.baseUrl+"/classroom/learnResource/book.png",
           url: "/pages/learnResource/courseLibrary"
         },
         {
           description: "资料库",
-          img: "/static/classroom/learnResource/essay.png",
+          img: this.$request.baseUrl+"/classroom/learnResource/essay.png",
           url: "/pages/learnResource/DocLib" //DocLib文件未创建
         }
       ]

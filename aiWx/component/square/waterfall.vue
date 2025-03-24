@@ -44,7 +44,7 @@
       </card>
       </view>
     </view>
-    <view v-if="renderList.length !== 0" class="null-box">    
+    <view v-if="renderList.length === 0" class="null-box">    
       <view class="null">暂无数据哦~ </view>
     </view>
   </scroll-view>
@@ -328,7 +328,7 @@ import { rafThrottle } from '@/utils/tool'
           content:item.content,
           title:item.title,
           articleId:item.articleId,
-          userName:"我是老米头围呃呃呃呃呃",
+          userName:item.userName,
           likeCount:item.likeCount,
           bgColor:this.colorList[Math.floor(Math.random()*10)]
         }))

@@ -76,7 +76,7 @@ export default {
   data() {
       return {
         label:{
-          avatar:"/static/my/avatar.png",
+          avatar:this.$request.baseUrl+"/my/avatar.png",
           userName:"",
           gender:"",
           signature:"",

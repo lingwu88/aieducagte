@@ -38,20 +38,20 @@
 								<image
 									:src="
 										item.isFavorited
-											? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico'
-											: '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'
+											? this.$request.baseUrl+'/classroom/learnResource/ResourceLibrary/icon/star-filled.ico'
+											: this.$request.baseUrl+'/classroom/learnResource/ResourceLibrary/icon/star.ico'
 									"
 									class="btn-icon"
 								></image>
 								<text>{{ item.isFavorited ? '已收藏' : '未收藏' }}</text>
 							</view>
 							<view class="menu-btn" @tap.stop="downloadFile(item)">
-								<image src="/static/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
+								<image :src="this.$request.baseUrl+'/classroom/learnResource/ResourceLibrary/icon/download.ico'" class="btn-icon"></image>
 								<text>下载</text>
 							</view>
 							<view class="menu-btn" open-type="share" @tap.stop="handleShareButton(item)">
 								<button open-type="share" class="share-btn" :data-item="item" @tap.stop="handleShareButton(item)">
-									<image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
+									<image :src="this.$request.baseUrl+'/classroom/learnResource/ResourceLibrary/icon/Forward.ico'" class="btn-icon"></image>
 									<text>分享</text>
 								</button>
 							</view>
@@ -85,7 +85,7 @@ export default {
 			pageSize: 20,
 			page: 1,
 			loading: false,
-			defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
+			defaultImg: this.$request.baseUrl+'/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
 			maxTitleLength: 17,
 			maxPreviewLength: 40,
 			// 加载更多相关

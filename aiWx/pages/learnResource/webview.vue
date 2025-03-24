@@ -16,7 +16,7 @@ export default {
 	},
 	data() {
 		return {
-			url: ''
+			// url: ''
 		};
 	},
 	onLoad(options) {
