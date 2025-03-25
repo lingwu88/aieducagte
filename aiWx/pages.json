@@ -226,7 +226,7 @@
 			},
 			{
 				"pagePath": "pages/index/selfStudy",
-				"text": "自习空间",
+				"text": "课后复习",
 				"iconPath": "static/selfStudy/selfStudy.png",
 				"selectedIconPath": "static/selfStudy/selfStudySelected.png"
 			},
