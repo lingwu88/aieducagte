@@ -86,7 +86,6 @@ export default {
 
 		fetchPreferenceData() {
 			this.isLoading = true;
-
 			const keywordsArray = [
 				'土木工程',
 				'计算机科学',
@@ -108,13 +107,8 @@ export default {
 			wx.request({
 				url: 'https://fugui.mynatapp.cc/ai/analyze',
 				method: 'POST',
-				data: {
-					inputArray: keywordsArray,
-					type: 'contentPreference'
-				},
-				header: {
-					'content-type': 'application/json'
-				},
+				data: { inputArray: keywordsArray, type: 'contentPreference' },
+				header: { 'content-type': 'application/json' },
 				success: (res) => {
 					if (res.statusCode === 200 && res.data.success) {
 						console.log('后端返回数据:', res.data);
@@ -134,17 +128,14 @@ export default {
 					this.useFallbackData();
 				},
 				complete: () => {
-					// 延迟一下消失动画，让用户感知到AI的处理
-					setTimeout(() => {
-						this.isLoading = false;
-					}, 800);
+					setTimeout(() => (this.isLoading = false), 800);
 				}
 			});
 		},
 
 		useFallbackData() {
 			const mockData = {
-				result: '### 内容偏好分析报告\n\n1. **学习领域偏好**  \n   您的学习领域涵盖了多个学科，包括土木工程、计算机科学、人工智能、数据结构与算法等。从您的核心兴趣"数据结构与算法"和"人工智能"可以看出，您对计算机科学相关的知识有强烈的偏好，尤其是在逻辑性强、技术含量高的领域。这表明您可能更倾向于技术深度而非广度的学习。\n\n2. **核心兴趣分析**  \n   您的核心兴趣集中在"数据结构与算法"和"人工智能"。您曾深入探讨过这些主题，说明您对编程逻辑、算法优化以及AI模型的构建和应用非常感兴趣。例如，您可能对机器学习框架（如TensorFlow或PyTorch）的实际应用感兴趣，可以进一步探索相关项目实践。\n\n3. **目标驱动的学习需求**  \n   您的目标是考研和人工智能领域的创业。结合目标院校深圳大学，您特别关注研究生分数线和面试难度。这意味着您希望获取的信息能够直接帮助您备考，并为未来的职业发展提供支持。例如，您可能会对历年考研真题解析、面试技巧分享等内容感兴趣。\n\n### 总结  \n综合来看，您的学习偏好集中在技术深度较高的领域，尤其是数据结构与算法及人工智能。同时，您对跨学科的应用场景表现出浓厚兴趣，并且注重学习内容的实际价值和对未来职业发展的助力。因此，推荐的内容应以实战为导向，结合考研备考需求和行业应用案例，帮助您更好地实现目标。'
+				result: '### 内容偏好分析报告\n\n1. **学习领域偏好**  \n   您的学习领域涵盖了多个学科，包括土木工程、计算机科学、人工智能、数据结构与算法等。从您的核心兴趣"数据结构与算法"和"人工智能"可以看出，您对计算机科学相关的知识有强烈的偏好，尤其是在逻辑性强、技术含量高的领域。\n\n2. **核心兴趣分析**  \n   您的核心兴趣集中在"数据结构与算法"和"人工智能"。您曾深入探讨过这些主题，说明您对编程逻辑、算法优化以及AI模型的构建和应用非常感兴趣。\n\n### 总结  \n综合来看，您的学习偏好集中在技术深度较高的领域，尤其是数据结构与算法及人工智能。'
 			};
 			this.reportData = this.parseMarkdown(mockData.result);
 		},
@@ -163,33 +154,30 @@ export default {
 			const text = typeof markdownText === 'string' ? markdownText : String(markdownText || '');
 			if (!text) {
 				console.error('markdownText 为空或无效');
-				return {
-					title: '内容偏好分析报告',
-					sections: [],
-					summary: ''
-				};
+				return { title: '内容偏好分析报告', sections: [], summary: '' };
 			}
 
-			// 移除开头的 ### 标题（如果存在）
+			// 移除主标题并提取主要内容
 			const contentWithoutHeader = text.replace(/^###\s+.*?\n\n/, '').trim();
 
-			// 分割总结部分（支持 ### 总结 或 **总结**）
+			// 分割总结部分
 			const summarySplit = contentWithoutHeader.split(/(?:###\s+总结|\*\*\s*总结\s*\*\*)/);
 			const mainContent = summarySplit[0].trim();
 			const summary = summarySplit.length > 1 ? summarySplit[1].trim() : '';
 
-			// 匹配小节（支持灵活格式）
-			const sectionRegex = /(\d+\.\s+\*\*(.*?)\*\*)\s+([\s\S]*?)(?=\d+\.\s+\*\*|$|---)/g;
+			// 通用小节正则表达式：支持 #### 和 numbered bold titles
+			const sectionRegex = /(?:####\s+(.*?)\n|(\d+\.\s+\*\*(.*?)\*\*))\s*([\s\S]*?)(?=(?:####|\d+\.\s+\*\*|###|---|$))/g;
 			let match;
 			let index = 0;
 
 			while ((match = sectionRegex.exec(mainContent)) !== null) {
-				const sectionTitle = match[2].trim(); // 提取标题
-				const sectionContent = match[3].trim(); // 提取内容
+				// 标题可能是 #### 格式 (match[1]) 或 numbered bold 格式 (match[3])
+				const sectionTitle = (match[1] || match[3]).trim();
+				const sectionContent = match[4].trim();
 
 				// 提取要点
 				const points = [];
-				const pointRegex = /-\s+(.*?)(?=(?:-\s+|$))/g;
+				const pointRegex = /-\s+(.*?)(?=(?:-\s+|$|\n\n))/g; // 改进 bullet point 提取
 				let pointMatch;
 				let hasPoints = false;
 
@@ -198,12 +186,12 @@ export default {
 					hasPoints = true;
 				}
 
-				// 如果没有要点，则将整个内容作为单个point
-				if (!hasPoints) {
+				// 如果没有 bullet points，将整个内容作为单个 point
+				if (!hasPoints && sectionContent) {
 					points.push(sectionContent);
 				}
 
-				// 预计算样式
+				// 应用样式
 				const color = sectionColors[index % sectionColors.length];
 				const style = `background: linear-gradient(to right, ${color.bg}, rgba(255, 255, 255, 0.05));`;
 				const borderStyle = `background: linear-gradient(to bottom, ${color.border}, ${color.borderEnd});`;
@@ -218,6 +206,17 @@ export default {
 				index++;
 			}
 
+			// 如果没有匹配到任何小节，将整个内容作为单个 section 处理
+			if (sections.length === 0 && mainContent) {
+				const color = sectionColors[0];
+				sections.push({
+					title: '分析内容',
+					points: [mainContent],
+					style: `background: linear-gradient(to right, ${color.bg}, rgba(255, 255, 255, 0.05));`,
+					borderStyle: `background: linear-gradient(to bottom, ${color.border}, ${color.borderEnd});`
+				});
+			}
+
 			return {
 				title: '内容偏好分析报告',
 				sections,
@@ -227,7 +226,6 @@ export default {
 	}
 };
 </script>
-
 <style lang="scss" scoped>
 .content-preference {
 	min-height: 100vh;
