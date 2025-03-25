@@ -13,68 +13,75 @@
 			<uni-data-select
       v-model="value"
       :localdata="range"
-      @change="change"
+      @change="change($event,'type')"
     ></uni-data-select>
 		<uni-data-select
 				v-model="value2"
 				:localdata="range2"
-				@change="change"
+				@change="change($event,'orderMode')"
 				:clear="false"
 				emptyTips="暂无数据"
 				placeholder="任务选择"
 			></uni-data-select>
 		</view>
-		<u-list width="90vw">
-      <u-list-item v-for="(item, index) in list" :key="index">
-        <post 
-					class="item" 
-					:likeCount="item.likeCount"
-					:commentCount="item.commentCount"
-					:content="item.content" 
-					:author="item.userName" 
-					:sourceType="item.sourceType" 
-					:time="item.createTime"
-					:title="item.title"
-					:img="item.userAvatar"
-					:showStar="item.approved"
-					@showComment="controlShow"
-					@star="handleStar($event,item)"
-					@comment="handleComment($event,item)"
-					:commentList="commentList"
-				></post>
-      </u-list-item>
-    </u-list>
-		<!-- <image class="edit-icon" src="/static/square/edit.png"></image> -->
-		<image src='/static/square/edit.png' class="image" @click="handleClick"></image>
-		<view :class="showInput?'input-area':'input-hidden'" >
-
-		<view class="input">
-			<!-- <view class="mode-swtich">
-				<uni-icons type='chat' size="24"></uni-icons>
-			</view> -->
-			<view class="input-box">
-				<textarea
-					v-model="inputText"
-					:adjust-position="false"
-					:cursor-spacing="20"
-					auto-height
-					:show-confirm-bar="false"
-					placeholder="请输入内容..."
-					:maxlength="-1"
-					class="input-textarea"
-				/>
-			</view>
-		</view>
-		<view 
+		<view class="list-content" v-if="list.length !== 0">
+			<u-list width="90vw" @scrolltolower="loadData">
+				<u-list-item v-for="(item, index) in list" :key="index">
+					<post 
+						class="item" 
+						:likeCount="item.likeCount"
+						:commentCount="item.commentCount"
+						:content="item.content" 
+						:author="item.userName" 
+						:sourceType="item.sourceType" 
+						:time="item.createTime"
+						:title="item.title"
+						:img="item.userAvatar"
+						:showStar="item.approved"
+						@showComment="controlShow"
+						@star="handleStar($event,item)"
+						@comment="handleComment($event,item)"
+						:commentList="commentList"
+						:tagList="item.tags"
+						:contentType="typeList[item.type]"
+					></post>
+				</u-list-item>
+			</u-list>
+			<!-- <image class="edit-icon" src="/static/square/edit.png"></image> -->
+			<view :class="showInput?'input-area':'input-hidden'" >
+				
+				<view class="input">
+					<!-- <view class="mode-swtich">
+						<uni-icons type='chat' size="24"></uni-icons>
+					</view> -->
+					<view class="input-box">
+						<textarea
+						v-model="inputText"
+						:adjust-position="false"
+						:cursor-spacing="20"
+						auto-height
+						:show-confirm-bar="false"
+						placeholder="请输入内容..."
+						:maxlength="-1"
+						class="input-textarea"
+						/>
+					</view>
+				</view>
+				<view 
 				class="send-btn"
 				:class="{ active:true  }"
 				@tap="handleSend"
-			>
+				>
 				发送
 			</view>
-
+			
 		</view>
 	</view>
+	<view class="null-box" v-else>
+		<view class="null">暂无数据~</view>
+	</view>
+	<image src='/static/square/edit.png' class="image" @click="handleClick"></image>
+</view>
 </template>
 
 <script>
@@ -89,14 +96,16 @@ import request from '../../tools/request';
 			return {
 				value: 1,
 				range: [
-					{ value: 0, text: "篮球" },
-					{ value: 1, text: "足球" },
-					{ value: 2, text: "游泳" },
+					{ value:0 , text: "所有"     },
+					{ value: 1, text: "资料分享" },
+					{ value: 2, text: "日常记录" },
+					{ value: 3, text: "技术交流" },
 				],
 				value2:0,
 				range2: [
-						{ value: 0, text: "升序" },
-						{ value: 1, text: "降序" },
+						{ value: 0, text: "最新发布" },
+						{ value: 1, text: "高分推荐" },
+						{ value: 2, text: "最热发布" }
 				],
 				bgImg:"/static/square/checkIn2.png",
 				inputStyle:{
@@ -107,7 +116,9 @@ import request from '../../tools/request';
 				articleListBody:{
 					userId:"",
 					articleId:"",
-					limit:6
+					limit:6,
+					orderMode:0,
+					type:0
 				},
 				starBody:{
 					userId:"",
@@ -163,6 +174,8 @@ import request from '../../tools/request';
 				showInput:false,
 				commentList:[],
 				currentIndex:-1,
+				typeList:['暂无该类别','资料分享','日常记录','技术交流']
+				// tagList:[]
 				// list:[
 				// 		{
 				// 			content:"这是一个自律帖子",
@@ -216,23 +229,44 @@ import request from '../../tools/request';
 			this.getList()
 		},
 		methods: {
-			getList(){
-				this.$api.square.getArticleList({
-					...this.articleListBody,
-					userId:this.userId,
-				}).then(res=>{
-					console.log(res);
-					this.$set(this,'list',res.data.map(item=>({
-						...item,
-						approved:item.approved,
-						userAvatar:request.baseUrl+item.userAvatar
-					})))
-					console.log(this.list);
-					
-				})
-				.catch(err=>{
-					console.log(err);
-					
+			async loadData(){
+				//先获取到当前末尾id
+				const lastId = this.list[this.list.length-1].articleId
+				const len = await this.getList(lastId)
+				console.log("len:"+len);
+				
+				if(len != -1 && len == 0){
+					uni.showToast({
+						icon:"none",
+						title:"已经到底了哦~"
+					})
+				}
+			},
+			getList(lastId=""){
+				return new Promise((resolve,reject)=>{
+					this.$api.square.getArticleList({
+						...this.articleListBody,
+						articleId:lastId,
+						userId:this.userId,
+					}).then(res=>{
+						console.log(res);
+						const newArr = res.data.map(item=>({
+							...item,
+							approved:item.approved,
+							userAvatar:request.baseUrl+item.userAvatar,
+							tags:item.tags.split(',')
+						}))
+						const arr = [...this.list, ...newArr]
+						console.log(arr);
+						
+						this.$set(this,'list',arr)
+						resolve(res.data?.length?res.data.length:0)
+						
+					})
+					.catch(err=>{
+						console.log(err);
+						reject(-1)
+					})
 				})
 			},
 			handleStar(approved,item){
@@ -290,14 +324,33 @@ import request from '../../tools/request';
 					
 				})
 			},
-			change(e) {
-				console.log("e:", e);
-				if(e==0){
-					this.$set(this,'list',this.list.sort((a, b) => new Date(a.time) - new Date(b.time)))
-				}
-				else{
-					this.$set(this,'list',this.list.sort((a, b) => new Date(b.time) - new Date(a.time)))
-				}
+			change(e,type) {
+				//改变值
+				this.articleListBody[type] = e
+				
+				this.$api.square.getArticleList({
+						...this.articleListBody,
+						articleId:'',
+						userId:this.userId,
+					}).then(res=>{
+						console.log(res);
+						const newArr = res.data.map(item=>({
+							...item,
+							approved:item.approved,
+							userAvatar:request.baseUrl+item.userAvatar,
+							tags:item.tags.split(',')
+						}))
+						this.$set(this,'list',newArr)
+					})
+					.catch(err=>{
+						console.log(err);
+					})
+				// if(e==0){
+				// 	this.$set(this,'list',this.list.sort((a, b) => new Date(a.time) - new Date(b.time)))
+				// }
+				// else{
+				// 	this.$set(this,'list',this.list.sort((a, b) => new Date(b.time) - new Date(a.time)))
+				// }
 			},
 			controlShow(){
 				this.showInput = !this.showInput
@@ -488,4 +541,17 @@ import request from '../../tools/request';
 		width: 0;
 		height: 0;
 	}
+	.null-box{
+		flex:1;
+		width: 100vw;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		.null{
+			font-size: 50rpx;
+			text-align: center;
+			font-weight: 800;    
+		}
+}
 </style>

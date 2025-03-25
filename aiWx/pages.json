@@ -27,7 +27,19 @@
 			}
 		}
 	],
-	"subPackages": [{
+	"subPackages": [
+		{
+			"root":"pages/selfStudy",
+			"pages": [
+				{
+					"path":"index",
+					"style":{
+						"navigationBarTitleText":"课后复习"
+					}
+				}
+			]
+		},
+		{
 			"root": "pages/square",
 			"pages": [{
 					"path": "check",

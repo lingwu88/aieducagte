@@ -22,10 +22,10 @@ const list2 = data2.data.items.map((i) => ({
 
 const list = [...list1, ...list2].map((item, index) => ({ bgColor: colorArr[index % (colorArr.length - 1)], ...item }));
 
-export const indexList = data3.data.map(item=>({
-  url:item.url,
-  title:item.title,
-  img:item.img
+export const indexList = data3.data.map(item => ({
+  url: item.url,
+  title: item.title,
+  img: item.img
 }))
 
 export default list;

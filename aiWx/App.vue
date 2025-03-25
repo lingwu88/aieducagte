@@ -58,6 +58,9 @@ export default {
 	},
 	onHide: function () {
 		console.log('App Hide')
+	},
+	onError(e){
+		console.log(e)
 	}
 }
 </script>

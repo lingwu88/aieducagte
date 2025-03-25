@@ -5,6 +5,7 @@ import { initHighLight } from './tools/markdownUtils';
 import Vue from 'vue'
 import uView from "uview-ui";
 import api from './api'
+import request  from './tools/request';
 Vue.use(uView);
 import './uni.promisify.adaptor'
 Vue.config.productionTip = false
@@ -13,6 +14,7 @@ const app = new Vue({
   ...App
 })
 Vue.prototype.$api = api
+Vue.prototype.$request = request
 app.$mount()
 // #endif
 

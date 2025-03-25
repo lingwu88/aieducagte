@@ -37,20 +37,20 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
   //维护的定时器id
   let timeoutId = null
   //五秒
-  const TIMEOUT_DURATION = 10000
+  const TIMEOUT_DURATION = 5000
 
   // console.log(onComplete);
-  
 
-  function resetTimeout(){
-    if(timeoutId){
+
+  function resetTimeout() {
+    if (timeoutId) {
       clearTimeout(timeoutId)
     }
-    timeoutId = setTimeout(()=>{
+    timeoutId = setTimeout(() => {
       console.log('超时,无数据,主动断开连接');
       // requestTask.abort()   //终止SSE
       onComplete(uni.getStorageSync('userId'))
-    },TIMEOUT_DURATION)
+    }, TIMEOUT_DURATION)
   }
 
   // 在 complete 回调中清理定时器
@@ -58,7 +58,7 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
     if (timeoutId) clearTimeout(timeoutId);
     if (onComplete) onComplete();
   }
-  
+
 
   function onChunkReceived(res) {
     onData(decode(res.data))
@@ -126,9 +126,10 @@ export function learnSchedule(data) {
 }
 
 //产生学习路径
-export function learnPath(data){
+export function learnPath(data) {
   return request.post(
     '/api/ai/learning-path',
     data
   )
 }
+

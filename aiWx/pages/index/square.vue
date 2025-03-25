@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<waterfall class="fall" :gap="15 " :page-size="20" :column="column" :enter-size="column * 8" :request="getData">
+		<waterfall class="fall" :gap="15 " :limit="12" :column="column" :enter-size="column * 8" :request="getData">
 		</waterfall>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
@@ -14,6 +14,7 @@ import list from "../../config/index.js"
 			return {
 					fContainerRef:null,
 					column:2,
+					userId:"",
 					fContainerObserver:null,
 					bgImg:"/static/square/checkIn2.png",
 					list:[
@@ -68,21 +69,26 @@ import list from "../../config/index.js"
 					this.column = 2;
 				}
 			},
-			getData(page,pageSize){
-				return new Promise((resolve)=>{
-					setTimeout(()=>{
-						resolve(list.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
-					},1000)
+		  // async getData(page,pageSize){
+			// 	return new Promise((resolve)=>{
+			// 		setTimeout(()=>{
+			// 			resolve(list.slice((page-1)*pageSize,(page-1)*pageSize+pageSize))
+			// 		},1000)
+			// 	})
+			// },
+			async getData(articleId,userId,limit,orderMode=0){
+				console.log(this.userId);
+				
+				return this.$api.square.getArticleList({
+					userId,
+					articleId,
+					limit,
+					orderMode
 				})
 			},
 			navigaTo(){
 				uni.navigateTo({url:"/pages/square/check"})
 			}
-		},
-		mounted() {
-			
-		},
-		onLoad() {
 		},
 	}
 </script>

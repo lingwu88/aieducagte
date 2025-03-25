@@ -8,11 +8,11 @@ function rafThrottle(fn) {
     setTimeout(() => {
       fn.apply(this, args)
       lock = false
-    }, 0)
+    }, 5000)
   }
 }
 
-//防抖
+//防抖 —— 只有过了一定间隔才会触发，你如果在cd时再触发，会继续刷新
 function debounce(fn, delay = 300) {
   let timer = null
   return function (...args) {

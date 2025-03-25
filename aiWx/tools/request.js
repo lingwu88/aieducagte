@@ -1,6 +1,8 @@
-const baseUrl = "http://3hygvd.natappfree.cc"
+// const baseUrl = "http://120.26.132.46:8091"
+const baseUrl = 'http://120.26.132.46:8091'
 const timeout = 5000
 const access_token = uni.getStorageSync('accessToken')
+// const baseUrlAi =  'http://t6emjh.natappfree.cc'
 
 function post(url, data, contentType, token, ...args) {
   return request(baseUrl + url, undefined, data, 'POST', contentType, token, ...args)
@@ -23,7 +25,9 @@ function postFile(url, data, contentType, token, responseType) {
 function request(url, params = {}, data = {}, method = "POST", contentType = "application/json", token = true, ...args) {
   return new Promise((resolve, reject) => {
     console.log(args.map(item => { console.log(...item) }));
-
+    uni.showLoading({
+      title:"加载中"
+    })
     uni.request({
       url,
       method,
@@ -36,15 +40,26 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
       },
       ...args,
       success(res) {
+        uni.hideLoading()
         console.log(res)
-        if (res.statusCode == 500) {
-          uni.showToast({
-            title: '系统繁忙',
-            icon: 'error'
-          })
-        }
         if (res.statusCode == 200) {
           resolve(res.data)
+        }
+        //如果响应失败
+        else if(res.statusCode !=200){
+          uni.showToast({
+            title:res.data.info?res.data.info:'系统繁忙',
+            icon: 'error'
+          })
+          reject(res)
+        }
+        //响应成功，但状态码非200
+        else {
+          uni.showToast({
+            title: res.info?res.info:'系统繁忙',
+            icon: 'error'
+          })
+          reject(res)
         }
 
       },
@@ -53,6 +68,7 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
           title: err.errMsg,
           icon: "none"
         })
+        uni.hideLoading()
         reject(err)
         console.log(err);
       }
