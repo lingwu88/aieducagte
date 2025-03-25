@@ -43,6 +43,7 @@
 						@approve="handleApprove($event,item,index)"
 						@star="toggleStar($event,item,index)"
 						@comment="handleComment($event,item)"
+						@detail="toDetail($event,item)"
 						:commentList="commentList"
 						:viewCount="item.viewCount"
 						:tagList="item.tags"
@@ -238,6 +239,11 @@ import request from '../../tools/request';
 			this.getList()
 		},
 		methods: {
+			toDetail(e,item){
+				uni.navigateTo({
+					url:`/pages/index/postDetail?articleId=${item.articleId}`
+				})
+			},
 			async loadData(){
 				//先获取到当前末尾id
 				const lastId = this.list[this.list.length-1].articleId

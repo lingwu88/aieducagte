@@ -18,7 +18,7 @@
                 </view>
               </view>
               <view class="right">
-                <u-icon :name="item.collected?'star-fill':'star'" size="22" @click.stop="toggleStar(item.collected,item,index)"></u-icon>
+                <u-icon :name="item.collected?'star-fill':'star'" size="30" @tap.stop="toggleStar(item.collected,item,index)"></u-icon>
               </view>
             </view>
           </view>
@@ -422,6 +422,7 @@ export default{
       .right{
         position: relative;
         top: 30%;
+        height: 100%;
       }
     }
   }

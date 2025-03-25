@@ -140,16 +140,21 @@ mounted(){
           uni.chooseImage({
               count: 1,
               success: (res) => {
-                  let resSize = tempFiles[0].size;
-                  if(resSize > 1024*1024*10){
-                    uni.showToast({
-                      title:"上传图片大小不能超过10MB",
-                      icon:"error"
-                    })
-                    return
-                  }
-
-                  this.label.avatar = res.tempFilePaths[0];   
+                console.log(res);
+                
+                  // let resSize = tempFiles[0].size;
+                  // if(resSize > 1024*1024*10){
+                  //   uni.showToast({
+                  //     title:"上传图片大小不能超过10MB",
+                  //     icon:"error"
+                  //   })
+                  //   return
+                  // }
+                  console.log(res);
+                  
+                  this.$set(this.label,'avatar',res.tempFilePaths[0])   
+                  console.log(this.label);
+                  
                   //更新头像
                   this.$api.personal.uploadAvatar({
                     userId:this.userId,

@@ -1,6 +1,6 @@
 <template>
   <view>
-    <view class="container">
+    <view class="container" @click="handleToDetail">
       <view class="header">
         <image :src="img" class="user-img" height="175rpx" width="175rpx"  shape="circle"></image>
         <view class="header-content">
@@ -24,9 +24,9 @@
           <uni-icons type="eye" size="20"></uni-icons>
           <text class="like">{{viewCount}}</text>
         </view>
-        <icon :img="approveSrc" @click="handleApprove" :number="likeCount"></icon>
+        <icon :img="approveSrc" @click.stop="handleApprove" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
-        <icon :img="commentSrc" :number="commentCount" @click="handleShow"></icon>
+        <icon :img="commentSrc" :number="commentCount" @click.stop="handleShow"></icon>
       </view>
     </view>
     <commentSection v-if="showComment" :commentList="commentList"></commentSection>
@@ -124,6 +124,9 @@ export default{
     }
   },
   methods: {
+    handleToDetail(){
+      this.$emit('detail')
+    },
     handleStar(){
       this.$emit('star',this.showStar)
     },
