@@ -27,9 +27,9 @@
             path:"/pages/classManagement/aiChats"
           },
           {
-            img:this.$request.baseUrl+"/classroom/learningSuggestion.png",
-            content:"学习建议",
-            path:"/pages/learnSuggestion/index"
+            img:"/static/classroom/learningSuggestion.png",
+            content:"学能图谱",
+            path:"/pages/learnDashboard/index"
           },
           {
             img:this.$request.baseUrl+"/classroom/progessFeedback.png",

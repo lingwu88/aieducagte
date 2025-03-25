@@ -2,8 +2,7 @@
 	"easycom": {
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	},
-	"pages": [
-		{
+	"pages": [{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "课堂"
@@ -48,8 +47,7 @@
 		},
 		{
 			"root": "pages/square",
-			"pages": [
-				{
+			"pages": [{
 					"path": "check",
 					"style": {
 						"navigationBarTitleText": "打卡圈"
@@ -65,8 +63,7 @@
 		},
 		{
 			"root": "pages/classManagement",
-			"pages": [
-				{
+			"pages": [{
 					"path": "aiChats",
 					"style": {
 						"navigationBarTitleText": "课程管理"
@@ -94,8 +91,7 @@
 		},
 		{
 			"root": "pages/learnResource",
-			"pages": [
-				{
+			"pages": [{
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "学习资源"
@@ -123,7 +119,7 @@
 				{
 					"path": "DocLib",
 					"style": {
-						"navigationBarTitleText": "资料库" 
+						"navigationBarTitleText": "资料库"
 					}
 				},
 
@@ -137,48 +133,63 @@
 		},
 		{
 			"root": "pages/progressFeedback",
-			"pages": [
-				{
+			"pages": [{
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "进度反馈"
 					}
 				},
 				{
-					"path":"learningProgress",
-					"style":{
-						"navigationBarTitleText":"学习进度"
+					"path": "learningProgress",
+					"style": {
+						"navigationBarTitleText": "学习进度"
 					}
 				},
 				{
-					"path":"learningSituation",
-					"style":{
-						"navigationBarTitleText":"学习情况"
+					"path": "learningSituation",
+					"style": {
+						"navigationBarTitleText": "学习情况"
 					}
 				}
 			]
 		},
 		{
-			"root": "pages/learnSuggestion",
-			"pages": [
-				{
+			"root": "pages/learnDashboard",
+			"pages": [{
 					"path": "index",
+					"style": {
+						"navigationBarTitleText": "学能图谱"
+					}
+				},
+				{
+					"path": "contentPreference",
+					"style": {
+						"navigationBarTitleText": "内容偏好"
+					}
+				},
+				{
+					"path": "strengthsWeaknesses",
+					"style": {
+						"navigationBarTitleText": "优缺点"
+					}
+				},
+				{
+					"path": "learnSuggestions",
 					"style": {
 						"navigationBarTitleText": "学习建议"
 					}
 				}
+
 			]
 		},
 		{
 			"root": "pages/login",
-			"pages": [
-				{
-					"path": "login",
-					"style": {
-						"navigationBarTitleText": "登录"
-					}
+			"pages": [{
+				"path": "login",
+				"style": {
+					"navigationBarTitleText": "登录"
 				}
-			]
+			}]
 		},
 		{
 			"root": "pages/personal",
@@ -201,7 +212,7 @@
 						"navigationBarTitleText":"收藏"
 					}
 				}
-			]
+			}]
 		}
 	],
 	"globalStyle": {
@@ -217,8 +228,7 @@
 		"backgroundColor": "",
 		"position": "bottom",
 		"borderStyle": "black",
-		"list": [
-			{
+		"list": [{
 				"pagePath": "pages/index/index",
 				"text": "课堂",
 				"iconPath": "static/classroom/class.png",
