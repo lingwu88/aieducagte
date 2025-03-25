@@ -14,6 +14,9 @@
 import courseCard from './components/courseCard.vue';
 	export default {
     components:{courseCard},
+    onLoad(){
+      this.getCourse()
+    },
 		data() {
 			return {
           list:[
@@ -48,11 +51,22 @@ import courseCard from './components/courseCard.vue';
           ]
 				}
 		},
-		onLoad() {
-
-		},
 		methods: {
-		}
+      getCourse(){
+        this.$api.learnResource.getCourse({
+          coursewareId:"",
+          limit:12
+        })
+        .then(res=>{
+          console.log(res);
+          
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+      }
+    }
 	}
 </script>
 

@@ -38,10 +38,10 @@
 						:title="item.title"
 						:img="item.userAvatar"
 						:showApprove="item.approved"
-						
+						:showStar="item.collected"
 						@showComment="controlShow"
 						@approve="handleApprove($event,item,index)"
-						@star="handleStar($event,item,index)"
+						@star="toggleStar($event,item,index)"
 						@comment="handleComment($event,item)"
 						:commentList="commentList"
 						:tagList="item.tags"
@@ -257,7 +257,7 @@ import request from '../../tools/request';
 							...item,
 							approved:item.approved,
 							userAvatar:request.baseUrl+item.userAvatar,
-							tags:item.tags==="[]"?[]:item.tags.slice(1, -1).split(',')
+							tags:(item.tags==="[]"||item.tags==="")?[]:item.tags.slice(1, -1).split(',')
 						}))
 						if(lastId === ""){
 							arr = newArr
@@ -282,64 +282,60 @@ import request from '../../tools/request';
 				})
 			},
 			handleStar(status,item){
-				return new Promise((resolve,reject)=>{
-
-					//若真，则取消
-					if(status){
-						this.$api.square.starArticle({
+				const body = {
 							userId:this.userId,
 							articleId:item.articleId
-						})
+				}
+				return new Promise((resolve,reject)=>{
+					//若真，则取消
+					if(status){
+						this.$api.square.cancelStar(body)
 						.then(res=>{
-
+							resolve(false)
 						})
 						.catch(err=>{
-							throw new Error(err)
+							reject(err)
 						})
 					}
 					else{
-
+						this.$api.square.starArticle(body)
+						.then(res=>{
+							resolve(true)
+						})
+						.catch(err=>{
+							reject(err)
+						})
 					}
 				})
 			},
 			toggleStar(starStatus,item,index){
+				console.log('触发star');
+				
 				//更改当前状态
 				this.$set(this.list,index,{
 					...item,
-					approved:!approved
+					collected:!starStatus
 				})
 
-				//若真，则取消更改
-				if(starStatus){
-
-				}
-				
-				this.$api.square.approve({
-					approved:!starStatus,
-					userId:this.userId,
-					articleId:item.articleId
-				}).then(res=>{
-					console.log(res)
-					
-					//如果为真，则为点赞
-					if(this.list[index].approved){
-						this.$set(this.list[index],'likeCount',item.likeCount+1)
+				this.handleStar(starStatus,item)
+				.then(res=>{
+					if(res){
 						uni.showToast({
-							title:'点赞成功'
+							title:"成功收藏"
 						})
 					}
 					else{
-						this.$set(this.list[index],'likeCount',item.likeCount-1)
 						uni.showToast({
-							title:'取消点赞成功'
+							title:"取消收藏"
 						})
 					}
-					console.log(index);
-					
 				})
 				.catch(err=>{
 					console.log(err);
-					
+					uni.showToast({
+						title:'错误',
+						icon:"error"
+					})
 				})
 			},
 			handleApprove(approved,item,index){
@@ -355,16 +351,16 @@ import request from '../../tools/request';
 					articleId:item.articleId
 				}).then(res=>{
 					//如果为真，则为点赞
-					if(this.list[index].approved){
-						this.$set(this.list[index],'likeCount',item.likeCount+1)
-						uni.showToast({
-							title:'点赞成功'
-						})
-					}
-					else{
+					if(approved){
 						this.$set(this.list[index],'likeCount',item.likeCount-1)
 						uni.showToast({
 							title:'取消点赞成功'
+						})
+					}
+					else{
+						this.$set(this.list[index],'likeCount',item.likeCount+1)
+						uni.showToast({
+							title:'点赞成功'
 						})
 					}
 					

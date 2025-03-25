@@ -18,7 +18,7 @@
       <view class="footer">
         <view @click="handleStar" class="star">     
           <u-icon :name="showStar?'star-fill':'star'" size="22"></u-icon>
-          <text class="star-number">22</text>
+          <text class="star-number"> </text>
         </view>
         <icon :img="approveSrc" @click="handleApprove" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->

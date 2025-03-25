@@ -16,7 +16,7 @@
       </view>
       <view class="type">{{ typeList[info.type] }}</view>
       <view class="content-footer">
-          <image :src="approvedSrc" class="image" @click="handleStar(info.approved,info)"></image>
+          <image :src="approvedSrc" class="image" @click="handleApprove(info.approved,info)"></image>
           <view class="content-number">{{ info.likeCount }}</view>
       </view>
     </view>
@@ -80,66 +80,70 @@ export default{
   },
   data() {
     return {
-      info:{
-        "title": "如何手写线程池",
-        "articleId": "13",
-        "content": "我不想干了，可恶的java，添砖jav,fjsdklajfkljdsaklfjkldsajklfjf接口的反对开放时间啊快乐减肥的快乐撒娇开发建设打开了放假啊数据lakes的快乐减肥快链接阿斯利康分时间啊都快链接反抗精神方卡链接放辣椒库a",
-        "userName": "这是我啊",
-        "userAvatar": this.$request.baseUrl+"/avatars/oFcZA60zZ_q2lTfGTvvt-ySA93tQ_qHlVM5nz8Ry944d94bdfa4e83cce1c30deb8f31616c4.jpg",
-        "viewCount": 0,
-        "likeCount": 0,
-        "commentCount": 0,
-        "type": 0,
-        "tags": ["java"],
-        "createTime": "2025-03-11 23:05:08",
-        "approved": false
-      },
+      articleId:"",
+      userId:"",
+      info:{},
       commentList:[],
-      typeList:['资料分享','日常记录','技术交流']
+      typeList:['','资料分享','日常记录','技术交流']
     }
   },
   methods: {
-     //控制（取消）收藏
-     handleStar(approved,item){
-				// console.log(approved,item);
-				// 找到需要修改的文章
-				this.$set(this,'info',{
-					...this.info,
-					approved:!approved
-				})
-				
-				// this.$api.square.star({
-				// 	...this.starBody,
-				// 	approved:!approved,
-				// 	userId:this.userId,
-				// 	articleId:item.articleId
-				// }).then(res=>{
-				// 	console.log(res)
-					
+     //控制（取消）点赞
+     handleApprove(approved,item){
+      this.$api.square.approve({
+					approved:!approved,
+					userId:this.userId,
+					articleId:item.articleId
+				}).then(res=>{
 					//如果为真，则为点赞
-					if(this.info.approved){
-						this.$set(this.info,'likeCount',item.likeCount+1)
-						uni.showToast({
-							title:'点赞成功'
-						})
-					}
-					else{
+					if(approved){
 						this.$set(this.info,'likeCount',item.likeCount-1)
 						uni.showToast({
 							title:'取消点赞成功'
 						})
 					}
-					console.log(index);
+					else{
+						this.$set(this.info,'likeCount',item.likeCount+1)
+						uni.showToast({
+							title:'点赞成功'
+						})
+					}
 					
-				// })
-				// .catch(err=>{
-				// 	console.log(err);
-					
-				// })
+					//修改数组中内容
+					this.$set(this,'info',{
+						...this.info,
+						approved:!approved
+					})
+				})
+				.catch(err=>{
+					console.log(err);
+				})
 			},
+      getInfo(){
+        this.$api.square.queryIdArticle({userId:this.userId,articleId:this.articleId})
+        .then(res=>{
+          console.log(res);
+          this.$set(this,'info',{
+            ...res.data,
+            userAvatar:this.$request.baseUrl+res.data.userAvatar,
+            tags:(res.data.tags==="[]"||res.data.tags==="")?[]:res.data.tags.slice(1, -1).split(',')
+          })
+        })
+        
+      }
   },
-  onLoad(){
-    console.log(this.approvedSrc);
+  onLoad(options){
+    this.userId = uni.getStorageSync('userId')
+    if(options.articleId){
+      this.articleId = options.articleId
+      console.log(this.articleId);
+      this.getInfo()
+    }
+    else{
+      uni.switchTab({
+        url:'/pages/index/index'
+      })
+    }
     
   },
   computed:{
@@ -215,7 +219,7 @@ export default{
         width: 100rpx;
         height: 100rpx;
         border-radius: 50%;
-        border: 1px solid #000000;
+        border:none;
         padding: 10rpx;
       }
     }

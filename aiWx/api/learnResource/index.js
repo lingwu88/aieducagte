@@ -27,6 +27,7 @@ export function exportFile(data){
 //获取课程库
 export function getCourse({coursewareId,limit}){
   return request.get(
-    `/api/resource/getResourceList?coursewareId=${coursewareId}&limit=${limit}`
+    `/api/resource/getCoursewareList?coursewareId=${coursewareId}&limit=${limit}`
   )
 }
+

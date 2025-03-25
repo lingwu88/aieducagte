@@ -27,7 +27,12 @@
         </view>
         <view class="footer">
           <view class="footer-item">
-            <image :src="item.approved?'http://120.26.132.46:8091/square/star-fill.png':'http://120.26.132.46:8091/square/star.png'" class="image" @click.stop="handleStar(item.approved,item)"></image>
+            <view class="iconStar" @click.stop="toggleStar(item.collected,item,index)">
+              <u-icon :name="item.collected?'star-fill':'star'" size="22"></u-icon>
+            </view>
+          </view>
+          <view class="footer-item">
+            <image :src="item.approved?'http://120.26.132.46:8091/square/star-fill.png':'http://120.26.132.46:8091/square/star.png'" class="image" @click.stop="handleApprove(item.approved,item)"></image>
             <text class="footer-number">{{ item.likeCount }}</text>
           </view>
           <view class="footer-item">
@@ -59,7 +64,7 @@
 export default{
   data() {
     return {
-      typeList:['资料分享','日常记录','技术交流'],
+      typeList:['','资料分享','日常记录','技术交流'],
       List:[
         // {
         //   "title": "如何手写线程池",
@@ -95,7 +100,12 @@ export default{
         // }
       ],
       commentList:[],
-      userId:""
+      userId:"",
+      approveBody:{
+					userId:"",
+					articleId:"",
+					approved:false
+      },
     }
   },
   onLoad(){
@@ -103,31 +113,107 @@ export default{
     this.getPost()
   },
   methods: {
-    getPost(){
-      this.$api.personal.myArticleList(this.userId).then(res=>{
-        console.log(res);
-        
-      })
-      .catch(err=>{
-        console.log(err);
-        
+    handleStar(status,item){
+				const body = {
+							userId:this.userId,
+							articleId:item.articleId
+				}
+				return new Promise((resolve,reject)=>{
+					//若真，则取消
+					if(status){
+						this.$api.square.cancelStar(body)
+						.then(res=>{
+							resolve(false)
+						})
+						.catch(err=>{
+							reject(err)
+						})
+					}
+					else{
+						this.$api.square.starArticle(body)
+						.then(res=>{
+							resolve(true)
+						})
+						.catch(err=>{
+							reject(err)
+						})
+					}
+				})
+			},
+			toggleStar(starStatus,item,index){
+				console.log('触发star');
+				
+				//更改当前状态
+				this.$set(this.List,index,{
+					...item,
+					collected:!starStatus
+				})
+
+				this.handleStar(starStatus,item)
+				.then(res=>{
+					if(res){
+						uni.showToast({
+							title:"成功收藏"
+						})
+					}
+					else{
+						uni.showToast({
+							title:"取消收藏"
+						})
+					}
+				})
+				.catch(err=>{
+					console.log(err);
+					uni.showToast({
+						title:'错误',
+						icon:"error"
+					})
+				})
+			},
+    getPost(lastId=""){
+      return new Promise((resolve,reject)=>{
+      	let arr
+					this.$api.personal.myArticleList(this.userId)
+          .then(res=>{
+						console.log(res);
+						const newArr = res.data.map(item=>({
+							...item,
+							approved:item.approved,
+							userAvatar:this.$request.baseUrl+item.userAvatar,
+							tags:item.tags==="[]"?[]:item.tags.slice(1, -1).split(',')
+						}))
+						if(lastId === ""){
+							arr = newArr
+						}
+						else{
+							arr = [...this.List, ...newArr]
+						}
+						console.log(arr);
+						
+						this.$set(this,'List',arr)
+						resolve(res.data?.length?res.data.length:0)
+					})
+					.catch(err=>{
+						console.log(err);
+						reject(-1)
+					})
       })
     },
     //控制（取消）收藏
-    handleStar(approved,item){
+    handleApprove(approved,item){
 				// console.log(approved,item);
 				// 找到需要修改的文章
-				const index = this.list.findIndex(article=>article.articleId == item.articleId)
+				const index = this.List.findIndex(article=>article.articleId == item.articleId)
 
 				//修改数组中内容
-				this.$set(this.list,index,{
+				this.$set(this.List,index,{
 					...item,
 					approved:!approved
 				})
-				console.log(this.list[index]);
+				console.log(this.List[index]);
 				
-				this.$api.square.star({
-					...this.starBody,
+				this.$api.square.approve({
+					...this.approveBody,
 					approved:!approved,
 					userId:this.userId,
 					articleId:item.articleId
@@ -135,14 +221,14 @@ export default{
 					console.log(res)
 					
 					//如果为真，则为点赞
-					if(this.list[index].approved){
-						this.$set(this.list[index],'likeCount',item.likeCount+1)
+					if(this.List[index].approved){
+						this.$set(this.List[index],'likeCount',item.likeCount+1)
 						uni.showToast({
 							title:'点赞成功'
 						})
 					}
 					else{
-						this.$set(this.list[index],'likeCount',item.likeCount-1)
+						this.$set(this.List[index],'likeCount',item.likeCount-1)
 						uni.showToast({
 							title:'取消点赞成功'
 						})
@@ -176,7 +262,7 @@ export default{
 			},
       handleToDetail(item){
         uni.navigateTo({
-          url:"/pages/index/postDetail"
+          url:"/pages/index/postDetail?articleId="+item.articleId
         })
       },
       toggleToast(status,index){
@@ -348,6 +434,9 @@ export default{
             margin-right: 5rpx;
             width: 40rpx;
             height: 40rpx;
+          }
+          .iconStar{
+            margin-bottom: 10%;
           }
         }
         &-number{
