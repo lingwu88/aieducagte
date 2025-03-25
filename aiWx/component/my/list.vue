@@ -17,11 +17,11 @@
 					},
 					{
 						title:"我的帖子",
-						url:"/pages/personal/index"
+						url:"/pages/personal/myPost"
 					},
 					{
 						title:"记录与收藏",
-						url:"/pages/personal/index"
+						url:"/pages/personal/collection"
 					},
 					{
 						title:"建议与反馈",
@@ -29,7 +29,7 @@
 					},
 					{
 						title:"清除缓存",
-						url:"/pages/personal/index"
+						url:"/pages/personal/clear"
 					}
 				]
 			}
@@ -43,8 +43,13 @@
 				if(item.url === "/pages/personal/index"){
 					uni.showToast({
 						title:"暂未开放此功能",
-						icon:none
+						icon:'none'
 					})
+					return
+				}
+				else if(item.url === '/pages/personal/clear'){
+					this.$emit('clear')
+					return
 				}
 				uni.navigateTo({
 					url:item.url

@@ -16,28 +16,11 @@
       <view class="loading-more" v-if="isLoading">
         <text>加载中...</text>
       </view>
-
-      <!-- <view class="content"> -->
-      <!-- <view class="content-title">{{ result.title }}</view> -->
-      <!-- <view class="second">
-        <view class="base">基于{{ result.base }}篇参考资料</view>
-        <view class="select">
-          <uni-data-select
-            v-model="value"
-            :localdata="range"
-            @change="change"
-          ></uni-data-select>
-        </view>
-      </view> -->
-      <!-- <view class="word">
-        <mp-html :content="content"/>
-      </view> -->
-    <!-- </view> -->
       <!-- 消息列表 -->
       <view class="message-list">
         <view
           v-for="(item, index) in messageList"
-          :key="index"
+          :key="item.id"
           :id="'msg-' + index"
           class="message-item"
           :class="item.type"
@@ -50,9 +33,17 @@
           <!-- 消息内容 -->
           <view class="message-content">
             <!-- 文本消息 -->
-            <view v-if="item.contentType === 'text'" class="text-content">
-              {{ item.content }}
-            </view>
+            <!-- <mp-html 
+            v-if="item.contentType === 'text'" 
+            class="text-content" 
+            :content="item.content">
+            </mp-html> -->
+            <mp-html
+            v-if="item.contentType === 'text'" 
+            class="text-content" 
+            :content="item.content">
+            </mp-html>
+
 
             <!-- 图片消息 -->
              <image 
@@ -93,17 +84,12 @@
       </view>
     </scroll-view>
 
-<!-- 
-    <view class="navigate-box" @click="handleToProfession">
-      <image src="/static/classroom/classManagement/professional.png"></image>
-      <view>专业模式</view>
-    </view> -->
 
     <view :class="[{'input-area':true,'input-area-flex':!show}]" v-show="!show">
+      <view class="mode-swtich" @tap="toggleShow">
+        <uni-icons type= 'gear-filled' size="24"></uni-icons>
+      </view>
       <view class="input">
-        <view class="mode-swtich" @tap="switchMode">
-          <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
-        </view>
         <view class="input-box" v-if="!isVoiceMode">
           <textarea
             v-model="inputText"
@@ -117,10 +103,10 @@
             @blur="handleBlur"
             class="input-textarea"
           />
-          <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
+          <!-- <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons> -->
         </view>
         
-        <view 
+        <!-- <view 
           v-else
           class="voice-input"
           :class="{ recording: isRecording }"
@@ -129,7 +115,7 @@
           @touchcancel="cancelRecording"
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
-        </view>
+        </view> -->
       </view>
       <view 
           class="send-btn"
@@ -156,15 +142,11 @@ export default {
   props: {
     userAvatar: {
       type: String,
-      default: '/static/my/user.png'
+      default: 'http://120.26.132.46:8091/my/user.png'
     },
     aiAvatar: {
       type: String,
-      default: '/static/my/avatar.png'
-    },
-    messageList:{
-      type:Array,
-      default:[]
+      default:'http://120.26.132.46:8091/my/avatar.png'
     },
     show:{
       type:Boolean,
@@ -188,7 +170,8 @@ export default {
       page: 1,
       isAiTyping: false,
       requestbody:{},
-      content:""
+      content:"",
+      messageList:[]
     }
   },
   created() {
@@ -199,6 +182,9 @@ export default {
     this.initRequest()
   },
   methods: {
+    toggleShow(){
+      this.$emit('controlSetting')
+    },
     initRequest(){
       let body = uni.getStorageSync('aiSetting')
       this.requestbody = {
@@ -256,6 +242,7 @@ export default {
     handleBlur() {
       this.isVoiceMode = false
     },
+    //发送按钮
     async handleSend() {
       if(!this.canSend) return
 
@@ -263,10 +250,13 @@ export default {
         type: 'user',
         contentType: 'text',
         content: this.inputText,
-        status: 'sending'
+        status: 'sent',
+        id:this.messageList.length
       }
-      this.$emit('push',userMessage)
-      // this.messageList.push(userMessage)
+      // this.$emit('push',userMessage)
+      this.messageList.push(userMessage)
+      console.log(this.messageList);
+      
       this.scrollToBottom()
 
       
@@ -274,17 +264,18 @@ export default {
       try{
         this.isAiTyping = true
         // const response = await this.sendToAI(userMessage.content)
-        await this.sendToAI(userMessage.content)
-        userMessage.status = 'sent'
-        this.$emit('push',{
+        this.messageList.push({
           type: 'ai',
           contentType: 'text',
-          // content: response
-          content:this.content
+          content:"",
+          id:this.messageList.length
         })
-        // this.messageList.push()
+        this.sendToAI(userMessage.content)
+        // userMessage.status = 'sent'
+        console.log(this.messageList);
+        
       } catch (error) {
-        userMessage.status = 'failed'
+        // userMessage.status = 'failed'
         uni.showToast({
           title: '发送失败',
           icon: 'none'
@@ -341,18 +332,12 @@ export default {
 
     sendVoiceMessage(tempFilePath, duration) {
       console.log('sendVoiceMessage', tempFilePath, duration)
-      this.$emit('push',{
+      this.messageList.push({
         type: 'user',
         contentType: 'voice',
         content: tempFilePath,
         duration: Math.round(duration / 1000)
       })
-      // this.messageList.push({
-      //   type: 'user',
-      //   contentType: 'voice',
-      //   content: tempFilePath,
-      //   duration: Math.round(duration / 1000)
-      // })
       this.scrollToBottom()
       
       //发送完语音后
@@ -370,46 +355,55 @@ export default {
     sendToAI(content) {
       return new Promise((resolve,reject)=>{
         this.generateAi()
-        // this.$api.classManagement.learnSchedule(this.form).then(res=>{
-        //   console.log(res);
-        //   resolve(res)
-        // })
-        // .catch(err=>{
-        //   console.log(err);
-        //   reject(err)
-        // })
+        .then(res=>{
+          resolve('ai连接成功')
+        })
+        .catch(err=>{
+          reject('ai连接失败'+err)
+        })
       })
     },
     //使用复习ai
     generateAi(id=""){
       // let body = uni.getStorageSync('aiSetting')
-      let data = {
-        ...this.setting,
-        userId:uni.getStorageSync('userId'),
-        conversationId:id,
-        qurey:this.inputText
-      }
-
-      console.log(data);
-      
-      
-      //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${data.userId}`,this.logData,undefined,this.closeSSE)
-      this.$api.selfStudy.reviewAi(data).then(res=>{
-        console.log(res);
+      return new Promise((resolve,reject)=>{
+        let data = {
+          ...this.setting,
+          userId:uni.getStorageSync('userId'),
+          conversationId:id,
+          query:this.inputText
+        }
         
-      })
-      .catch(err=>{
-        console.log(err);
-        
+        //开启sse
+        this.$api.classManagement.createSSE(
+          `/api/ai/createSse?userId=${data.userId}`,
+          this.logData,
+          undefined,
+          this.closeSSE
+        )
+        this.$api.selfStudy.reviewAi(data)
+        .then(res=>{
+          console.log(res);
+          resolve('成功连接')
+        })
+        .catch(err=>{
+          reject('连接失败'+err)
+        })
       })
     },
     closeSSE(){
       this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
         console.log(res);
         console.log('关闭');
-        const word = convertMarkdown(this.content)
-        this.$set(this,'content',word)
+        const word = convertMarkdown(this.messageList[this.messageList.length-1].content)
+        console.log(this.messageList);
+        this.$set(this.messageList,this.messageList.length-1,{
+          ...this.messageList[this.messageList.length-1],
+          content:word
+        })
+        this.scrollToBottom()
+        console.log(this.messageList);
+        
       })
       .catch(err=>{
         console.log(err);
@@ -421,7 +415,8 @@ export default {
       console.log(res);
        const data = regexSSE(res)
        if(data){
-        this.content +=data
+        // this.content +=data
+        this.messageList[this.messageList.length-1].content +=data
        }
       // this.result.word += data; // 将提取的数据添加到 result.word
     },
@@ -441,7 +436,8 @@ export default {
 }
 .chat-container {
   width:inherit;
-  height: 100vh;
+  // height: auto;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;

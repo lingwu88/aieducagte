@@ -14,12 +14,12 @@
 					list:[
 						{
 							description: "学习进度",
-							img: "/static/classroom/learnResource/book.png",
+							img: this.$request.baseUrl+"/classroom/learnResource/book.png",
 							url: "/pages/progressFeedback/learningProgress"
 						},
 						{
 							description: "学习情况",
-							img: "/static/classroom/learnResource/book.png",
+							img: this.$request.baseUrl+"/classroom/learnResource/book.png",
 							url: "/pages/progressFeedback/learningSituation"
 						}
 					]

@@ -14,45 +14,59 @@
 import courseCard from './components/courseCard.vue';
 	export default {
     components:{courseCard},
+    onLoad(){
+      this.getCourse()
+    },
 		data() {
 			return {
           list:[
             {
-              img:"/static/classroom/learnResource/course_bg1.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg1.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg2.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg2.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg3.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg3.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg4.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg4.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg5.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg5.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg6.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg6.png",
               title:"这只是个示例"
             },
             {
-              img:"/static/classroom/learnResource/course_bg7.png",
+              img:this.$request.baseUrl+"/classroom/learnResource/course_bg7.png",
               title:"这只是个示例"
             }
           ]
 				}
 		},
-		onLoad() {
-
-		},
 		methods: {
-		}
+      getCourse(){
+        this.$api.learnResource.getCourse({
+          coursewareId:"",
+          limit:12
+        })
+        .then(res=>{
+          console.log(res);
+          
+        })
+        .catch(err=>{
+          console.log(err);
+          
+        })
+      }
+    }
 	}
 </script>
 

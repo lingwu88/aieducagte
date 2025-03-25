@@ -13,8 +13,8 @@
 			@scrolltolower="handleLoad"
 			>
 			<view v-if="renderList.length!=0">
-				<u-list-item v-for="(item, index) in renderList" :key="id">
-					<essay @click="handleTo(item)" :img="item.img" :title="item.title"></essay>
+				<u-list-item v-for="(item, index) in renderList" :key="item.title">
+					<essay @click="handleTo($event,item)" :img="item.img" :title="item.title"></essay>
 				</u-list-item>
 			</view>
 			<view v-else>
@@ -68,9 +68,11 @@ import essay from '../../component/classroom/essay.vue';
 			handleClick(){
 				
 			},
-			handleTo(item){
+			handleTo(e,item){
+				console.log(item.urk);
+				
 				uni.navigateTo({
-						url: `/pages/learnResource/webview?url=${encodeURIComponent(item.url)}`
+						url: `/pages/learnResource/webview?url=${item.url}`
 					});
 			},
 			getInfo(page,pageSize){

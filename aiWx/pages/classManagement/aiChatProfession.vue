@@ -68,7 +68,7 @@
 		</u--form>
     </view>
     <view class="navigate-box" @click="handleToNormal">
-      <image src="/static/classroom/classManagement/professional.png"></image>
+      <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
       <view>普通模式</view>
     </view>
     <view class="btn" @click="handleProduce" v-if="!type">生成</view>
