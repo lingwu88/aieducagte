@@ -34,6 +34,7 @@
 		<view
 			v-for="toast in toastQueue"
 			:key="toast.id"
+			:id="`toast-${toast.id}`"
 			class="toast"
 			:style="{
 				top: toast.top + 'px',
@@ -41,7 +42,8 @@
 				opacity: toast.opacity
 			}"
 		>
-			{{ toast.message }}
+			<!-- 使用 text 标签来确保换行有效 -->
+			<text class="toast-message">{{ toast.message }}</text>
 		</view>
 	</view>
 </template>
@@ -58,7 +60,7 @@ export default {
 	},
 	methods: {
 		show(context, ...args) {
-			// 校验第一个参数 context
+			
 			if (typeof context !== 'string') {
 				throw new Error('Toast context must be a string');
 			}
@@ -70,7 +72,7 @@ export default {
 				StayTime: 1300
 			};
 
-			// 解析传入的参数
+			// 解析参数
 			const params = {};
 			args.forEach((arg, index) => {
 				if (typeof arg !== 'object' || arg === null) {
@@ -87,33 +89,64 @@ export default {
 				params[key] = arg[key];
 			});
 
-			// 合并默认参数和用户传入参数
+			// 合并参数
 			const mergedParams = { ...defaultParams, ...params };
 
-			// 创建新 Toast
+			// 创建新的 toast，初始 opacity 设为 0（隐藏），待位置调整后再显示
 			const newToast = {
 				id: toastId++,
 				message: context,
 				...this.calcPosition(mergedParams.heightPercent),
-				opacity: 1,
+				opacity: 0,
 				direction: this.validateDirection(mergedParams.direction)
 			};
 
 			this.toastQueue.push(newToast);
 
-			// 设置停留时间和动画
-			setTimeout(() => {
-				this.animateDismiss(newToast);
-				setTimeout(() => {
-					this.toastQueue = this.toastQueue.filter((t) => t.id !== newToast.id);
-				}, 500); // 渐隐动画时间固定为 500ms
-			}, mergedParams.StayTime); // 使用指定的停留时间
+			// 等待 DOM 更新后，获取 toast 的位置，并根据需要调整
+			this.$nextTick(() => {
+				uni.createSelectorQuery()
+				.in(this)
+					.select(`#toast-${newToast.id}`)
+					.boundingClientRect((rect) => {
+						if (rect) {
+							const { windowWidth, windowHeight } = this.systemInfo;
+							// 计算 rpx 转 px 的比例（750rpx 为设计稿宽度）
+							const conversion = windowWidth / 750;
+							const bottomMargin = 30 * conversion;
+							const topMargin = 20 * conversion;
+							let adjustedTop = newToast.top;
+							// 若底部超出屏幕，则上移，使底边距离屏幕底部 30rpx
+							if (rect.bottom > windowHeight) {
+								adjustedTop = newToast.top - (rect.bottom - (windowHeight - bottomMargin));
+							}
+							// 若顶部超出屏幕，则下移，使顶边距离屏幕上方 20rpx
+							if (rect.top < 0) {
+								adjustedTop = newToast.top + (0 - rect.top) + topMargin;
+							}
+							newToast.top = adjustedTop;
+							
+						}
+						// 调整完毕后显示 toast
+						newToast.opacity = 1;
+						// 设置停留时间与消失动画
+						setTimeout(() => {
+							this.animateDismiss(newToast);
+							setTimeout(() => {
+								this.toastQueue = this.toastQueue.filter((t) => t.id !== newToast.id);
+							}, 600); // 固定 500ms 渐隐动画
+						}, mergedParams.StayTime);
+						
+					})
+					.exec();
+			});
 		},
 		calcPosition(heightPercent) {
 			const { windowHeight, windowWidth } = this.systemInfo;
-			const toastHeight = 25;
+			// 初步计算 toast 的 top 位置，后续根据实际尺寸调整
+			const defaultToastHeight = 25;
 			return {
-				top: Math.max(windowHeight * (1 - heightPercent) - toastHeight / 2, 50),
+				top: Math.max(windowHeight * (1 - heightPercent) - defaultToastHeight / 2, 50),
 				left: windowWidth / 2
 			};
 		},
@@ -148,7 +181,7 @@ export default {
 	top: 0;
 	left: 0;
 	width: 100%;
-	z-index: 9999;
+	z-index: 9999999999999;
 	pointer-events: none;
 }
 .toast {
@@ -160,10 +193,20 @@ export default {
 	border-radius: 10rpx;
 	font-size: 28rpx;
 	transition: all 0.5s ease;
-	max-width: 80%;
+	max-width: 100%;
 	text-align: center;
+	/* 确保文本换行、不会撑宽容器 */
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-wrap: break-word;
 }
 .toast + .toast {
-	margin-top: 120rpx; // 优化为 rpx 单位
+	margin-top: 120rpx;
+}
+.toast-message {
+	display: block;
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-wrap: break-word;
 }
 </style>
