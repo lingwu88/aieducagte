@@ -12,7 +12,7 @@ export function getComment(articleId){
 }
 
 //控制点赞
-export function star(data){
+export function approve(data){
   return request.post(
     '/api/square/approveArticle',
     data
@@ -73,6 +73,22 @@ export function queryIdArticle({userId,articleId}){
 export function deleteArticle(data){
   return request.post(
     '/api/square/deleteArticle',
+    data
+  )
+}
+
+//收藏文章
+export function starArticle(data){
+  return request.post(
+    '/api/user/collectArticle',
+    data
+  )
+}
+
+//取消收藏
+export function cancelStar(data){
+  return request.post(
+    '/api/user/cancelCollectArticle',
     data
   )
 }

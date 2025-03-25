@@ -1,7 +1,7 @@
 <template>
 	<view class="container main">
     <myHeader class="header" :isLogin="isLogin" :img="img" :name="userName"></myHeader>
-		<list></list>
+		<list @clear="clearStorage"></list>
 		<view class="btn" @click="logout" v-if="isLogin">登出</view>
 	</view>
 </template>
@@ -37,6 +37,27 @@ import request from '../../tools/request';
 			}
 		},
 		methods: {
+			clearStorage(){
+				console.log(uni.getStorageInfoSync().keys);
+				const keys = uni.getStorageInfoSync().keys
+
+				//遍历清除缓存
+				if(keys.length!==0){
+					keys.forEach(element => {
+						uni.removeStorageSync(element)
+					});
+					uni.showToast({
+						title:"成功清除缓存",
+						icon:'none'
+					})
+				}
+				else{
+					uni.showToast({
+						title:"已无任何可清空缓存",
+						icon:"warning"
+					})
+				}
+			},
 			getInfo(){
 				this.$api.personal.getUserInfo(this.userId).then(res=>{
 										// this.$set(this,'img',res.data.avatar)

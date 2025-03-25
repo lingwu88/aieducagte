@@ -1,8 +1,8 @@
 <template>
     <view class="box">
       <view class="essay-list" v-for="(item,index) in List" :key="item.articleId">
-        <view class="icon" v-if="showControl"></view>
-        <view class="essay-item" :class="[{'essay-item-control':showControl}]">
+        <view class="icon" v-if="showControl" :class="{'icon-selected':item.isSelected}" @click="toggleSelect(item.isSelected,index)"></view>
+        <view class="essay-item" :class="[{'essay-item-control':showControl}]" @click="toggleSelect(item.isSelected,index)">
 
           <view class="left">
             <image class="avatar" :src="item.userAvatar" lazy-load="true" />
@@ -26,7 +26,7 @@
       </view>
       <view class="footer-another" v-else>
         <view @click="toggleControl">取消管理</view>
-        <view>全选</view>
+        <view @click="toggleAll">全选</view>
         <view>取消收藏</view>   
       </view>
         
@@ -51,7 +51,8 @@ export default{
           "type": 0,
           "tags": "java",
           "createTime": "2025-03-11 23:05:08",
-          "approved": false
+          "approved": false,
+          "isSelected":false
         },
         {
           "title": "迭代器模式",
@@ -65,11 +66,12 @@ export default{
           "type": 0,
           "tags": "",
           "createTime": "2025-02-20 14:17:29",
-          "approved": true
+          "approved": true,
+          "isSelected":false
         },
         {
           "title": "如何手写线程池",
-          "articleId": "1899476692292997120",
+          "articleId": "189947669229299hij0",
           "content": "我不想干了，可恶的java，添砖java，发送金德拉克激发快乐瞬间打开放辣椒克拉三等奖快放假了刷卡机看来大家方卡链接啊",
           "userName": "",
           "userAvatar": "/static/my/avatar.png",
@@ -79,11 +81,12 @@ export default{
           "type": 0,
           "tags": "java",
           "createTime": "2025-03-11 23:05:08",
-          "approved": false
+          "approved": false,
+          "isSelected":false
         },
         {
           "title": "如何手写线程池",
-          "articleId": "1899476692292997120",
+          "articleId": "1899476692292997199",
           "content": "我不想干了，可恶的java，添砖java，发送金德拉克激发快乐瞬间打开放辣椒克拉三等奖快放假了刷卡机看来大家方卡链接啊",
           "userName": "",
           "userAvatar": "/static/my/avatar.png",
@@ -93,11 +96,12 @@ export default{
           "type": 0,
           "tags": "java",
           "createTime": "2025-03-11 23:05:08",
-          "approved": false
+          "approved": false,
+          "isSelected":false
         },
         {
           "title": "如何手写线程池",
-          "articleId": "1899476692292997120",
+          "articleId": "189947669229299712340",
           "content": "我不想干了，可恶的java，添砖java，发送金德拉克激发快乐瞬间打开放辣椒克拉三等奖快放假了刷卡机看来大家方卡链接啊",
           "userName": "",
           "userAvatar": "/static/my/avatar.png",
@@ -107,11 +111,12 @@ export default{
           "type": 0,
           "tags": "java",
           "createTime": "2025-03-11 23:05:08",
-          "approved": false
+          "approved": false,
+          "isSelected":false
         },
         {
           "title": "如何手写线程池",
-          "articleId": "1899476692292997120",
+          "articleId": "1899476692292997178",
           "content": "我不想干了，可恶的java，添砖java，发送金德拉克激发快乐瞬间打开放辣椒克拉三等奖快放假了刷卡机看来大家方卡链接啊",
           "userName": "",
           "userAvatar": "/static/my/avatar.png",
@@ -121,14 +126,42 @@ export default{
           "type": 0,
           "tags": "java",
           "createTime": "2025-03-11 23:05:08",
-          "approved": false
+          "approved": false,
+          "isSelected":false
         }
       ]
     }
   },
   methods: {
+    toggleAll(){
+      // console.log(this.List);
+      
+      this.List = this.List.map(element => ({
+        ...element,
+        "isSelected":true
+      }));
+
+      // console.log(this.List);
+      
+    },
     toggleControl(){
       this.showControl = !this.showControl
+      //撤销状态更改
+      this.List = this.List.map(item=>({
+        ...item,
+        isSelected:false
+      }))
+    },
+    toggleSelect(status,currentIndex){
+      console.log(status);
+      
+      console.log(currentIndex);
+      
+      //修改状态
+      this.$set(this.List,currentIndex,{
+        ...this.List[currentIndex],
+        isSelected:!status
+      })
     }
   },
 }
@@ -153,6 +186,11 @@ export default{
       height: 50rpx;
       border-radius: 50%;
       border:1px solid #000000
+    }
+
+    .icon-selected{
+      border:none;
+      background-color: #556ced;
     }
     
     .essay-item-control{

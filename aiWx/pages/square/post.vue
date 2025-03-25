@@ -14,9 +14,13 @@
       <view class="tag-list" v-if="tagList.length!=0">
         <view class="tag-item" v-for="(item,index) in tagList" :key="item">#{{ item }}</view>
       </view>
-      <text class="content-type">{{ contentType }}</text>
+      <view class="content-type">{{ contentType }}</view>
       <view class="footer">
-        <icon :img="starSrc" @click="handleStar" :number="likeCount"></icon>
+        <view @click="handleStar" class="star">     
+          <u-icon :name="showStar?'star-fill':'star'" size="22"></u-icon>
+          <text class="star-number">22</text>
+        </view>
+        <icon :img="approveSrc" @click="handleApprove" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
         <icon :img="commentSrc" :number="commentCount" @click="handleShow"></icon>
       </view>
@@ -76,13 +80,18 @@ export default{
       type:Array,
       default:[]
     },
-    showStar:{
+    showApprove:{
       type:Boolean,
       required:true
     },
     contentType:{
       type:String,
       required:true
+    },
+    showStar:{
+      type:Boolean,
+      required:true,
+      default:false
     }
   },
   data(){
@@ -96,11 +105,11 @@ export default{
     }
   },
   computed:{
-    starSrc(){
-      return this.$request.baseUrl + this.star
+    approveSrc(){
+      return this.$request.baseUrl + this.approve
     },
-    star(){
-     return this.showStar?'/square/star-fill.png':'/square/star.png'
+    approve(){
+     return this.showApprove?'/square/star-fill.png':'/square/star.png'
     },
     commentSrc(){
       return this.$request.baseUrl + '/square/comment.png'
@@ -108,8 +117,11 @@ export default{
   },
   methods: {
     handleStar(){
-      console.log(this.showStar);
       this.$emit('star',this.showStar)
+    },
+    handleApprove(){
+      console.log(this.showApprove);
+      this.$emit('approve',this.showApprove)
     },
     handleShow(){
       this.showComment = !this.showComment
@@ -187,6 +199,18 @@ export default{
     color: #ffffff;
     margin-left: 10rpx;
     background-color: #7a6b9e;
+    width:fit-content;
+    margin-top:10rpx;
+  }
+  .star{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10rpx;
+    .star-number{
+      font-size: 30rpx;
+    }
   }
   }
   .footer{

@@ -29,7 +29,7 @@
 					},
 					{
 						title:"清除缓存",
-						url:"/pages/personal/index"
+						url:"/pages/personal/clear"
 					}
 				]
 			}
@@ -45,6 +45,11 @@
 						title:"暂未开放此功能",
 						icon:'none'
 					})
+					return
+				}
+				else if(item.url === '/pages/personal/clear'){
+					this.$emit('clear')
+					return
 				}
 				uni.navigateTo({
 					url:item.url

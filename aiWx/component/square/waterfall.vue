@@ -4,22 +4,21 @@
     @scroll="throttleScroll"
     scrollbar="true"
     scroll-y="true"
-    @scrolltolower="loadDataList"
     >
     <view class="waterfall-list">
       <view 
         v-if="isShow"
         v-for="renderItem in renderList"
-        :key = "renderItem.item.id"
+        :key = "renderItem.item.articleId"
         :style = "getStyle(renderItem.style) || {}"
         class="waterfall-item"
         @click="handleClick(renderItem.item.id)"
         >
         <card 
+          :src="renderItem.item.avatar"
           :title="renderItem.item.title" 
           :author="renderItem.item.userName" 
           :bgColor="renderItem.item.bgColor" 
-          :imageHeight="renderItem.imageHeight"
           :content="renderItem.item.content"
           :likeCount="renderItem.item.likeCount"
         ></card>
@@ -28,17 +27,17 @@
       <view 
         v-if="!isShow"
         v-for="(item, index) in temporaryList" 
-        :key="index"
+        :key="iten.item.articleId"
         class="temporary-item"
         :style="getStyle(item.style) || {} "
         :data-index="index"
       >
         <card 
+          :src="item.item.avatar"
           :content="item.item.content"
           :title="item.item.title" 
           :author="item.item.userName" 
           :bgColor="item.item.bgColor" 
-          :imageHeight="item.imageHeight"
           :likeCount="item.item.likeCount"
         >
       </card>
@@ -100,7 +99,6 @@ import { rafThrottle } from '@/utils/tool'
         },
         colorList:['#ca9e9e','#cec0a3','#cdcea3','#accea3','#a3cec0','#a3c2ce','#a3aece','#b1a3ce','#cea3c5','#cea3a3'],
         userId:"",
-        lastId:"",
         //一个数据源二维数组 —— 队列状态
         queueState:{
           queue:new Array(this.column).fill(0).map(()=>({list:[],height:0})),
@@ -110,10 +108,10 @@ import { rafThrottle } from '@/utils/tool'
     },
     methods:{
       handleClick(id){
-        console.log('这是id',id);
+        // console.log('这是id',id);
       },
       getStyle(style){
-        console.log(style);
+        // console.log(style);
         
         return style ? `
           width:${style.width};
@@ -122,6 +120,8 @@ import { rafThrottle } from '@/utils/tool'
       },
       //预渲染的带样式数据列表(定高)
       mountTemporaryList(size = this.enterSize){
+        console.log(this.hasMoreData);
+        
         if(!this.hasMoreData)
           return
         this.isShow = false
@@ -134,15 +134,18 @@ import { rafThrottle } from '@/utils/tool'
               break
             } 
             const rect = this.itemSizeInfo.get(item.articleId)
-            console.log(item);
-            console.log("rect:",rect);
+            // console.log(item);
+            // console.log("rect:",rect);
+
+            console.log(rect);
+            
             
             
             this.temporaryList.push({
               item,
               y:0,
               h:0,
-              imageHeight:rect.imageHeight,
+              // imageHeight:rect.imageHeight,
               style:{
                 width:`${rect.width}px`
               },
@@ -231,18 +234,18 @@ import { rafThrottle } from '@/utils/tool'
           const rect = this.itemSizeInfo.get(item.articleId)
           const width = rect.width
           const height = rect.height
-          const imageHeight = rect.imageHeight
+          // const imageHeight = rect.imageHeight
           let y = 0
           if(before){
             y = before.y + before.h + this.gap
           }
-          console.log(index);
+          // console.log(index);
           
           return {
             item,
             y,
             h:height,
-            imageHeight,
+            // imageHeight,
             style:{
               width:`${width}px`,
               height:`${height}px`,
@@ -253,7 +256,7 @@ import { rafThrottle } from '@/utils/tool'
         },
       //设置每一项的样式
       setItemSize() {
-        console.log(this.itemSizeInfo);
+        // console.log(this.itemSizeInfo);
         
         //itemSizeInfo 是一个Map键值对，在reduce中，第一个参数pre：当前容器，第二个参数current，当前元素
         this.itemSizeInfo = this.dataState.list.reduce((pre, current) => {
@@ -265,18 +268,21 @@ import { rafThrottle } from '@/utils/tool'
           //当前元素
           const rect = this.itemSizeInfo.get(current.articleId);
           // console.log(current);
+          // console.log(current);
+          console.log(itemWidth);
+          
           
           //设置itemSizeInfo
           pre.set(current.articleId, {
             width: itemWidth,
             height: rect ? rect.height : 0,
-            imageHeight: Math.floor((itemWidth * current.height) / current.width),
+            // imageHeight: Math.floor((itemWidth * current.height) / current.width),
           });
           return pre;
         }, new Map());
       },
       handleScroll(event){
-        console.log(event);
+        // console.log(event);
         
         this.fContainerRef.boundingClientRect((rect)=>{
           if(!rect)
@@ -285,15 +291,23 @@ import { rafThrottle } from '@/utils/tool'
             ...this.scrollState,
             start:event.detail.scrollTop
           })
+          // console.log(this.scrollState);
           
-          // if(!this.hasMoreData && !this.dataState.loading){
-          //   this.loadDataList().then((len)=>{
-          //     len && this.setItemSize()
-          //     len && this.mountTemporaryList()
-          //   })
-          //   return
-          // }
-
+          
+          if(!this.hasMoreData && !this.dataState.loading){
+            this.loadDataList().then(len=>{
+              len && this.setItemSize()
+              len && this.mountTemporaryList()
+            })
+            return
+          }
+          // console.log(rect);
+          // console.log(event.detail);
+          
+          
+          
+          console.log('当前列最小高度minHeight'+this.computedHeight.minHeight);
+          //当我滚动视图超过当前时，开始重新渲染
           if(event.detail.scrollTop + rect.height >= this.computedHeight.minHeight){
             this.mountTemporaryList() 
           }
@@ -342,7 +356,8 @@ import { rafThrottle } from '@/utils/tool'
         //如果有数据
         this.dataState.list.push(...list)
         this.dataState.loading = false
-        console.log(this.dataState);
+        // console.log(this.dataState);
+        console.log(list.length);
         
         return list.length
       },
@@ -362,7 +377,14 @@ import { rafThrottle } from '@/utils/tool'
       },
     },
     computed:{
+      lastId(){
+        return this.dataState.list.length!==0?this.dataState.list[this.dataState.list.length-1].articleId:""
+      },
       hasMoreData(){
+        console.log(this.queueState);
+        console.log(this.dataState);
+        
+        
         //当某一列的数据量大于当前已处理的数据项数量len时，说明还有更多数据
         return this.queueState.len < this.dataState.list.length
       },
@@ -372,7 +394,7 @@ import { rafThrottle } from '@/utils/tool'
         minHeight = Infinity ,
         maxHeight = -Infinity
         //this.queueState维护一个二维数组数据列
-        console.log(this.queueState);
+        // console.log(this.queueState);
         
         this.queueState.queue.forEach(({height},index)=>{
           if(height < minHeight){

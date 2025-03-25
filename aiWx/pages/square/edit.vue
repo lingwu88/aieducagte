@@ -171,11 +171,25 @@
 				],
 				selectedTag:[],
 				show:false,
-				newTag:""	
+				newTag:""	,
+				nowList:[]
     }
   },
   onLoad() {
+		if(uni.getStorageSync('tags'))
+			this.nowList = uni.getStorageSync('tags')
 
+		if(this.nowList.length!==0){
+			this.nowList.forEach((item=>{
+				this.tagList.push({
+					name:item,
+					id:this.tagList.length+1
+				})
+			}))
+		}
+	},
+	onUnload(){
+		uni.setStorageSync('tags',this.nowList)
 	},
 	methods: {
 		uploadImage() {
@@ -216,7 +230,14 @@
 		addTag(){
 			//推入数组
 			this.tagList.push({name:this.newTag,id:(this.tagList.length+1).toString()})
+			this.nowList.push(this.newTag)
+			if(this.nowList.length>3){
+				this.nowList.shift()
+			}
+			console.log(this.show);
+			
 			this.show = false
+			this.newTag = ""
 		},
 		//关闭弹窗，清空数据
 		close(){
