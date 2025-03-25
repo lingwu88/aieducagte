@@ -44,6 +44,7 @@
 						@star="toggleStar($event,item,index)"
 						@comment="handleComment($event,item)"
 						:commentList="commentList"
+						:viewCount="item.viewCount"
 						:tagList="item.tags"
 						:contentType="typeList[item.type]"
 					></post>
@@ -71,7 +72,7 @@
 				</view>
 				<view 
 				class="send-btn"
-				:class="{ active:true  }"
+				:class="{ active:canSend  }"
 				@tap="handleSend"
 				>
 				发送
@@ -88,9 +89,15 @@
 
 <script>
 import post from './post.vue';
+import pageTime from '../../mixins/pageTime';
 import request from '../../tools/request';
 
 	export default {
+		mixins:[pageTime],
+		mounted(){
+			this.checkUserId()
+			this.setType(3)
+		},
 		components:{
 			post
 		},
@@ -282,9 +289,11 @@ import request from '../../tools/request';
 				})
 			},
 			handleStar(status,item){
+				let arr = []
+        arr.push(item.articleId)
 				const body = {
 							userId:this.userId,
-							articleId:item.articleId
+							articleId:arr
 				}
 				return new Promise((resolve,reject)=>{
 					//若真，则取消
@@ -447,9 +456,6 @@ import request from '../../tools/request';
 				})
 			},
 			handleSend(){
-				console.log(this.currentIndex);
-				console.log(this.inputText);
-				
 				//根据当前index,判断是什么
 				if(this.currentIndex == -1)
 					return
@@ -472,38 +478,7 @@ import request from '../../tools/request';
 						createTime:res.data.createTime
 					})
 
-					//动态添加评论数
-
-				// 	const index = this.list.findIndex(article=>article.articleId == item.articleId)
-				// console.log(this.list[index]);
 				
-				// this.$api.square.star({
-				// 	...this.starBody,
-				// 	approved:!approved,
-				// 	userId:this.userId,
-				// 	articleId:item.articleId
-				// }).then(res=>{
-				// 	console.log(res)
-					
-				// 	//如果为真，则为点赞
-				// 	if(this.list[index].approved){
-				// 		this.$set(this.list[index],'likeCount',item.likeCount+1)
-				// 		uni.showToast({
-				// 			title:'点赞成功'
-				// 		})
-				// 	}
-				// 	else{
-				// 		this.$set(this.list[index],'likeCount',item.likeCount-1)
-				// 		uni.showToast({
-				// 			title:'取消点赞成功'
-				// 		})
-				// 	}
-				// 	console.log(index);
-					
-				// })
-				// .catch(err=>{
-				// 	console.log(err);
-					
 				// })
 					uni.showToast({
 						title:"成功评论"
@@ -514,6 +489,11 @@ import request from '../../tools/request';
 					
 				})
 				this.inputText = ""
+			}
+		},
+		computed:{
+			canSend() {
+				return this.inputText.trim().length > 0
 			}
 		}
 	}

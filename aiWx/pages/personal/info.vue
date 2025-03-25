@@ -72,7 +72,9 @@
 
 <script>
 import request from '../../tools/request';
+import pageTime from '../../mixins/pageTime';
 export default {
+  mixins:[pageTime],
   data() {
       return {
         label:{
@@ -130,6 +132,9 @@ export default {
 		//onReady 为uni-app支持的生命周期之一
     	this.$refs.uForm.setRules(this.rules)
 },
+mounted(){
+			this.checkUserId()
+		},
   methods: {
       chooseAvatar() {
           uni.chooseImage({

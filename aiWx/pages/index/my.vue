@@ -10,11 +10,16 @@
 import myHeader from '../../component/my/myHeader.vue';
 import list from '../../component/my/list.vue';
 import request from '../../tools/request';
+import pageTime from '../../mixins/pageTime';
 
 	export default {
+		mixins:[pageTime],
 		components:{
 			myHeader,
 			list
+		},
+		mounted(){
+			this.checkUserId()
 		},
 		data() {
 			return {
@@ -44,7 +49,10 @@ import request from '../../tools/request';
 				//遍历清除缓存
 				if(keys.length!==0){
 					keys.forEach(element => {
-						uni.removeStorageSync(element)
+						if(element === 'userId' || element === 'refreshToken' || element === 'accessToken')
+							return
+						else
+							uni.removeStorageSync(element)
 					});
 					uni.showToast({
 						title:"成功清除缓存",

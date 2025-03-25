@@ -40,10 +40,16 @@
 <script>
 import progress from './components/progress.vue';
 import tag from './components/tag.vue'
+import pageTime from '../../mixins/pageTime';
 	export default {
+		mixins:[pageTime],
 		components:{
 			tag,
 			progress
+		},
+		mounted(){
+			this.checkUserId()
+			this.setType(1)
 		},
 		data() {
 			return {
@@ -56,24 +62,24 @@ import tag from './components/tag.vue'
 						title:"自动生成"
 					}
 				],
-				iconList:[
-					{
-						type:"link",
-						desc:"网页链接"
-					},
-					{
-						type:"font",
-						desc:"剪切版文字"
-					},
-					{
-						type:"upload-filled",
-						desc:"本地文件"
-					},
-					{
-						type:"weixin",
-						desc:"微信文件"
-					}
-				],
+				// iconList:[
+				// 	{
+				// 		type:"link",
+				// 		desc:"网页链接"
+				// 	},
+				// 	{
+				// 		type:"font",
+				// 		desc:"剪切版文字"
+				// 	},
+				// 	{
+				// 		type:"upload-filled",
+				// 		desc:"本地文件"
+				// 	},
+				// 	{
+				// 		type:"weixin",
+				// 		desc:"微信文件"
+				// 	}
+				// ],
 				active:0,
 				list:[
 					{
@@ -128,10 +134,8 @@ import tag from './components/tag.vue'
 					currentIndex:0
 				}
 		},
-		onLoad() {
-
-		},
-		mounted() {
+		onShow(){
+			this.value = ""
 		},
 		methods: {
 			handleMenuClick(index){
@@ -196,7 +200,7 @@ import tag from './components/tag.vue'
   padding: 20rpx;
 	background-color: #f2f4ff;
 	min-height:180rpx;
-	max-height: 460rpx;
+	// max-height: 460rpx;
 	/deep/ .u-input{
 		background-color: #fff;
 		border:none;

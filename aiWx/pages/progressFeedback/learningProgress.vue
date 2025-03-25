@@ -31,16 +31,19 @@
 
 <script>
 import * as echarts from 'echarts'
+import { onLoad } from 'uview-ui/libs/mixin/mixin';
 export default {
     data() {
         return {
+            datalist:[],
             list4: [
                 {
                     name: '每天'
                 }, 
-                {
-                    name: '近三日',
-                }],
+                // {
+                //     name: '近三日',
+                // }
+            ],
             // option: {
             //     tooltip: {
             //         trigger: 'axis',
@@ -251,8 +254,35 @@ export default {
             }
         };
     },
+    mounted(){
+        this.checkUserId()
+    },
+    onLoad(){
+        this.userId = uni.getStorageSync('userId')
+       
+    },
+    onShow(){
+        this.getData()
+        // this.setChart({
+        //     series:[
+        //         {
+        //             data:[
+        //                 value:this.dataList.map()
+        //             ]
+        //         }
+        //     ]
+        // })
+    },
     // 组件能被调用必须是组件的节点已经被渲染到页面上
     methods: {
+        getData(){
+            this.$api.progressFeedBack.getEvalution(this.userId).then(res=>{
+                console.log(res);
+               this.dataList = Object.keys(res.data).map(key=>res.data[key])
+                console.log(this.dataList);
+                
+            })
+        },
         async setChart(customOption) {
             // chart 图表实例不能存在data里
            const chart = await this.$refs.chartRef.init(echarts);
@@ -266,11 +296,11 @@ export default {
                     radar: {
                         // shape: 'circle',
                         indicator: [
-                        { name: '专业度', max: 6500 },
-                        { name: '交流活跃度', max: 16000 },
-                        { name: '复习积极性', max: 30000 },
-                        { name: '拓展度', max: 38000 },
-                        { name: '多样性', max: 52000 },
+                        { name: '专业度', max: 400 },
+                        { name: '多样性', max: 400 },
+                        { name: '拓展度', max: 400 },
+                        { name: '复习积极性', max: 400 },
+                        { name: '交流活跃度', max: 400 },
                         ]
                     },
                     series: [
@@ -279,7 +309,7 @@ export default {
                         type: 'radar',
                         data: [
                             {
-                            value: [4200, 3000, 20000, 35000, 50000, 18000],
+                            value: this.dataList,
                             // name: 'Allocated Budget'
                             }
                         ]
@@ -299,6 +329,11 @@ export default {
         },
         async setChart2(customOption){
             const chart = await this.$refs.chartRef2.init(echarts);
+            const nameList = ['专业度','多样性','拓展度','复习积极性','交流活跃度']
+            const arr = this.dataList.map((item,index)=>({
+                value:item,
+                name:nameList[index]
+            }))
             let defaultoption = {
                     legend: {
                         top:'bottom',
@@ -314,17 +349,10 @@ export default {
                             name: 'Nightingale Chart',
                             type: 'pie',
                             center: ['50%', '50%'],
-                            roseType: 'radius',
                             itemStyle: {
                                 borderRadius: 8
                             },
-                            data: [
-                                { value: 40, name: '专业度' },
-                                { value: 38, name: '多样性' },
-                                { value: 32, name: '拓展度' },
-                                { value: 30, name: '复习积极性' },
-                                { value: 28, name: '交流活跃度' },
-                            ],
+                            data: arr,
                             emphasis: {
                                 itemStyle: {
                                 shadowBlur: 10,

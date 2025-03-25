@@ -54,7 +54,7 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
   //维护的定时器id
   let timeoutId = null
   //五秒
-  const TIMEOUT_DURATION = 10000
+  const TIMEOUT_DURATION = 100000
 
   // console.log(onComplete);
 
@@ -112,10 +112,11 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
 
       handleComplete()
 
-      // if (onComplete) {
-      //   onComplete()
-      // }
+      if (onComplete) {
+        onComplete()
+      }
 
+      //解绑
       if (onHeadersReceived) {
         requestTask?.offHeadersReceived(onHeadersReceived)
       }

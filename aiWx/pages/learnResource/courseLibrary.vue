@@ -3,8 +3,8 @@
     <view class="line"></view>
     <view class="title">优质课程汇总</view>
     <view class="course-list">
-      <view  v-for="(item,index) in list" :key="index" class="course-item">
-        <courseCard :img="item.img" :title="item.title" class="course-item"></courseCard>
+      <view  v-for="(item,index) in list" :key="item.coursewareId" class="course-item">
+        <courseCard :img="item.coursewareContent.pic" :title="item.coursewareName" class="course-item" @play="handlePlay(item.coursewareContent)"></courseCard>
       </view>
     </view>
 	</view>
@@ -12,6 +12,7 @@
 
 <script>
 import courseCard from './components/courseCard.vue';
+import pageTime from '../../mixins/pageTime';
 	export default {
     components:{courseCard},
     onLoad(){
@@ -20,36 +21,40 @@ import courseCard from './components/courseCard.vue';
 		data() {
 			return {
           list:[
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg1.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg2.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg3.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg4.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg5.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg6.png",
-              title:"这只是个示例"
-            },
-            {
-              img:this.$request.baseUrl+"/classroom/learnResource/course_bg7.png",
-              title:"这只是个示例"
-            }
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg1.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg2.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg3.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg4.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg5.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg6.png",
+            //   title:"这只是个示例"
+            // },
+            // {
+            //   img:this.$request.baseUrl+"/classroom/learnResource/course_bg7.png",
+            //   title:"这只是个示例"
+            // }
           ]
 				}
+		},
+    mounted(){
+			this.checkUserId()
+      this.setType(2)
 		},
 		methods: {
       getCourse(){
@@ -58,12 +63,28 @@ import courseCard from './components/courseCard.vue';
           limit:12
         })
         .then(res=>{
-          console.log(res);
-          
+          console.log(res.data);
+          console.log(JSON.parse(res.data[0].coursewareContent));
+          const newArr = res.data.map(item=>({
+            ...item,
+            coursewareContent:JSON.parse(item.coursewareContent)
+          }))
+          this.$set(this,'list',newArr)
         })
         .catch(err=>{
           console.log(err);
           
+        })
+      },
+      handlePlay(item){
+        const {aid,bvid,cid} = item
+        console.log(aid);
+        
+        const videoUrl =`https://player.bilibili.com/player.html?isOutside=true&aid=${aid}&bvid=${bvid}&cid=${cid}&p=1`
+        console.log(videoUrl);
+        
+        uni.navigateTo({
+          url:`/pages/index/videoPlay?videoUrl=${encodeURIComponent(videoUrl)}`
         })
       }
     }
@@ -85,6 +106,7 @@ import courseCard from './components/courseCard.vue';
 .course-list{
   width: 100vw;
   min-height: 400rpx;
+  overflow: scroll;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;

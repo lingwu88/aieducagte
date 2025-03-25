@@ -34,10 +34,8 @@
 			}
 		},
 		created() {
-      console.log('test'+this.$request.baseUrl);
-      console.log(this.img);
-      
-      
+      // console.log('test'+this.$request.baseUrl);
+      // console.log(this.img);
 		},
     computed:{
       imgSrc(){

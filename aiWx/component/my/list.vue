@@ -23,10 +23,10 @@
 						title:"记录与收藏",
 						url:"/pages/personal/collection"
 					},
-					{
-						title:"建议与反馈",
-						url:"/pages/personal/index"
-					},
+					// {
+					// 	title:"建议与反馈",
+					// 	url:"/pages/personal/index"
+					// },
 					{
 						title:"清除缓存",
 						url:"/pages/personal/clear"

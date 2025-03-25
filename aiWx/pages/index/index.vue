@@ -33,11 +33,16 @@
 import {indexList} from '../../config'
 import iconList from '../../component/classroom/iconList.vue';
 import essay from '../../component/classroom/essay.vue';
+import pageTime from '../../mixins/pageTime';
 	export default {
+		mixins:[pageTime],
 		components:{
 			iconList,
 			essay
 		},
+		mounted(){
+    	this.checkUserId()
+  	},
 		data() {
 			return {
 				// title: 'Hello',

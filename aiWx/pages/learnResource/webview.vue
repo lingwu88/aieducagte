@@ -20,6 +20,9 @@ export default {
             isUsingVPN: false
         };
     },
+    mounted(){
+			this.checkUserId()
+		},
     // 使用计算属性来解码 url
     computed: {
         decodedUrl() {

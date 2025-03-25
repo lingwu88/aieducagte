@@ -36,7 +36,13 @@
 </template>
 
 <script>
+import pageTime from '../../mixins/pageTime';
+
 export default {
+	mixins:[pageTime],
+	mounted() {
+		this.setType(2)
+	},
 	data() {
 		return {
 			suggestions: '',

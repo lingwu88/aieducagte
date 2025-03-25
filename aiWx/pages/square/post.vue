@@ -20,6 +20,10 @@
           <u-icon :name="showStar?'star-fill':'star'" size="22"></u-icon>
           <text class="star-number"> </text>
         </view>
+        <view class="star">
+          <uni-icons type="eye" size="20"></uni-icons>
+          <text class="like">{{viewCount}}</text>
+        </view>
         <icon :img="approveSrc" @click="handleApprove" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
         <icon :img="commentSrc" :number="commentCount" @click="handleShow"></icon>
@@ -92,6 +96,10 @@ export default{
       type:Boolean,
       required:true,
       default:false
+    },
+    viewCount:{
+      type:Number,
+      required:true
     }
   },
   data(){

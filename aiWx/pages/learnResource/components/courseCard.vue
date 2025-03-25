@@ -1,10 +1,10 @@
 <template>
 	<view>
-		<view class="card-box">
+		<view class="card-box" @click="handlePlay">
 			<view class="img-box">
 				<image :src="img" class="img"></image>
 			</view>
-			<view class="title">【{{ title }}】</view>
+			<view class="title">{{ title }}</view>
 		</view>
 	</view>
 </template>
@@ -25,14 +25,18 @@ export default {
 		return {};
 	},
 	onLoad() {},
-	methods: {}
+	methods: {
+		handlePlay(){
+			this.$emit('play')
+		}
+	}
 };
 </script>
 
 <style lang="scss" scoped>
 .card-box{
   width:100%;
-  min-height: 200rpx;
+  min-height: 350rpx;
 
   .img-box{
     width:100%;
@@ -46,8 +50,14 @@ export default {
   }
 
 	.title {
-		font-size: 38rpx;
+		font-size: 28rpx;
 		font-family: Georgia, 'Times New Roman', Times, serif;
+		word-break: break-all;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 4;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 }
 </style>

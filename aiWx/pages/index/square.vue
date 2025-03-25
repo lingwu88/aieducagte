@@ -8,8 +8,13 @@
 <script>
 import waterfall from '../../component/square/waterfall.vue'
 import list from "../../config/index.js"
+import pageTime from '../../mixins/pageTime.js'
 	export default {
+		mixins:[pageTime],
 		components:{ waterfall  },
+		mounted(){
+			this.checkUserId()
+		},
 		data() {
 			return {
 					fContainerRef:null,

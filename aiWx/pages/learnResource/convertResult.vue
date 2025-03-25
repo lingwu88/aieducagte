@@ -36,7 +36,7 @@
 			<mp-html 
 			class="mphtml"
 			ref="article" 
-			container-style="padding:20px;min-height:calc(100vh - 130px)"
+			container-style="padding:20px;min-height:calc(100vh - 130px);overflow:scroll;letter-spacing:1rpx;word-break:break-all;"
 			:content="essay"
 			:tag-style="tagStyle" 
 			:editable="editable"
@@ -119,6 +119,7 @@
 	import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 	import {htmlToText} from '../../tools/tool'
 import { exportFile } from '../../api/learnResource'
+import pageTime from '../../mixins/pageTime'
 	// 上传图片方法
 	function upload(src, type) {
 		return new Promise((resolve, reject) => {
@@ -144,6 +145,10 @@ import { exportFile } from '../../api/learnResource'
 		// 实际使用时，删除线上资源
 	}
 	export default {
+		mixins:[pageTime],
+		mounted(){
+			this.checkUserId()
+		},
 		components:{
 			mpHtml
 		},
@@ -647,6 +652,12 @@ import { exportFile } from '../../api/learnResource'
 </script>
 
 <style scoped lang="scss">
+	.mphtml{
+		& text{
+			word-break: break-all;
+    	letter-spacing: 1rpx;
+		}
+	}
 	page {
 		line-height: 1.6;
 	}

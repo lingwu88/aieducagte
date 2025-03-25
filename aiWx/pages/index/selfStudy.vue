@@ -11,6 +11,7 @@
 				:userAvatar="img" 
 				:show="showNavigator"
 				@controlSetting="showSetting = true"
+				:sessionId="sessionId"
 				></chat>  
 	</view>
 		
@@ -199,11 +200,16 @@ import chat from '../../component/selfStudy/chat.vue';
 // import chatSession from '../../component/selfStudy/chatSession.vue';
 import { regexSSE } from '../../tools/tool'
 import { convertMarkdown } from '../../tools/markdownUtils';
+import pageTime from '../../mixins/pageTime';
 export default{
+	mixins:[pageTime],
   components:{
     chat,
 		// chatSession
   },
+	mounted(){
+			this.checkUserId()
+		},
   data() {
     return {
       // showNavigator:false,
@@ -270,19 +276,22 @@ export default{
 					required:true,
 					message:"请选择"
 				}
-			}
+			},
+			// sessionId:""
     }
   },
   onLoad(){
     this.getAvatar()
 		if(uni.getStorageSync('setting'))
 			this.model1 = uni.getStorageSync('setting')
-		this.getSession()
+		// this.getSession()
 		if(uni.getStorageSync('userId'))
 			this.userId = uni.getStorageSync('userId')
   },
   onShow(){
     this.result = ''
+		if(uni.getStorageSync('setting'))
+			this.model1 = uni.getStorageSync('setting')
     // this.generateAi()
   },
   methods: {
@@ -290,15 +299,6 @@ export default{
 			this.model1[type]=e.name
 			
 			// this.$refs.uForm.validateField('userInfo.sex')
-		},
-		getSession(){
-			this.$api.classManagement.getSessionId({userId:this.userId,type:1}).then(res=>{
-        console.log(res);
-        this.form.conversationId = res.data
-      })
-      .catch(err=>{
-        console.log(err);
-      })
 		},
     getAvatar(){
         this.$api.personal.getUserAvatar(uni.getStorageSync('userId')).then(res=>{
@@ -325,6 +325,7 @@ export default{
 		handleSetting(){
 			this.$refs.uForm.validate().then(res => {
 				this.setting = {...this.setting,...this.model1}
+				uni.setStorageSync('setting',this.model1)
 				this.showSetting = false	
 			}).catch(errors => {
 				// uni.$u.toast('校验失败')
@@ -339,6 +340,8 @@ export default{
 		//存储设置
 		handleClose(){
 			this.showSetting = false
+			console.log(this.model1);
+			
 			uni.setStorageSync('setting',this.model1)
 		}
   },            

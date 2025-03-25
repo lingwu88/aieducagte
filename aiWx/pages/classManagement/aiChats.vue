@@ -39,23 +39,23 @@
             </view>
 
             <!-- 图片消息 -->
-             <image 
+             <!-- <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
-            />
+            /> -->
 
             <!-- 语音消息 -->
-            <view 
+            <!-- <view 
               v-else-if="item.contentType === 'voice'"
               class="voice-content"
               @tap="playVoice(item.content)"
             >
               <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"></uni-icons>
               <text>{{ item.duration }}″</text>
-            </view>
+            </view> -->
           </view>
 
         <!-- 消息状态 -->
@@ -85,9 +85,9 @@
 
     <view class="input-area">
       <view class="input">
-        <view class="mode-swtich" @tap="switchMode">
+        <!-- <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
-        </view>
+        </view> -->
         <view class="input-box" v-if="!isVoiceMode">
           <textarea
             v-model="inputText"
@@ -101,9 +101,9 @@
             @blur="handleBlur"
             class="input-textarea"
           />
-          <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
+          <!-- <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons> -->
         </view>
-        
+<!--         
         <view 
           v-else
           class="voice-input"
@@ -113,7 +113,7 @@
           @touchcancel="cancelRecording"
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
-        </view>
+        </view> -->
       </view>
       <view 
           class="send-btn"
@@ -130,17 +130,23 @@
 
 <script>
 import request from '../../tools/request';
+import pageTime from '../../mixins/pageTime';
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
+  mixins:[pageTime],
   props: {
     aiAvatar: {
       type: String,
       default: 'http://120.26.132.46:8091/my/avatar.png'
     }
   },
+  mounted(){
+			this.checkUserId()
+      this.setType(1)
+		},
   data() {
     return {
       userAvatar:"",
@@ -160,6 +166,9 @@ export default {
   created() {
     this.initRecorder(),
     this.initAudioContext()
+  },
+  onShow(){
+    this.messageList = []
   },
   onLoad(){
     this.getAvatar()

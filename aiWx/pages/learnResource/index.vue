@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import pageTime from '../../mixins/pageTime';
 export default {
+  mixins:[pageTime],
   data() {
     return {
       list: [
@@ -33,6 +35,9 @@ export default {
       ]
     }
   },
+  mounted(){
+			this.checkUserId()
+		},
   onLoad() {},
   methods: {
     handleto(index) {

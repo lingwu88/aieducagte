@@ -61,7 +61,9 @@
 </template>
 
 <script>
+import pageTime from '../../mixins/pageTime'
 export default{
+  mixins:[pageTime],
   data() {
     return {
       typeList:['','资料分享','日常记录','技术交流'],
@@ -112,11 +114,16 @@ export default{
     this.userId = uni.getStorageSync('userId')
     this.getPost()
   },
+  mounted(){
+			this.checkUserId()
+		},
   methods: {
     handleStar(status,item){
+        let arr = []
+        arr.push(item.articleId)
 				const body = {
 							userId:this.userId,
-							articleId:item.articleId
+							articleId:arr
 				}
 				return new Promise((resolve,reject)=>{
 					//若真，则取消

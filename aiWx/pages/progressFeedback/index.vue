@@ -9,11 +9,14 @@
 
 <script>
 	export default {
+		mounted(){
+			this.checkUserId()
+		},
 		data() {
 			return {
 					list:[
 						{
-							description: "学习进度",
+							description: "综合评估",
 							img: this.$request.baseUrl+"/classroom/learnResource/book.png",
 							url: "/pages/progressFeedback/learningProgress"
 						},

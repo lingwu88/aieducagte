@@ -46,13 +46,13 @@
 
 
             <!-- 图片消息 -->
-             <image 
+             <!-- <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
-            />
+            /> -->
 
             <!-- 语音消息 -->
             <view 
@@ -160,6 +160,7 @@ export default {
   data() {
     return {
       scrollTop: 0,
+      sessionId:"",
       lastMessageId: '',
       isLoading: false,
       isPlaying: false,
@@ -175,13 +176,28 @@ export default {
     }
   },
   created() {
-    this.initRecorder(),
-    this.initAudioContext()
+    // this.initRecorder(),
+    // this.initAudioContext()
+    this.getSession()
   },
   onShow(){
     this.initRequest()
   },
   methods: {
+    getSession(){
+			if(this.sessionId!=""){
+				return
+			}
+			this.$api.classManagement.getSessionId({userId:uni.getStorageSync('userId'),type:1}).then(res=>{
+        console.log(res);
+        this.sessionId= res.data
+        console.log(this.sessionId);
+        
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+		},
     toggleShow(){
       this.$emit('controlSetting')
     },
@@ -245,6 +261,19 @@ export default {
     //发送按钮
     async handleSend() {
       if(!this.canSend) return
+      //检查设置是否有空值      
+      if(Object.values(this.setting)
+        .some(value => 
+          value === '' || value === null || value === undefined
+        )
+      )
+      {
+        uni.showToast({
+          title:"请填写完设置!",
+          icon:"error"
+        })
+        return
+      }
 
       const userMessage = {
         type: 'user',
@@ -354,7 +383,9 @@ export default {
     },
     sendToAI(content) {
       return new Promise((resolve,reject)=>{
-        this.generateAi()
+        console.log(this.sessionId);
+        
+        this.generateAi(this.sessionId)
         .then(res=>{
           resolve('ai连接成功')
         })
@@ -365,6 +396,8 @@ export default {
     },
     //使用复习ai
     generateAi(id=""){
+      console.log(id);
+      
       // let body = uni.getStorageSync('aiSetting')
       return new Promise((resolve,reject)=>{
         let data = {

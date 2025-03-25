@@ -1,30 +1,29 @@
 <template>
   <scroll-view 
     class="waterfall-container" 
-    @scroll="throttleScroll"
     scrollbar="true"
     scroll-y="true"
+    @scrolltolower="loadDataList"
     >
     <view class="waterfall-list">
       <view 
         v-if="isShow"
-        v-for="renderItem in renderList"
-        :key = "renderItem.item.articleId"
-        :style = "getStyle(renderItem.style) || {}"
+        v-for="item in renderList"
+        :key = "item.articleId"
         class="waterfall-item"
-        @click="handleClick(renderItem.item.id)"
         >
         <card 
-          :src="renderItem.item.avatar"
-          :title="renderItem.item.title" 
-          :author="renderItem.item.userName" 
-          :bgColor="renderItem.item.bgColor" 
-          :content="renderItem.item.content"
-          :likeCount="renderItem.item.likeCount"
+          :src="item.avatar"
+          :title="item.title" 
+          :author="item.userName" 
+          :bgColor="item.bgColor" 
+          :content="item.content"
+          :viewCount="item.viewCount"
+          @toDetail="handleToDetail(item.articleId)"
         ></card>
       </view>
       
-      <view 
+      <!-- <view 
         v-if="!isShow"
         v-for="(item, index) in temporaryList" 
         :key="iten.item.articleId"
@@ -38,10 +37,10 @@
           :title="item.item.title" 
           :author="item.item.userName" 
           :bgColor="item.item.bgColor" 
-          :likeCount="item.item.likeCount"
+          :viewCount="item.item.viewCount"
         >
       </card>
-      </view>
+      </view> -->
     </view>
     <view v-if="renderList.length === 0" class="null-box">    
       <view class="null">暂无数据哦~ </view>
@@ -51,7 +50,7 @@
 
 <script>
 import card from './card.vue'
-import { rafThrottle } from '@/utils/tool'
+// import { rafThrottle } from '@/utils/tool'
 	export default {
     components:{
       card
@@ -83,6 +82,7 @@ import { rafThrottle } from '@/utils/tool'
       return {
         //容器视图实例
         fContainerRef:null,
+        renderList:[],
         isShow:true,
         temporaryList:[],
         scrollState:{},
@@ -109,6 +109,13 @@ import { rafThrottle } from '@/utils/tool'
     methods:{
       handleClick(id){
         // console.log('这是id',id);
+      },
+      handleToDetail(id){
+        console.log('触发');
+        
+        uni.navigateTo({
+          url:`/pages/index/postDetail?articleId=${id}`
+        })
       },
       getStyle(style){
         // console.log(style);
@@ -284,23 +291,23 @@ import { rafThrottle } from '@/utils/tool'
       handleScroll(event){
         // console.log(event);
         
-        this.fContainerRef.boundingClientRect((rect)=>{
-          if(!rect)
-            return
-          this.$set(this,'scrollState',{
-            ...this.scrollState,
-            start:event.detail.scrollTop
-          })
+        // this.fContainerRef.boundingClientRect((rect)=>{
+        //   if(!rect)
+        //     return
+        //   this.$set(this,'scrollState',{
+        //     ...this.scrollState,
+        //     start:event.detail.scrollTop
+        //   })
           // console.log(this.scrollState);
           
           
-          if(!this.hasMoreData && !this.dataState.loading){
-            this.loadDataList().then(len=>{
-              len && this.setItemSize()
-              len && this.mountTemporaryList()
-            })
-            return
-          }
+          // if(!this.hasMoreData && !this.dataState.loading){
+          //   this.loadDataList().then(len=>{
+          //     len && this.setItemSize()
+          //     len && this.mountTemporaryList()
+          //   })
+          //   return
+          // }
           // console.log(rect);
           // console.log(event.detail);
           
@@ -308,10 +315,10 @@ import { rafThrottle } from '@/utils/tool'
           
           console.log('当前列最小高度minHeight'+this.computedHeight.minHeight);
           //当我滚动视图超过当前时，开始重新渲染
-          if(event.detail.scrollTop + rect.height >= this.computedHeight.minHeight){
-            this.mountTemporaryList() 
-          }
-        }).exec()
+          // if(event.detail.scrollTop + rect.height >= this.computedHeight.minHeight){
+          //   this.mountTemporaryList() 
+          // }
+        // }).exec()
       },
       //初始化滚动视图元素状态
       initScrollState(){
@@ -330,7 +337,7 @@ import { rafThrottle } from '@/utils/tool'
         }).exec()
       },
       async loadDataList(){
-
+        let newArr = []
         //如果正在加载，那么就返回
         if(this.dataState.isFinish){
           return
@@ -347,14 +354,16 @@ import { rafThrottle } from '@/utils/tool'
           bgColor:this.colorList[Math.floor(Math.random()*10)]
         }))
          console.log(list);
-         
          //如果没长度即没数据，那么return
-        if(!list?.length){
-          this.dataState.isFinish = true
-          return
-        }
+         if(!list?.length){
+           this.dataState.isFinish = true
+           return
+          }
+          
+        newArr = [...this.renderList,...list]
         //如果有数据
-        this.dataState.list.push(...list)
+        this.$set(this,'renderList',newArr)
+        // this.dataState.list.push(...list)
         this.dataState.loading = false
         // console.log(this.dataState);
         console.log(list.length);
@@ -362,17 +371,17 @@ import { rafThrottle } from '@/utils/tool'
         return list.length
       },
       async init(){
-        this.initScrollState()
+        // this.initScrollState()
         const len = await this.loadDataList()
         // console.log(len);
         // console.log("这是dataState的list",this.dataState.list);
 
         //根据数据源设置每一个数据的样式
-        this.setItemSize()
+        // this.setItemSize()
         // console.log("这是itemSizeInfo",this.itemSizeInfo);
 
         //构造定高渲染列表
-        len && this.mountTemporaryList()
+        // len && this.mountTemporaryList()
         
       },
     },
@@ -380,59 +389,59 @@ import { rafThrottle } from '@/utils/tool'
       lastId(){
         return this.dataState.list.length!==0?this.dataState.list[this.dataState.list.length-1].articleId:""
       },
-      hasMoreData(){
-        console.log(this.queueState);
-        console.log(this.dataState);
+      // hasMoreData(){
+      //   console.log(this.queueState);
+      //   console.log(this.dataState);
         
         
-        //当某一列的数据量大于当前已处理的数据项数量len时，说明还有更多数据
-        return this.queueState.len < this.dataState.list.length
-      },
+      //   //当某一列的数据量大于当前已处理的数据项数量len时，说明还有更多数据
+      //   return this.queueState.len < this.dataState.list.length
+      // },
       //动态计算高度
-      computedHeight(){
-        let minIndex = 0 ,
-        minHeight = Infinity ,
-        maxHeight = -Infinity
-        //this.queueState维护一个二维数组数据列
-        // console.log(this.queueState);
+      // computedHeight(){
+      //   let minIndex = 0 ,
+      //   minHeight = Infinity ,
+      //   maxHeight = -Infinity
+      //   //this.queueState维护一个二维数组数据列
+      //   // console.log(this.queueState);
         
-        this.queueState.queue.forEach(({height},index)=>{
-          if(height < minHeight){
-            minHeight = height
-            minIndex = index
-          }
-          if(height > maxHeight){
-            maxHeight = height
-          }
-        })
-        return {
-          minIndex,
-          minHeight,
-          maxHeight
-        }
-      },
-      cardList(){
-        return this.queueState.queue.reduce((pre,{list})=>pre.concat(list),[])
-      },
-      end(){
-        // console.log('这是end',this.scrollState.viewHeight + this.scrollState.start);
+      //   this.queueState.queue.forEach(({height},index)=>{
+      //     if(height < minHeight){
+      //       minHeight = height
+      //       minIndex = index
+      //     }
+      //     if(height > maxHeight){
+      //       maxHeight = height
+      //     }
+      //   })
+      //   return {
+      //     minIndex,
+      //     minHeight,
+      //     maxHeight
+      //   }
+      // },
+      // cardList(){
+      //   return this.queueState.queue.reduce((pre,{list})=>pre.concat(list),[])
+      // },
+      // end(){
+      //   // console.log('这是end',this.scrollState.viewHeight + this.scrollState.start);
         
-        return this.scrollState.viewHeight + this.scrollState.start
-      },
-      renderList(){
-        // console.log('这是cardList',this.cardList);
-        // console.log('这是renderList',this.cardList.filter((i)=>{
-        //   i.h + i.y > this.scrollState.start && i.y < this.end
-        // }));
-        // console.log('这是end',this.end);
-        // console.log('这是scrollState',this.scrollState);
+      //   return this.scrollState.viewHeight + this.scrollState.start
+      // },
+      // renderList(){
+      //   // console.log('这是cardList',this.cardList);
+      //   // console.log('这是renderList',this.cardList.filter((i)=>{
+      //   //   i.h + i.y > this.scrollState.start && i.y < this.end
+      //   // }));
+      //   // console.log('这是end',this.end);
+      //   // console.log('这是scrollState',this.scrollState);
         
-        return this.cardList.filter((i)=>{
-          // console.log('这是i.h + i.y > this.scrollState.start && i.y < this.end',i.h + i.y > this.scrollState.start && i.y < this.end);
-          //筛选在范围内的数据
-          return i.h + i.y > this.scrollState.start && i.y < this.end
-        })
-      }
+      //   return this.cardList.filter((i)=>{
+      //     // console.log('这是i.h + i.y > this.scrollState.start && i.y < this.end',i.h + i.y > this.scrollState.start && i.y < this.end);
+      //     //筛选在范围内的数据
+      //     return i.h + i.y > this.scrollState.start && i.y < this.end
+      //   })
+      // }
     },
     //这是组件的生命周期
     mounted() {
@@ -443,12 +452,12 @@ import { rafThrottle } from '@/utils/tool'
 				console.log('赋值',this.userId);
       }
 
-      this.fContainerRef = uni.createSelectorQuery().in(this).select('.waterfall-container');
-      console.log(this.fContainerRef);
+      // this.fContainerRef = uni.createSelectorQuery().in(this).select('.waterfall-container');
+      // console.log(this.fContainerRef);
       
       this.init()
       //节流滚动
-      this.throttleScroll = rafThrottle(this.handleScroll)
+      // this.throttleScroll = rafThrottle(this.handleScroll)
       // console.log(uni.getStorageSync('userId'));
       
     },
@@ -467,14 +476,17 @@ import { rafThrottle } from '@/utils/tool'
   }
   &-list{
     position: relative;
+    display: flex;          // 启用 Flex 布局
+    flex-wrap: wrap;        // 允许换行
+    gap: 20rpx;             // 列间距（小程序需基础库 2.8.0+）
     width:100%;
     height:100%;
   }
   &-item{
-    position: absolute;
-    top:0;
-    left: 0;
-    box-sizing: border-box;
+    width: 45%;
+    max-height: 250rpx;
+    overflow: scroll;
+    margin:0 auto;
   }
 }
 .null-box{
