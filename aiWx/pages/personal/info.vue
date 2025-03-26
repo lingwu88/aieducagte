@@ -123,10 +123,10 @@ export default {
   onLoad(){
     if(uni.getStorageSync('userId'))
       this.userId = uni.getStorageSync('userId')
-  },
-  onShow(){
     this.getAvatar()
     this.getInfo()
+  },
+  onShow(){
   },
   onReady() {
 		//onReady 为uni-app支持的生命周期之一
@@ -175,7 +175,11 @@ mounted(){
       getAvatar(){
         this.$api.personal.getUserAvatar(this.userId).then(res=>{
           console.log(res);
-          this.label.avatar = request.baseUrl + res.data
+          this.$set(this,'label',{
+            ...this.label,
+            avatar:this.$request.baseUrl + res.data
+          })
+          // this.label.avatar = request.baseUrl + res.data
         })
         .catch(err=>{
           console.log(err);

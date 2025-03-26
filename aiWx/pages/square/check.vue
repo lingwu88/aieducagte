@@ -296,7 +296,7 @@ import request from '../../tools/request';
 			},
 			handleStar(status,item){
 				let arr = []
-        arr.push(item.articleId)
+        arr.push((item.articleId).toString())
 				const body = {
 							userId:this.userId,
 							articleId:arr
