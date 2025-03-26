@@ -152,7 +152,10 @@ mounted(){
                   // }
                   console.log(res);
                   
-                  this.$set(this.label,'avatar',res.tempFilePaths[0])   
+                  this.$set(this,'label',{
+                    ...this.label,
+                    avatar:res.tempFilePaths[0]
+                  })   
                   console.log(this.label);
                   
                   //更新头像

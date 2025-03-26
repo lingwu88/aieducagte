@@ -11,7 +11,6 @@
 				:userAvatar="img" 
 				:show="showNavigator"
 				@controlSetting="showSetting = true"
-				:sessionId="sessionId"
 				></chat>  
 	</view>
 		

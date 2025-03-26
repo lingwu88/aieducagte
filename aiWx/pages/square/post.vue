@@ -16,7 +16,7 @@
       </view>
       <view class="content-type">{{ contentType }}</view>
       <view class="footer">
-        <view @click="handleStar" class="star">     
+        <view @click.stop="handleStar" class="star">     
           <u-icon :name="showStar?'star-fill':'star'" size="22"></u-icon>
           <text class="star-number"> </text>
         </view>
