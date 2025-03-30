@@ -39,20 +39,17 @@
     <view class="mode-switch-container">
       <view class="mode-switch">
         <view 
-          class="mode-tab" 
-          :class="{ active: !isProfessionalMode }"
-          @click="switchMode(false)"
+          class="mode-tab active"
         >
           <text>普通模式</text>
         </view>
         <view 
-          class="mode-tab" 
-          :class="{ active: isProfessionalMode }"
-          @click="switchMode(true)"
+          class="mode-tab pro-mode"
+          @click="handleToProfession"
         >
           <text>专业模式</text>
         </view>
-        <view class="slider" :class="{ right: isProfessionalMode }"></view>
+        <view class="slider"></view>
       </view>
     </view>
 
@@ -75,8 +72,7 @@ export default {
   },
   data() {
     return {
-      inputText: '',
-      isProfessionalMode: false
+      inputText: ''
     }
   },
   methods: {
@@ -96,14 +92,6 @@ export default {
       uni.navigateTo({
         url: `/pages/classManagement/searchResult?query=${encodeURIComponent(query)}`
       });
-    },
-    switchMode(isProfessional) {
-      this.isProfessionalMode = isProfessional;
-      
-      // 如果选择专业模式，跳转到专业模式页面
-      if (isProfessional) {
-        this.handleToProfession();
-      }
     },
     handleToProfession() {
       // 跳转到专业模式页面
@@ -271,6 +259,16 @@ export default {
             font-weight: 500;
           }
         }
+        
+        &.pro-mode {
+          text {
+            color: #666;
+          }
+          
+          &:active {
+            opacity: 0.7;
+          }
+        }
       }
       
       .slider {
@@ -281,12 +279,7 @@ export default {
         height: calc(100% - 10rpx);
         background: linear-gradient(to right, #5b6af0, #7b89ff);
         border-radius: 35rpx;
-        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         z-index: 1;
-        
-        &.right {
-          left: calc(50% + 5rpx);
-        }
       }
     }
   }
