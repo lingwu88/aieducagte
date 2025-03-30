@@ -28,22 +28,19 @@
 		},
 		{
 			"path": "pages/index/postDetail",
-			"style":{
-				"navigationBarTitleText":"帖子详情"
+			"style": {
+				"navigationBarTitleText": "帖子详情"
 			}
 		}
 	],
-	"subPackages": [
-		{
-			"root":"pages/selfStudy",
-			"pages": [
-				{
-					"path":"index",
-					"style":{
-						"navigationBarTitleText":"课后复习"
-					}
+	"subPackages": [{
+			"root": "pages/selfStudy",
+			"pages": [{
+				"path": "index",
+				"style": {
+					"navigationBarTitleText": "课后复习"
 				}
-			]
+			}]
 		},
 		{
 			"root": "pages/square",
@@ -193,8 +190,7 @@
 		},
 		{
 			"root": "pages/personal",
-			"pages": [
-				{
+			"pages": [{
 					"path": "info",
 					"style": {
 						"navigationBarTitleText": "个人信息"
@@ -202,56 +198,56 @@
 				},
 				{
 					"path": "myPost",
-					"style":{
+					"style": {
 						"navigationBarTitleText": "我的帖子"
 					}
 				},
 				{
-					"path":"collection",
-					"style":{
-						"navigationBarTitleText":"收藏"
+					"path": "collection",
+					"style": {
+						"navigationBarTitleText": "收藏"
 					}
 				}
 			}]
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"uniIdRouter": {},
-	"tabBar": {
-		"color": "#ccc",
-		"selectedColor": "#6F55D2",
-		"backgroundColor": "",
-		"position": "bottom",
-		"borderStyle": "black",
-		"list": [{
-				"pagePath": "pages/index/index",
-				"text": "课堂",
-				"iconPath": "static/classroom/class.png",
-				"selectedIconPath": "static/classroom/classSelected.png"
-			},
-			{
-				"pagePath": "pages/index/selfStudy",
-				"text": "自习空间",
-				"iconPath": "static/selfStudy/selfStudy.png",
-				"selectedIconPath": "static/selfStudy/selfStudySelected.png"
-			},
-			{
-				"pagePath": "pages/index/square",
-				"text": "广场",
-				"iconPath": "static/square/square.png",
-				"selectedIconPath": "static/square/squareSelected.png"
-			},
-			{
-				"pagePath": "pages/index/my",
-				"text": "我的",
-				"iconPath": "static/my/avatar.png",
-				"selectedIconPath": "static/my/avatarSelected.png"
-			}
-		]
 	}
+],
+"globalStyle": {
+	"navigationBarTextStyle": "black",
+	"navigationBarTitleText": "uni-app",
+	"navigationBarBackgroundColor": "#F8F8F8",
+	"backgroundColor": "#F8F8F8"
+},
+"uniIdRouter": {},
+"tabBar": {
+	"color": "#ccc",
+	"selectedColor": "#6F55D2",
+	"backgroundColor": "",
+	"position": "bottom",
+	"borderStyle": "black",
+	"list": [{
+			"pagePath": "pages/index/index",
+			"text": "课堂",
+			"iconPath": "static/classroom/class.png",
+			"selectedIconPath": "static/classroom/classSelected.png"
+		},
+		{
+			"pagePath": "pages/index/selfStudy",
+			"text": "自习空间",
+			"iconPath": "static/selfStudy/selfStudy.png",
+			"selectedIconPath": "static/selfStudy/selfStudySelected.png"
+		},
+		{
+			"pagePath": "pages/index/square",
+			"text": "广场",
+			"iconPath": "static/square/square.png",
+			"selectedIconPath": "static/square/squareSelected.png"
+		},
+		{
+			"pagePath": "pages/index/my",
+			"text": "我的",
+			"iconPath": "static/my/avatar.png",
+			"selectedIconPath": "static/my/avatarSelected.png"
+		}
+	]
+}
 }
