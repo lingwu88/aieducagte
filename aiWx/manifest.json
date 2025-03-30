@@ -1,4 +1,5 @@
 {
+    "sassImplementationName" : "node-sass",
     "name" : "aiWx",
     "appid" : "__UNI__6DF42D4",
     "description" : "",
@@ -59,7 +60,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        // "appid": "wx9e7afb652fe643a9",
+        //"appid": "wx9e7afb652fe643a9",
         "appid" : "wxe588a553a6a64c79",
         "setting" : {
             "urlCheck" : false,
@@ -81,7 +82,7 @@
         "optimization" : {
             "subPackages" : true
         },
-        "lazyCodeLoading": "requiredComponents"
+        "lazyCodeLoading" : "requiredComponents"
     },
     "mp-alipay" : {
         "usingComponents" : true
