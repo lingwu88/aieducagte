@@ -38,7 +38,6 @@
         </view>
         <view class="mode-option" :class="{ active: isProfessionalMode }" @click="handleToProfession">
           <text>专业模式</text>
-          <text class="mode-desc">适用于更复杂的学习规划</text>
         </view>
       </view>
     </view>
