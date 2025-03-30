@@ -131,7 +131,8 @@ export default {
     
     if(options){
       console.log(options.query);
-      this.generateAi(options.query)
+      const decodedQuery = options.query ? decodeURIComponent(options.query) : '';
+      this.generateAi(decodedQuery)
     }
     this.getSessionId()
   },

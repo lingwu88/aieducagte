@@ -1,16 +1,19 @@
 <template>
   <view class="container" @tap="handleContainerTap">
     <toast ref="toast"></toast>
-    <scroll-view scroll-x class="categories-scroll">
-      <view class="categories">
-        <view v-for="(category, index) in categories" :key="index" class="category" :class="{ active: currentCategory === category }" @click="changeCategory(category)">
-          {{ category }}
+    <!-- 添加固定顶部区域容器 -->
+    <view class="fixed-header">
+      <scroll-view scroll-x class="categories-scroll">
+        <view class="categories">
+          <view v-for="(category, index) in categories" :key="index" class="category" :class="{ active: currentCategory === category }" @click="changeCategory(category)">
+            {{ category }}
+          </view>
         </view>
+      </scroll-view>
+      <!-- 搜索框 -->
+      <view class="search-container">
+        <input type="text" placeholder="搜索资源..." v-model="searchQuery" @input="filterResources" />
       </view>
-    </scroll-view>
-    <!-- Added Search Box -->
-    <view class="search-container">
-      <input type="text" placeholder="搜索资源..." v-model="searchQuery" @input="filterResources" />
     </view>
     <view class="load-container">
       <scroll-view
@@ -419,21 +422,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Existing styles unchanged */
+/* Existing styles unchanged unless specified */
 .container {
   height: 100vh;
   background-color: #fafafa;
+  position: relative;
+  overflow: hidden;
 }
+
+/* 添加固定顶部区域样式 */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: #fafafa;
+}
+
 .categories-scroll {
   width: 100%;
   white-space: nowrap;
   box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.15);
 }
+
 .categories {
   display: inline-flex;
   padding: 20rpx 0;
   background-color: #fefefe;
 }
+
 .category {
   width: 180rpx;
   font-size: 32rpx;
@@ -441,23 +459,36 @@ export default {
   text-align: center;
   padding: 10rpx 0;
 }
+
 .category.active {
   color: #007aff;
   border-bottom: 4rpx solid #007aff;
 }
+
+.load-container {
+  position: relative;
+  padding-top: 200rpx;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .resource-list {
   position: relative;
   z-index: 2;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: auto;
+  padding-top: 20rpx;
 }
+
 .list-content {
   position: relative;
 }
+
 .bottom-spacer {
   height: 45rpx;
 }
+
 .load-hint {
   position: fixed;
   bottom: 0;
@@ -473,6 +504,7 @@ export default {
   transition: opacity 0.2s ease;
   z-index: 1;
 }
+
 .resource-item {
   display: flex;
   align-items: center;
@@ -483,18 +515,23 @@ export default {
   width: 675rpx;
   height: 135rpx;
   box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.17);
+  position: relative;
+  z-index: 1;
 }
+
 .item-img {
   width: 100rpx;
   height: 100rpx;
   margin-right: 20rpx;
 }
+
 .item-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+
 .item-title {
   font-size: 32rpx;
   color: #333;
@@ -502,11 +539,13 @@ export default {
   max-width: 500rpx;
   display: block;
 }
+
 .item-title.ellipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .item-desc {
   font-size: 24rpx;
   color: #999;
@@ -515,6 +554,7 @@ export default {
   display: block;
   margin-top: 10rpx;
 }
+
 .item-desc.ellipsis-two {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -522,6 +562,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .item-more {
   width: 40rpx;
   height: 55rpx;
@@ -533,20 +574,24 @@ export default {
   padding-bottom: 0rpx;
   margin-top: auto;
 }
+
 .more-icon {
   font-size: 40rpx;
   color: #666;
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
+
 .menu-buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 0 20rpx 10rpx 60rpx;
   background-color: transparent;
-  z-index: 10000;
+  z-index: 5;
   gap: 20rpx;
+  position: relative;
 }
+
 .menu-btn {
   display: flex;
   align-items: center;
@@ -558,6 +603,7 @@ export default {
   z-index: 10001;
   box-sizing: border-box;
 }
+
 .share-btn {
   display: flex;
   align-items: center;
@@ -573,19 +619,23 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .share-btn::after {
   border: none;
 }
+
 .btn-icon {
   width: 40rpx;
   height: 40rpx;
   margin-right: 10rpx;
   z-index: 10001;
 }
+
 .menu-btn text {
   font-size: 28rpx;
   color: #333;
 }
+
 .loading,
 .empty {
   text-align: center;
@@ -593,12 +643,16 @@ export default {
   color: #999;
   padding: 20rpx;
 }
+
 /* Added styles for search box */
 .search-container {
   padding: 20rpx;
   background-color: #fff;
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
 }
+
 .search-container input {
   width: 100%;
   padding: 10rpx;
