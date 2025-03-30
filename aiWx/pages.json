@@ -75,7 +75,7 @@
 				{
 					"path": "aiChats",
 					"style": {
-						"navigationBarTitleText": "课程管理"
+						"navigationBarTitleText": "课程规划[普通模式]"
 					}
 				},
 				{
@@ -87,7 +87,7 @@
 				{
 					"path": "aiChatProfession",
 					"style": {
-						"navigationBarTitleText": "课程规划[专业版]"
+						"navigationBarTitleText": "课程规划[专业模式]"
 					}
 				},
 				{
