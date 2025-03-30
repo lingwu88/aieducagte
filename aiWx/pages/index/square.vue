@@ -1,6 +1,6 @@
 <template>
 	<view class="container content">
-		<waterfall class="fall" :gap="15 " :limit="12" :column="column" :enter-size="column * 8" :request="getData">
+		<waterfall class="fall" :gap="15 " :limit="16" :column="column" :enter-size="column * 8" :request="getData">
 		</waterfall>
 		<image :src="bgImg" class="check-img" @tap="navigaTo"></image>
 	</view>
@@ -16,7 +16,7 @@ import list from "../../config/index.js"
 					column:2,
 					userId:"",
 					fContainerObserver:null,
-					bgImg:"/static/square/checkIn2.png",
+					bgImg:this.$request.baseUrl+"/square/checkIn2.png",
 					list:[
 								{
 									title:"我是自律博主",
@@ -100,7 +100,7 @@ import list from "../../config/index.js"
 		align-items: center;
 		justify-content: center;
 		width:700rpx;
-		height:95vh;
+		min-height:95vh;
 		background-color: transparent;
 		margin: 2vh 2.5vw 0 2.5vw;
 		

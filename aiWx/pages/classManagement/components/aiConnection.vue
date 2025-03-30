@@ -154,11 +154,11 @@ export default {
   props: {
     userAvatar: {
       type: String,
-      default: '/static/my/user.png'
+      default: this.$request.baseUrl+'/my/user.png'
     },
     aiAvatar: {
       type: String,
-      default: '/static/my/avatar.png'
+      default: this.$request.baseUrl+'/my/avatar.png'
     },
     messageList:{
       type:Array,

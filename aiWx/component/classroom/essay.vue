@@ -2,7 +2,7 @@
   <view class="content">
     <view class="card" @click="handleClick">
       <view class="img-list">
-        <u--image :src="img" :lazy-load="true" height="250rpx" mode="widthFix"></u--image>
+        <u--image :src="imgSrc" :lazy-load="true" height="250rpx" mode="widthFix"></u--image>
       </view>
       <view class="footer">
         <text class="title">{{ title }}</text>
@@ -33,9 +33,17 @@
         // url:'https://mp.weixin.qq.com/s/ckxVWOXCFWBk9ivXYmrwDA'
 			}
 		},
-		onLoad() {
-
+		created() {
+      console.log('test'+this.$request.baseUrl);
+      console.log(this.img);
+      
+      
 		},
+    computed:{
+      imgSrc(){
+        return this.$request.baseUrl + this.img
+      }
+    },
 		methods: {
       handleClick(){
         this.$emit('click')
@@ -60,8 +68,12 @@
       // box-shadow: rgb(100 100 111 / 17%) 1px -1px 1px 2px;
 
       .title{
-        padding:10rpx 0 10rpx 10rpx;
+        padding: 10rpx 0 10rpx 10rpx;
+        width: 100%;
         font-size: 30rpx;
+        box-sizing: border-box;
+        letter-spacing: 1rpx;
+        word-break: break-word;
         font-family: "楷体";
       }
 
@@ -72,7 +84,7 @@
       }
 
       .footer{
-        width: 100%;
+        // width: 100%;
         min-height: 60rpx;
         display: flex;
         flex-direction: row;

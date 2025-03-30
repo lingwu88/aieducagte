@@ -8,7 +8,7 @@
     <view class="overlay"></view>
     <view class="box">
       <view class="header">
-        <image class="logo" src="/static/index.png" lazy-load="false" />
+        <image class="logo" :src="this.$request.baseUrl+'/index.png'" lazy-load="false" />
         <view class="teamName">智趣学坊</view>
       </view>
       <view class="footer">
@@ -53,6 +53,9 @@ export default {
           uni.setStorageSync("userId", res.data.userId);
           uni.setStorageSync("accessToken", res.data.accessToken);
           uni.setStorageSync("refreshToken", res.data.refreshToken);
+          uni.showToast({
+            title:"登录成功"
+          })
           uni.switchTab({
             url: "/pages/index/index"
           });

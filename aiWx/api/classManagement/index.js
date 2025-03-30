@@ -1,6 +1,7 @@
 import request from "../../tools/request";
 import * as TextEncoding from 'text-encoding-shim'
 
+//通用ai
 export function generalAi(data) {
   return request.post(
     '/api/ai/general-learning-plan',
@@ -8,10 +9,26 @@ export function generalAi(data) {
   )
 }
 
+//通用ai结果收藏
+export function saveGeneral(data){
+  return request.post(
+    '/api/ai/save-plan',
+    data
+  )
+}
+
+//取消收藏
+export function cancelSave(data){
+  return request.post(
+    '/api/ai/cancel-plan',
+    data
+  )
+}
+
 //获取会话id
-export function getSessionId(data) {
+export function getSessionId({userId,type}) {
   return request.get(
-    `/api/ai/get-conversaion-id?userId=${data}`
+    `/api/ai/get-conversaion-id?userId=${userId}&type=${type}`
   )
 }
 
@@ -37,7 +54,7 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
   //维护的定时器id
   let timeoutId = null
   //五秒
-  const TIMEOUT_DURATION = 5000
+  const TIMEOUT_DURATION = 10000
 
   // console.log(onComplete);
 
@@ -55,6 +72,8 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
 
   // 在 complete 回调中清理定时器
   function handleComplete() {
+    console.log('结束了');
+    
     if (timeoutId) clearTimeout(timeoutId);
     if (onComplete) onComplete();
   }
@@ -93,9 +112,9 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
 
       handleComplete()
 
-      if (onComplete) {
-        onComplete()
-      }
+      // if (onComplete) {
+      //   onComplete()
+      // }
 
       if (onHeadersReceived) {
         requestTask?.offHeadersReceived(onHeadersReceived)

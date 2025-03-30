@@ -76,7 +76,7 @@ export default {
   data() {
       return {
         label:{
-          avatar:"/static/my/avatar.png",
+          avatar:this.$request.baseUrl+"/my/avatar.png",
           userName:"",
           gender:"",
           signature:"",
@@ -107,7 +107,14 @@ export default {
         ],
         userId:'',
         rules:{
-
+          phone:[
+            {
+              pattern: /^1[3456789]\d{9}$/g,
+              // 正则检验前先将值转为字符串
+             
+              message: '手机号格式有误'
+            }
+          ]
         }
       };
   },
@@ -119,16 +126,25 @@ export default {
     this.getAvatar()
     this.getInfo()
   },
+  onReady() {
+		//onReady 为uni-app支持的生命周期之一
+    	this.$refs.uForm.setRules(this.rules)
+},
   methods: {
       chooseAvatar() {
           uni.chooseImage({
               count: 1,
               success: (res) => {
-                  this.label.avatar = res.tempFilePaths[0]; // 更新头像
-                  console.log(res);
-                  // this.form.avatar = res.tempFiles[0]
-                  // console.log(this.form.avatar);
-                  
+                  let resSize = tempFiles[0].size;
+                  if(resSize > 1024*1024*10){
+                    uni.showToast({
+                      title:"上传图片大小不能超过10MB",
+                      icon:"error"
+                    })
+                    return
+                  }
+
+                  this.label.avatar = res.tempFilePaths[0];   
                   //更新头像
                   this.$api.personal.uploadAvatar({
                     userId:this.userId,
@@ -190,13 +206,22 @@ export default {
         
       },
       saveInfo() {
-          console.log(this.form);
+          this.$refs.uForm.validate().then(res => {
+            uni.$u.toast('校验通过')
+          }).catch(errors => {
+            uni.$u.toast('校验失败')
+            return 
+          })
+
+          
           this.$api.personal.changeInfo({
             ...this.form,
             userId:this.userId
           }).then(res=>{
             console.log(res);
-            
+            uni.switchTab({
+              url:"/pages/index/index"
+            })
           })
           .catch(err=>{
             console.log(err);
@@ -206,13 +231,6 @@ export default {
           uni.showToast({
               title: '信息已保存',
               icon: 'success'
-          });
-          console.log({
-              avatar: this.avatar,
-              nickname: this.nickname,
-              gender: this.selectedGender,
-              birthday: this.birthday,
-              signature: this.signature
           });
       }
   }

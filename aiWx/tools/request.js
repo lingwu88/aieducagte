@@ -1,6 +1,6 @@
 // const baseUrl = "http://120.26.132.46:8091"
 const baseUrl = 'http://120.26.132.46:8091'
-const timeout = 5000
+const timeout = 50000
 const access_token = uni.getStorageSync('accessToken')
 // const baseUrlAi =  'http://t6emjh.natappfree.cc'
 
@@ -42,8 +42,11 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
       success(res) {
         uni.hideLoading()
         console.log(res)
-        if (res.statusCode == 200) {
+        if (res.statusCode === 200  && res?.data.code === 200) {
           resolve(res.data)
+        }
+        else if(res.statusCode === 200 && res.data === ''){
+          resolve(res)
         }
         //如果响应失败
         else if(res.statusCode !=200){
@@ -56,19 +59,19 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
         //响应成功，但状态码非200
         else {
           uni.showToast({
-            title: res.info?res.info:'系统繁忙',
+            title: res.data.info?res.data.info:'系统繁忙',
             icon: 'error'
           })
-          reject(res)
+          reject(res.data.info)
         }
 
       },
       fail(err) {
+        uni.hideLoading()
         uni.showToast({
           title: err.errMsg,
           icon: "none"
         })
-        uni.hideLoading()
         reject(err)
         console.log(err);
       }

@@ -18,7 +18,7 @@ export default {
 		},
 		img: {
 			type: String,
-			default: '/static/classroom/learnResource/course_default.png'
+			default: 'http://120.26.132.46:8091/classroom/learnResource/course_default.png'
 		}
 	},
 	data() {

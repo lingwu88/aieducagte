@@ -12,7 +12,7 @@ export function getComment(articleId){
 }
 
 //控制点赞
-export function star(data){
+export function approve(data){
   return request.post(
     '/api/square/approveArticle',
     data
@@ -59,5 +59,36 @@ export function searchArticle({userId,content}){
   return request.get(
     url,
     'application/x-www-form-urlencoded;charset=utf-8'
+  )
+}
+
+//id获取文章
+export function queryIdArticle({userId,articleId}){
+  return request.get(
+    `/api/square/queryArticle?userId=${userId}&articleId=${articleId}`
+  )
+}
+
+//删除文章
+export function deleteArticle(data){
+  return request.post(
+    '/api/square/deleteArticle',
+    data
+  )
+}
+
+//收藏文章
+export function starArticle(data){
+  return request.post(
+    '/api/user/collectArticle',
+    data
+  )
+}
+
+//取消收藏
+export function cancelStar(data){
+  return request.post(
+    '/api/user/cancelCollectArticle',
+    data
   )
 }

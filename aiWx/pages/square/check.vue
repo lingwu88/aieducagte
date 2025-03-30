@@ -26,7 +26,7 @@
 		</view>
 		<view class="list-content" v-if="list.length !== 0">
 			<u-list width="90vw" @scrolltolower="loadData">
-				<u-list-item v-for="(item, index) in list" :key="index">
+				<u-list-item v-for="(item, index) in list" :key="item.articleId">
 					<post 
 						class="item" 
 						:likeCount="item.likeCount"
@@ -37,9 +37,11 @@
 						:time="item.createTime"
 						:title="item.title"
 						:img="item.userAvatar"
-						:showStar="item.approved"
+						:showApprove="item.approved"
+						:showStar="item.collected"
 						@showComment="controlShow"
-						@star="handleStar($event,item)"
+						@approve="handleApprove($event,item,index)"
+						@star="toggleStar($event,item,index)"
 						@comment="handleComment($event,item)"
 						:commentList="commentList"
 						:tagList="item.tags"
@@ -80,12 +82,12 @@
 	<view class="null-box" v-else>
 		<view class="null">暂无数据~</view>
 	</view>
-	<image src='/static/square/edit.png' class="image" @click="handleClick"></image>
+	<image :src="'http://120.26.132.46:8091/square/edit.png'" class="image" @click="handleClick"></image>
 </view>
 </template>
 
 <script>
-import post from '../../component/square/post.vue';
+import post from './post.vue';
 import request from '../../tools/request';
 
 	export default {
@@ -107,7 +109,7 @@ import request from '../../tools/request';
 						{ value: 1, text: "高分推荐" },
 						{ value: 2, text: "最热发布" }
 				],
-				bgImg:"/static/square/checkIn2.png",
+				bgImg:this.$request.baseUrl+"/square/checkIn2.png",
 				inputStyle:{
 					width: "500rpx",
 				},
@@ -120,7 +122,7 @@ import request from '../../tools/request';
 					orderMode:0,
 					type:0
 				},
-				starBody:{
+				approveBody:{
 					userId:"",
 					articleId:"",
 					approved:false
@@ -244,6 +246,7 @@ import request from '../../tools/request';
 			},
 			getList(lastId=""){
 				return new Promise((resolve,reject)=>{
+					let arr
 					this.$api.square.getArticleList({
 						...this.articleListBody,
 						articleId:lastId,
@@ -254,12 +257,21 @@ import request from '../../tools/request';
 							...item,
 							approved:item.approved,
 							userAvatar:request.baseUrl+item.userAvatar,
-							tags:item.tags.split(',')
+							tags:(item.tags==="[]"||item.tags==="")?[]:item.tags.slice(1, -1).split(',')
 						}))
-						const arr = [...this.list, ...newArr]
+						if(lastId === ""){
+							arr = newArr
+						}
+						else{
+							arr = [...this.list, ...newArr]
+						}
 						console.log(arr);
 						
 						this.$set(this,'list',arr)
+						console.log(this.list);
+						
+						console.log('list:'+this.list);
+						
 						resolve(res.data?.length?res.data.length:0)
 						
 					})
@@ -269,44 +281,97 @@ import request from '../../tools/request';
 					})
 				})
 			},
-			handleStar(approved,item){
-				// console.log(approved,item);
-				// 找到需要修改的文章
-				const index = this.list.findIndex(article=>article.articleId == item.articleId)
-				//修改数组中内容
+			handleStar(status,item){
+				const body = {
+							userId:this.userId,
+							articleId:item.articleId
+				}
+				return new Promise((resolve,reject)=>{
+					//若真，则取消
+					if(status){
+						this.$api.square.cancelStar(body)
+						.then(res=>{
+							resolve(false)
+						})
+						.catch(err=>{
+							reject(err)
+						})
+					}
+					else{
+						this.$api.square.starArticle(body)
+						.then(res=>{
+							resolve(true)
+						})
+						.catch(err=>{
+							reject(err)
+						})
+					}
+				})
+			},
+			toggleStar(starStatus,item,index){
+				console.log('触发star');
+				
+				//更改当前状态
 				this.$set(this.list,index,{
 					...item,
-					approved:!approved
+					collected:!starStatus
 				})
+
+				this.handleStar(starStatus,item)
+				.then(res=>{
+					if(res){
+						uni.showToast({
+							title:"成功收藏"
+						})
+					}
+					else{
+						uni.showToast({
+							title:"取消收藏"
+						})
+					}
+				})
+				.catch(err=>{
+					console.log(err);
+					uni.showToast({
+						title:'错误',
+						icon:"error"
+					})
+				})
+			},
+			handleApprove(approved,item,index){
+				// console.log(approved,item);
+				// // 找到需要修改的文章
+				// const index = this.list.findIndex(article=>article.articleId == item.articleId)
 				console.log(this.list[index]);
 				
-				this.$api.square.star({
-					...this.starBody,
+				this.$api.square.approve({
+					...this.approveBody,
 					approved:!approved,
 					userId:this.userId,
 					articleId:item.articleId
 				}).then(res=>{
-					console.log(res)
-					
 					//如果为真，则为点赞
-					if(this.list[index].approved){
-						this.$set(this.list[index],'likeCount',item.likeCount+1)
-						uni.showToast({
-							title:'点赞成功'
-						})
-					}
-					else{
+					if(approved){
 						this.$set(this.list[index],'likeCount',item.likeCount-1)
 						uni.showToast({
 							title:'取消点赞成功'
 						})
 					}
-					console.log(index);
+					else{
+						this.$set(this.list[index],'likeCount',item.likeCount+1)
+						uni.showToast({
+							title:'点赞成功'
+						})
+					}
 					
+					//修改数组中内容
+					this.$set(this.list,index,{
+						...item,
+						approved:!approved
+					})
 				})
 				.catch(err=>{
 					console.log(err);
-					
 				})
 			},
 			handleSearch(){
@@ -363,9 +428,11 @@ import request from '../../tools/request';
 			handleComment(show,item){
 				if(show)
 					this.currentIndex = this.list.findIndex(data=>data.articleId == item.articleId)
-				else
+				else{
 					//为-1，说明没有展开的评论区
 					this.currentIndex = -1
+					return
+				}
 				this.$api.square.getComment(item.articleId).then(res=>{
 					console.log(res);
 					this.$set(this,'commentList',res.data.map(item=>({
@@ -396,14 +463,48 @@ import request from '../../tools/request';
 					fromId:this.userId,
 					content:this.inputText,
 					articleId:this.list[this.currentIndex].articleId
-				}).then(res=>{
+				})
+				.then(res=>{
 					console.log(res);
 					this.$set(this.commentList,this.commentList.length,{
 						content:res.data.content,
 						author:res.data.fromName,
 						createTime:res.data.createTime
 					})
-					this.commentList
+
+					//动态添加评论数
+
+				// 	const index = this.list.findIndex(article=>article.articleId == item.articleId)
+				// console.log(this.list[index]);
+				
+				// this.$api.square.star({
+				// 	...this.starBody,
+				// 	approved:!approved,
+				// 	userId:this.userId,
+				// 	articleId:item.articleId
+				// }).then(res=>{
+				// 	console.log(res)
+					
+				// 	//如果为真，则为点赞
+				// 	if(this.list[index].approved){
+				// 		this.$set(this.list[index],'likeCount',item.likeCount+1)
+				// 		uni.showToast({
+				// 			title:'点赞成功'
+				// 		})
+				// 	}
+				// 	else{
+				// 		this.$set(this.list[index],'likeCount',item.likeCount-1)
+				// 		uni.showToast({
+				// 			title:'取消点赞成功'
+				// 		})
+				// 	}
+				// 	console.log(index);
+					
+				// })
+				// .catch(err=>{
+				// 	console.log(err);
+					
+				// })
 					uni.showToast({
 						title:"成功评论"
 					})
@@ -412,6 +513,7 @@ import request from '../../tools/request';
 					console.log(err);
 					
 				})
+				this.inputText = ""
 			}
 		}
 	}
@@ -482,7 +584,7 @@ import request from '../../tools/request';
 		position:sticky;
 		bottom: 0;
 		left: 0;
-		width: 100vw;
+		// width: 95vw;
     display: flex;
     align-items: flex-end;
     padding: 20rpx;

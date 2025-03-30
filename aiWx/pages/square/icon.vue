@@ -2,7 +2,7 @@
   <view class="container">
     <image :src=img class="image" @click="handleClick"></image>
     <text class="footer-item">{{ number }}</text>
-    </view>
+  </view>
 </template>
 
 <script>

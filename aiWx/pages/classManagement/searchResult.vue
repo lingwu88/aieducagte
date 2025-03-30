@@ -25,7 +25,7 @@
         </view> -->
       </view>
       <view :class="{'word':true,'word-finish':isFinish}">
-        <mp-html :content="result.word"/>
+        <mp-html class="html-content" :content="result.word"/>
       </view>
     </view>
 
@@ -78,9 +78,7 @@
 
 <script>
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
-import request from '../../tools/request'
 import { regexSSE } from '../../tools/tool'
-import { getSessionId } from '../../api/classManagement'
 import { convertMarkdown } from '../../tools/markdownUtils'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
@@ -118,7 +116,8 @@ export default {
       inputText: '',
       isRecording: false,
       swtichStar:false,
-      isFinish:false
+      isFinish:false,
+      planId:""
     }
   },
   onLoad(options){
@@ -132,6 +131,7 @@ export default {
       console.log(options.query);
       this.generateAi(options.query)
     }
+    this.getSessionId()
   },
   mounted() {
 			// this.initHighLight()
@@ -262,14 +262,13 @@ export default {
       if(!this.canSend) return
       this.result.word = ''
       this.isFinish = false
-      this.getSessionId()
       this.generateAi()
     },
     getSessionId(){
       if(this.form.conversationId!=''){
         return 
       }
-      this.$api.classManagement.getSessionId(this.form.userId).then(res=>{
+      this.$api.classManagement.getSessionId({userId:this.form.userId,type:2}).then(res=>{
         console.log(res);
         this.form.conversationId = res.data
       })
@@ -341,15 +340,70 @@ export default {
         }, 1000)
       })
     },
-    swtichStars(){
-      if(this.swtichStar == false){
-        this.$set(this,"swtichStar",true)
-        console.log("此时是false");
-        
+    //切换收藏
+    async swtichStars(){
+      let data 
+      try{
+        data = await this.toggleStar(this.swtichStar)
       }
-      else{ 
-        this.$set(this,"swtichStar",false)
+      catch(e){
+        data = e
       }
+
+      uni.showToast({
+        title:data.msg,
+        icon:'none'
+      })
+      console.log(this.swtichStar);
+      
+      if(data.status){
+          this.swtichStar = !this.swtichStar
+      }
+      console.log(this.swtichStar);
+      
+    },
+    //控制收藏
+    async toggleStar(status){
+      //若当前为真，则是取消收藏
+      return new Promise((resolve,reject)=>{
+
+        if(status){
+          this.$api.classManagement.cancelSave({
+            userId:this.form.userId,
+            planId:this.planId
+          })
+          .then(res=>{
+            console.log(res);
+            resolve({status:true,msg:"成功取消收藏"})
+            // return  {status:true,msg:"成功取消收藏"}
+          })
+          .catch(err=>{
+            console.log(err);
+            reject({status:false,msg:"取消收藏失败"+err.data.info})
+            // return {status:false,msg:"取消收藏失败"+err}
+          })
+        }
+        //收藏
+        else{
+          console.log(this.result.word);
+          
+          this.$api.classManagement.saveGeneral({
+            userId:this.form.userId,
+            plan:this.result.word
+          })
+          .then(res=>{
+            console.log(res);
+            resolve({status:true,msg:"成功收藏"})
+            // return {status:true,msg:"成功收藏"}
+          })
+          .catch(err=>{
+            console.log(err);
+            reject({status:false,msg:"收藏失败"+err})
+            // return {status:false,msg:"收藏失败"+err}
+          })
+        }
+      })
+
     }
   },
   computed: {
@@ -406,6 +460,11 @@ export default {
   .content{
     min-height: 80vh;
     background-color: #fff;
+
+    .html-content{
+      letter-spacing: 2rpx;
+      word-break: break-word;
+    }
 
     &-title{
       font-size: 50rpx;

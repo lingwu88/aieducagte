@@ -103,9 +103,9 @@ export default {
   opacity: 0.8;
 }
 .login-background{
-  background-image: url('/static/my/bg1.png');
+  background-image: url('http://120.26.132.46:8091/my/bg1.png');
 }
 .noLogin-background{
-  background-image:url('/static/my/bg3.png')
+  background-image:url('http://120.26.132.46:8091/my/bg3.png')
 }
 </style>

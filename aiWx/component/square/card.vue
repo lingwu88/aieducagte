@@ -36,7 +36,7 @@ export default{
     src:{
       type:String,
       required:true,
-      default:'/avatars/defaultAvatar.jpg'
+      default:'http://120.26.132.46:8091/avatars/defaultAvatar.jpg'
     },
     content:{
       type:String,
@@ -93,10 +93,15 @@ export default{
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    
 
     &-text{
-      font-size: 32rpx;
-      
+      font-size: 30rpx;
+      word-break: break-all;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
     }
   }
 

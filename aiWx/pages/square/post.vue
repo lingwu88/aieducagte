@@ -11,14 +11,18 @@
       </view>
       <view class="header-title" selectable="false" space="false" decode="false">{{ title }}</view>
       <view class="content">{{ content }}</view>
-      <view class="tag-list">
+      <view class="tag-list" v-if="tagList.length!=0">
         <view class="tag-item" v-for="(item,index) in tagList" :key="item">#{{ item }}</view>
       </view>
-      <text class="content-type">{{ contentType }}</text>
+      <view class="content-type">{{ contentType }}</view>
       <view class="footer">
-        <icon :img="showStar?'/static/square/star-fill.png':'/static/square/star.png'" @click="handleStar" :number="likeCount"></icon>
+        <view @click="handleStar" class="star">     
+          <u-icon :name="showStar?'star-fill':'star'" size="22"></u-icon>
+          <text class="star-number"> </text>
+        </view>
+        <icon :img="approveSrc" @click="handleApprove" :number="likeCount"></icon>
         <!-- <icon img="/static/square/read.png" :number="likeCount"></icon> -->
-        <icon img="/static/square/comment.png" :number="commentCount" @click="handleShow"></icon>
+        <icon :img="commentSrc" :number="commentCount" @click="handleShow"></icon>
       </view>
     </view>
     <commentSection v-if="showComment" :commentList="commentList"></commentSection>
@@ -76,13 +80,18 @@ export default{
       type:Array,
       default:[]
     },
-    showStar:{
+    showApprove:{
       type:Boolean,
       required:true
     },
     contentType:{
       type:String,
       required:true
+    },
+    showStar:{
+      type:Boolean,
+      required:true,
+      default:false
     }
   },
   data(){
@@ -95,10 +104,24 @@ export default{
       showComment:false
     }
   },
+  computed:{
+    approveSrc(){
+      return this.$request.baseUrl + this.approve
+    },
+    approve(){
+     return this.showApprove?'/square/star-fill.png':'/square/star.png'
+    },
+    commentSrc(){
+      return this.$request.baseUrl + '/square/comment.png'
+    }
+  },
   methods: {
     handleStar(){
-      console.log(this.showStar);
       this.$emit('star',this.showStar)
+    },
+    handleApprove(){
+      console.log(this.showApprove);
+      this.$emit('approve',this.showApprove)
     },
     handleShow(){
       this.showComment = !this.showComment
@@ -119,7 +142,7 @@ export default{
   // border: 2px solid #000000;
   border-radius: 10rpx;
   margin:40rpx 0 0 0;
-  box-shadow: #d2d2ef 7px -5px 1px 0px;
+  box-shadow: #d2d2ef -2px -3px 1px 0px;
   
 
   .header{
@@ -176,6 +199,18 @@ export default{
     color: #ffffff;
     margin-left: 10rpx;
     background-color: #7a6b9e;
+    width:fit-content;
+    margin-top:10rpx;
+  }
+  .star{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10rpx;
+    .star-number{
+      font-size: 30rpx;
+    }
   }
   }
   .footer{

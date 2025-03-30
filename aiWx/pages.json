@@ -25,6 +25,12 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/index/postDetail",
+			"style":{
+				"navigationBarTitleText":"帖子详情"
+			}
 		}
 	],
 	"subPackages": [
@@ -187,10 +193,24 @@
 		},
 		{
 			"root": "pages/personal",
-			"pages": [{
-				"path": "info",
-				"style": {
-					"navigationBarTitleText": "个人信息"
+			"pages": [
+				{
+					"path": "info",
+					"style": {
+						"navigationBarTitleText": "个人信息"
+					}
+				},
+				{
+					"path": "myPost",
+					"style":{
+						"navigationBarTitleText": "我的帖子"
+					}
+				},
+				{
+					"path":"collection",
+					"style":{
+						"navigationBarTitleText":"收藏"
+					}
 				}
 			}]
 		}
