@@ -1,5 +1,11 @@
 <template>
   <view class="search-container">
+    <!-- 背景装饰 -->
+    <view class="bg-decoration">
+      <view class="circle circle-1"></view>
+      <view class="circle circle-2"></view>
+    </view>
+
     <!-- 顶部标题 -->
     <view class="header">
       <view class="title">智能学习规划</view>
@@ -29,17 +35,30 @@
       </view>
     </view>
 
-    <!-- 模式选择 -->
-    <view class="mode-switch">
-      <view class="mode-label">选择模式：</view>
-      <view class="mode-options">
-        <view class="mode-option" :class="{ active: !isProfessionalMode }">
+    <!-- 模式切换 -->
+    <view class="mode-switch-container">
+      <view class="mode-switch">
+        <view 
+          class="mode-tab" 
+          :class="{ active: !isProfessionalMode }"
+          @click="switchMode(false)"
+        >
           <text>普通模式</text>
         </view>
-        <view class="mode-option" :class="{ active: isProfessionalMode }" @click="handleToProfession">
+        <view 
+          class="mode-tab" 
+          :class="{ active: isProfessionalMode }"
+          @click="switchMode(true)"
+        >
           <text>专业模式</text>
         </view>
+        <view class="slider" :class="{ right: isProfessionalMode }"></view>
       </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="bottom-tips">
+      <text>智趣学坊 - 让学习更高效</text>
     </view>
   </view>
 </template>
@@ -78,6 +97,14 @@ export default {
         url: `/pages/classManagement/searchResult?query=${encodeURIComponent(query)}`
       });
     },
+    switchMode(isProfessional) {
+      this.isProfessionalMode = isProfessional;
+      
+      // 如果选择专业模式，跳转到专业模式页面
+      if (isProfessional) {
+        this.handleToProfession();
+      }
+    },
     handleToProfession() {
       // 跳转到专业模式页面
       uni.navigateTo({
@@ -100,22 +127,64 @@ export default {
   flex-direction: column;
   background-color: #f8f9fd;
   padding: 40rpx;
+  position: relative;
+  overflow: hidden;
+  
+  .bg-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+    }
+    
+    .circle-1 {
+      top: -150rpx;
+      right: -150rpx;
+      width: 500rpx;
+      height: 500rpx;
+      background: linear-gradient(135deg, #5b6af0, #7b89ff);
+    }
+    
+    .circle-2 {
+      bottom: -200rpx;
+      left: -200rpx;
+      width: 600rpx;
+      height: 600rpx;
+      background: linear-gradient(135deg, #5b6af0, #7b89ff);
+    }
+  }
   
   .header {
     text-align: center;
     margin-bottom: 60rpx;
     margin-top: 100rpx;
+    position: relative;
+    z-index: 1;
     
     .title {
-      font-size: 48rpx;
+      font-size: 52rpx;
       font-weight: bold;
       color: #333;
       margin-bottom: 20rpx;
+      background: linear-gradient(to right, #5b6af0, #7b89ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2rpx 10rpx rgba(91, 106, 240, 0.1);
     }
     
     .subtitle {
       font-size: 28rpx;
       color: #999;
+      line-height: 1.5;
+      padding: 0 40rpx;
     }
   }
   
@@ -124,10 +193,18 @@ export default {
     border-radius: 45rpx;
     padding: 0 30rpx;
     margin-bottom: 40rpx;
-    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10rpx 30rpx rgba(91, 106, 240, 0.1);
     display: flex;
     align-items: center;
     height: 110rpx;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    
+    &:focus-within {
+      transform: translateY(-5rpx);
+      box-shadow: 0 15rpx 40rpx rgba(91, 106, 240, 0.15);
+    }
     
     .search-input {
       flex: 1;
@@ -146,57 +223,91 @@ export default {
       color: #5b6af0;
       font-size: 32rpx;
       padding: 0 10rpx;
+      transition: all 0.2s ease;
       
       &.active {
         font-weight: 500;
+        transform: scale(1.05);
       }
     }
   }
   
-  .mode-switch {
+  .mode-switch-container {
     margin-top: 40rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
     
-    .mode-label {
-      font-size: 28rpx;
-      color: #999;
-      margin-bottom: 20rpx;
-    }
-    
-    .mode-options {
+    .mode-switch {
+      position: relative;
       display: flex;
-      flex-direction: column;
+      width: 400rpx;
+      height: 80rpx;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 40rpx;
+      box-shadow: 0 5rpx 20rpx rgba(91, 106, 240, 0.1);
+      overflow: hidden;
       
-      .mode-option {
+      .mode-tab {
+        flex: 1;
         display: flex;
-        flex-direction: column;
-        padding: 20rpx;
-        border-radius: 10rpx;
-        margin-bottom: 20rpx;
-        background-color: #fff;
-        box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
-        border-left: 6rpx solid transparent;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
         
         text {
-          font-size: 30rpx;
-          color: #666;
-        }
-        
-        .mode-desc {
-          font-size: 24rpx;
+          font-size: 28rpx;
           color: #999;
-          margin-top: 10rpx;
+          transition: all 0.3s ease;
         }
         
         &.active {
-          border-left-color: #5b6af0;
-          
-          text:first-child {
-            color: #5b6af0;
+          text {
+            color: #fff;
             font-weight: 500;
           }
         }
       }
+      
+      .slider {
+        position: absolute;
+        top: 5rpx;
+        left: 5rpx;
+        width: calc(50% - 10rpx);
+        height: calc(100% - 10rpx);
+        background: linear-gradient(to right, #5b6af0, #7b89ff);
+        border-radius: 35rpx;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        z-index: 1;
+        
+        &.right {
+          left: calc(50% + 5rpx);
+        }
+      }
     }
+  }
+  
+  .bottom-tips {
+    margin-top: auto;
+    text-align: center;
+    padding: 30rpx 0;
+    font-size: 24rpx;
+    color: #bbb;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10rpx);
   }
 }
 </style>
