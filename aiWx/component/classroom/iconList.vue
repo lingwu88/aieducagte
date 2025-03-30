@@ -35,7 +35,7 @@
           },
           {
             img:this.$request.baseUrl+"/classroom/learningSuggestion.png",
-            content:"学能图谱",
+            content:"学习建议",
             path:"/pages/learnDashboard/index"
           },
         ]

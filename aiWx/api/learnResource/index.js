@@ -31,3 +31,17 @@ export function getCourse({coursewareId,limit}){
   )
 }
 
+//获取资源
+export function getResource({userId,limit,resourceId}){
+  return request.get(
+    `/api/resource/getResourceList?userId=${userId}&limit=${limit}&resourceId=${resourceId}`
+  )
+}
+
+//保存资源
+// export function saveResource({}){
+//   return request.get(
+//     '/api/resource/saveResource'
+//   )
+// }
+

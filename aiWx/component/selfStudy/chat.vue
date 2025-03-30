@@ -425,7 +425,7 @@ export default {
       })
     },
     closeSSE(){
-      this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
+      // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
         console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.messageList[this.messageList.length-1].content)
@@ -437,10 +437,10 @@ export default {
         this.scrollToBottom()
         console.log(this.messageList);
         
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+      // })
+      // .catch(err=>{
+      //   console.log(err);
+      // })
     },
     //sse回调函数
     logData(res) {

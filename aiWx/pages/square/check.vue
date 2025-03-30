@@ -326,12 +326,7 @@ import request from '../../tools/request';
 			toggleStar(starStatus,item,index){
 				console.log('触发star');
 				
-				//更改当前状态
-				this.$set(this.list,index,{
-					...item,
-					collected:!starStatus
-				})
-
+				
 				this.handleStar(starStatus,item)
 				.then(res=>{
 					if(res){
@@ -344,6 +339,11 @@ import request from '../../tools/request';
 							title:"取消收藏"
 						})
 					}
+					//更改当前状态
+					this.$set(this.list,index,{
+						...item,
+						collected:!starStatus
+					})
 				})
 				.catch(err=>{
 					console.log(err);

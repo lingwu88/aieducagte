@@ -351,7 +351,8 @@ import card from './card.vue'
           articleId:item.articleId,
           userName:item.userName,
           likeCount:item.likeCount,
-          bgColor:this.colorList[Math.floor(Math.random()*10)]
+          bgColor:this.colorList[Math.floor(Math.random()*10)],
+          viewCount:item.viewCount
         }))
          console.log(list);
          //如果没长度即没数据，那么return
@@ -363,6 +364,8 @@ import card from './card.vue'
         newArr = [...this.renderList,...list]
         //如果有数据
         this.$set(this,'renderList',newArr)
+        console.log(this.renderList);
+        
         // this.dataState.list.push(...list)
         this.dataState.loading = false
         // console.log(this.dataState);
@@ -387,7 +390,7 @@ import card from './card.vue'
     },
     computed:{
       lastId(){
-        return this.dataState.list.length!==0?this.dataState.list[this.dataState.list.length-1].articleId:""
+        return this.renderList.length!==0?this.renderList[this.renderList.length-1]?.articleId:""
       },
       // hasMoreData(){
       //   console.log(this.queueState);
