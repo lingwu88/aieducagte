@@ -5,6 +5,12 @@
 			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
 		-->
+    <view class="background-decoration">
+      <view class="circle circle-1"></view>
+      <view class="circle circle-2"></view>
+      <view class="circle circle-3"></view>
+    </view>
+    
     <scroll-view 
       class="chat-content"
       scroll-y
@@ -87,7 +93,7 @@
 
     <view :class="[{'input-area':true,'input-area-flex':!show}]" v-show="!show">
       <view class="mode-swtich" @tap="toggleShow">
-        <uni-icons type= 'gear-filled' size="24"></uni-icons>
+        <uni-icons type= 'gear-filled' size="24" color="#5b6af0"></uni-icons>
       </view>
       <view class="input">
         <view class="input-box" v-if="!isVoiceMode">
@@ -473,38 +479,103 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background-color: #f8f9fd;
+  position: relative;
+  overflow: hidden;
+  
+  .background-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.05;
+      
+      &.circle-1 {
+        top: 5%;
+        right: -5%;
+        width: 300rpx;
+        height: 300rpx;
+        background: linear-gradient(135deg, #5b6af0, #7b89ff);
+      }
+      
+      &.circle-2 {
+        bottom: 20%;
+        left: -8%;
+        width: 400rpx;
+        height: 400rpx;
+        background: linear-gradient(135deg, #7b89ff, #5b6af0);
+      }
+      
+      &.circle-3 {
+        top: 40%;
+        right: 20%;
+        width: 200rpx;
+        height: 200rpx;
+        background: linear-gradient(135deg, #6a79f0, #5b6af0);
+      }
+    }
+  }
 
   .chat-content {
     flex: 1;
-    // padding: 20rpx;
+    position: relative;
+    z-index: 1;
+    padding: 10rpx 0;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="rgba(91, 106, 240, 0.03)"/></svg>');
+      background-size: 20rpx 20rpx;
+      pointer-events: none;
+      opacity: 0.5;
+    }
 
     .loading-more{
       padding: 20rpx;
       text-align: center;
+      color: #999;
+      font-size: 24rpx;
     }
 
     .message-list{
       .message-item{
         display: flex;
         // margin-bottom: 30rpx;
-        padding:30rpx 0 20rpx 0;
+        padding: 30rpx 20rpx 20rpx 20rpx;
+        position: relative;
         
         &.user{
           flex-direction: row-reverse;
           margin-right: 40rpx;
-            
+          
+          .avatar {
+            margin-right: -45rpx;
+          }
 
           .message-content{
             margin-right: 20rpx;
             margin-left: 60rpx;
-            background-color: #007AFF;
+            background: linear-gradient(135deg, #5b6af0, #7b89ff);
             color: #fff;
+            box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.2);
             
             //用来制作对话框的那个小角
             &::after{
               right: -16rpx;
-              border-left-color: #007AFF;
+              border-left-color: #6a79f0;
             }
           }
         }
@@ -515,6 +586,7 @@ export default {
             margin-right: 60rpx;
             background-color: #fff;
             margin-left: 40rpx;
+            box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
             
             &::after{
               left: -16rpx;
@@ -527,12 +599,14 @@ export default {
           width: 80rpx;
           height: 80rpx;
           border-radius: 50%;
+          box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+          border: 2rpx solid #fff;
         }
 
         .message-content{
           position: relative;
           padding: 20rpx;
-          border-radius: 10rpx;
+          border-radius: 18rpx;
           max-width: 60%;
           
           &::after{
@@ -544,7 +618,8 @@ export default {
 
           .text-content{
             word-break: break-all;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 28rpx;
           }
 
           .image-content{ 
@@ -570,25 +645,30 @@ export default {
       display: flex;
       align-items: flex-start;
       margin-bottom: 30rpx;
+      padding: 0 20rpx;
+      
       .avatar{
-          width: 80rpx;
-          height: 80rpx;
-          border-radius: 50%;
-        }
+        width: 80rpx;
+        height: 80rpx;
+        border-radius: 50%;
+        box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+        border: 2rpx solid #fff;
+      }
       
       .typing-indicator {
         display: flex;
         align-items: center;
         background-color: #fff;
         padding: 20rpx;
-        border-radius: 10rpx;
+        border-radius: 18rpx;
         margin-left: 20rpx;
+        box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
         
         .dot {
-          width: 8rpx;
-          height: 8rpx;
+          width: 10rpx;
+          height: 10rpx;
           border-radius: 50%;
-          background-color: #999;
+          background: linear-gradient(135deg, #5b6af0, #7b89ff);
           margin: 0 4rpx;
           animation: typing 1s infinite;
           
@@ -612,25 +692,49 @@ export default {
     position: sticky;
     bottom: 0;
     left: 0;
-    padding:20rpx;
-    background-color: #fff;
-    border-top: 1rpx solid #eee;
+    padding: 20rpx;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10rpx);
+    border-top: 1rpx solid rgba(238, 238, 238, 0.8);
+    z-index: 10;
+    box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 
     .input{
-      flex:1;
+      flex: 1;
       display: flex;
       align-items: flex-end;
-      background-color: #f5f5f5;
-      border-radius: 10rpx;
+      background-color: #ffffff;
+      border-radius: 40rpx;
       margin: 0 20rpx;
+      border: 1rpx solid rgba(91, 106, 240, 0.2);
+      box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
+      transition: all 0.3s ease;
+      
+      &:focus-within {
+        border-color: rgba(91, 106, 240, 0.5);
+        box-shadow: 0 2rpx 15rpx rgba(91, 106, 240, 0.1);
+      }
     }
 
     .mode-swtich{
-      padding:10rpx;
+      padding: 10rpx;
+      width: 60rpx;
+      height: 60rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: rgba(91, 106, 240, 0.1);
+      transition: all 0.3s ease;
+      
+      &:active {
+        transform: scale(0.9);
+        background-color: rgba(91, 106, 240, 0.2);
+      }
     }
 
     .input-box{
-      padding:0 20rpx 0 0;
+      padding: 0 20rpx 0 0;
       display: flex;
       flex-direction: row;
       align-items: flex-end;
@@ -639,11 +743,12 @@ export default {
 
       .input-textarea{
         width: 100%;
-        padding:20rpx;
+        padding: 20rpx 30rpx;
         max-height: 200rpx;
         font-size: 28rpx;
         line-height: 1.5;
         box-sizing: border-box;
+        border-radius: 40rpx;
       }
     }
 
@@ -661,17 +766,24 @@ export default {
     }
 
     .send-btn{
-      width:120rpx;
-      height:80rpx;
+      width: 120rpx;
+      height: 80rpx;
       line-height: 80rpx;
       text-align: center;
-      background-color: #007AFF;
+      background: linear-gradient(135deg, #5b6af0, #7b89ff);
       color: #fff;
-      border-radius: 10rpx;
+      border-radius: 40rpx;
       opacity: 0.5;
+      box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.2);
+      transition: all 0.3s ease;
 
       &.active{
         opacity: 1;
+        
+        &:active {
+          transform: scale(0.95);
+          box-shadow: 0 2rpx 8rpx rgba(91, 106, 240, 0.15);
+        }
       }
     }
   }

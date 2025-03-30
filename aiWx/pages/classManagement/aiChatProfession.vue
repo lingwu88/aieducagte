@@ -225,44 +225,85 @@ export default{
     justify-content: center;
     width: 30vw;
     height: auto;
+    background-color: #ffffff;
+    padding: 12rpx 24rpx;
+    border-radius: 40rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: translate(-50%, -20%) scale(0.96);
+    }
+    
     image{
-      width:30rpx;
-      height: 30rpx;
+      width: 36rpx;
+      height: 36rpx;
+      margin-right: 10rpx;
+    }
+    
+    view {
+      font-size: 28rpx;
+      color: #333;
+      font-weight: 500;
     }
   }
 
   .btn{
-    width: 50vw;
-    height: 100rpx;
+    width: 60vw;
+    height: 90rpx;
     color: #ffffff;
-    border-radius: 50rpx;
-    background-color: #2299ff;
+    border-radius: 45rpx;
+    background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
     text-align: center;
-    font-size: 44rpx;
-    line-height: 100rpx;
-    margin: auto;
+    font-size: 36rpx;
+    font-weight: 500;
+    line-height: 90rpx;
+    margin: 30rpx auto;
+    box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.3);
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.3);
+    }
   }
 }
 .green-btn{
-    width: 30vw;
+    width: 28vw;
     height: 70rpx;
     color: #ffffff;
-    border-radius: 50rpx;
-    background-color: #57b985;
+    border-radius: 35rpx;
+    background: linear-gradient(135deg, #42b983 0%, #57b985 100%);
     text-align: center;
-    font-size: 34rpx;
+    font-size: 30rpx;
+    font-weight: 500;
     line-height: 70rpx;
-    margin: 10rpx auto;
+    margin: 16rpx auto;
+    box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
+    }
 }
 .save-btn{
-    width: 50vw;
-    height: 100rpx;
+    width: 60vw;
+    height: 90rpx;
     color: #ffffff;
-    border-radius: 50rpx;
-    background-color: #fbc94a;
+    border-radius: 45rpx;
+    background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
     text-align: center;
-    font-size: 44rpx;
-    line-height: 100rpx;
-    margin: auto;
+    font-size: 36rpx;
+    font-weight: 500;
+    line-height: 90rpx;
+    margin: 30rpx auto;
+    box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
+    }
 }
 </style>
