@@ -1,5 +1,14 @@
 <template>
 	<view class="container">
+		<!-- 背景装饰元素 -->
+		<view class="bg-decoration bg-circle-1"></view>
+		<view class="bg-decoration bg-circle-2"></view>
+		<view class="bg-decoration bg-wave"></view>
+		<view class="bg-decoration bg-circle-3"></view>
+		<view class="bg-decoration bg-circle-4"></view>
+		<view class="bg-decoration bg-dots"></view>
+		<view class="bg-decoration bg-pattern"></view>
+		
 		<!-- 页面标题区域 -->
 		<view class="header">
 			<text class="title">学习资源</text>
@@ -87,6 +96,107 @@ export default {
   align-items: center;
   background-color: #f8f9fd;
   padding: 30rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景装饰元素 */
+.bg-decoration {
+  position: absolute;
+  z-index: 0;
+}
+
+.bg-circle-1 {
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(91, 106, 240, 0.15), rgba(123, 137, 255, 0.08));
+  top: -100rpx;
+  right: -150rpx;
+  animation: float 8s ease-in-out infinite;
+}
+
+.bg-circle-2 {
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(123, 137, 255, 0.1), rgba(91, 106, 240, 0.05));
+  bottom: 10%;
+  left: -100rpx;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+.bg-circle-3 {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(91, 106, 240, 0.1), rgba(123, 137, 255, 0.05));
+  top: 20%;
+  left: -50rpx;
+  animation: float 12s ease-in-out infinite;
+}
+
+.bg-circle-4 {
+  width: 250rpx;
+  height: 250rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(123, 137, 255, 0.1), rgba(91, 106, 240, 0.05));
+  bottom: 20%;
+  right: -50rpx;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+.bg-dots {
+  width: 200rpx;
+  height: 300rpx;
+  background-image: radial-gradient(rgba(91, 106, 240, 0.2) 2px, transparent 2px);
+  background-size: 18px 18px;
+  top: 40%;
+  right: 10%;
+  opacity: 0.3;
+}
+
+.bg-pattern {
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(91, 106, 240, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(91, 106, 240, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.5;
+}
+
+.bg-wave {
+  width: 100vw;
+  height: 200rpx;
+  background: linear-gradient(135deg, rgba(91, 106, 240, 0.03), rgba(123, 137, 255, 0.06));
+  transform: skewY(-3deg);
+  top: 30%;
+  left: 0;
+  animation: wave 15s linear infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15rpx);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: skewY(-3deg) translateX(0);
+  }
+  50% {
+    transform: skewY(-2deg) translateX(-10rpx);
+  }
+  100% {
+    transform: skewY(-3deg) translateX(0);
+  }
 }
 
 /* 页面标题区域 */
@@ -95,6 +205,8 @@ export default {
   text-align: left;
   margin-bottom: 40rpx;
   padding: 20rpx 0;
+  position: relative;
+  z-index: 1;
 }
 
 .title {
@@ -120,6 +232,8 @@ export default {
   box-shadow: 0 10rpx 20rpx rgba(91, 106, 240, 0.2);
   padding: 40rpx;
   transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .ai-card:active {
@@ -181,6 +295,8 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 20rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .resource-card {
