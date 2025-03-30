@@ -94,7 +94,7 @@ import pageTime from '../../mixins/pageTime';
 			getAvatar(){
         this.$api.personal.getUserAvatar(this.userId).then(res=>{
           console.log(res);
-					this.img = request.baseUrl+(res.data?res.data:'/avatars/defaultAvatar.jpg')
+					this.img = request.baseUrl+(res.data!=='/avatars/'?res.data:'/avatars/defaultAvatar.jpg')
 					console.log(this.img);
 					
         })

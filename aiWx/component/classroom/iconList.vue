@@ -17,24 +17,24 @@
 			return {
 				menu:[
           {
+            img:this.$request.baseUrl+"/classroom/classroomManagement.png",
+            content:"AI课堂",
+            path:"/pages/classManagement/aiChats"
+          },
+          {
             img:this.$request.baseUrl+"/classroom/learningResource.png",
             content:"学习资源",
             path:"/pages/learnResource/index"
           },
           {
-            img:this.$request.baseUrl+"/classroom/classroomManagement.png",
-            content:"课堂管理",
-            path:"/pages/classManagement/aiChats"
+            img:this.$request.baseUrl+"/classroom/progessFeedback.png",
+            content:"智能评估",
+            path:"/pages/progressFeedback/index"
           },
           {
             img:this.$request.baseUrl+"/classroom/learningSuggestion.png",
-            content:"学能图谱",
+            content:"学习建议",
             path:"/pages/learnDashboard/index"
-          },
-          {
-            img:this.$request.baseUrl+"/classroom/progessFeedback.png",
-            content:"进度反馈",
-            path:"/pages/progressFeedback/index"
           },
         ]
 			}
@@ -70,6 +70,7 @@
         background-color: none;
         display: flex;
         flex-direction: column;
+        align-items: center;
         
 
         .text{

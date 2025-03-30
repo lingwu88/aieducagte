@@ -76,16 +76,16 @@ export default{
       })
     },
     closeSSE(){
-      this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
+      // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
         console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.result)
         this.$set(this,'result',word)
-      })
-      .catch(err=>{
-        console.log(err);
+      // })
+      // .catch(err=>{
+      //   console.log(err);
         
-      })
+      // })
     },
     //sse回调函数
     logData(res) {
