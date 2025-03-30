@@ -4,12 +4,12 @@
     <view class="header">
       <view class="navigation-icon" @click="back"></view>
       <view class="title">课程规划与建议</view>
-      <view class="voice-play">
+      <!-- <view class="voice-play">
         <uni-icons type="sound" size="28"></uni-icons>
       </view>
       <view class="collection">
         <uni-icons :type="swtichStar==false?'star':'star-filled'" size="28" @click="swtichStars"></uni-icons>
-      </view>
+      </view> -->
     </view>
 
     <view class="content">
@@ -33,9 +33,9 @@
     <view class="input-area">
 
       <view class="input">
-        <view class="mode-swtich" @tap="switchMode">
+        <!-- <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
-        </view>
+        </view> -->
         <view class="input-box" v-if="!isVoiceMode">
           <textarea
             v-model="inputText"
@@ -52,7 +52,7 @@
           <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
         </view>
         
-        <view 
+        <!-- <view 
           v-else
           class="voice-input"
           :class="{ recording: isRecording }"
@@ -61,7 +61,7 @@
           @touchcancel="cancelRecording"
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
-        </view>
+        </view> -->
       </view>
       <view 
           class="send-btn"
@@ -80,11 +80,13 @@
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 import { regexSSE } from '../../tools/tool'
 import { convertMarkdown } from '../../tools/markdownUtils'
+import pageTime from '../../mixins/pageTime'
 //recorderManager 录音管理器 ,用来录音
 const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
+  mixins:[pageTime],
   props: {
   },
   components:{
@@ -129,11 +131,14 @@ export default {
     
     if(options){
       console.log(options.query);
-      this.generateAi(options.query)
+      const decodedQuery = options.query ? decodeURIComponent(options.query) : '';
+      this.generateAi(decodedQuery)
     }
     this.getSessionId()
   },
   mounted() {
+			this.checkUserId()
+      this.setType(1)
 			// this.initHighLight()
 			// console.log(this.initHighLight);
 			// //先处理essay中的换行符
@@ -245,11 +250,13 @@ export default {
     //sse回调函数
     logData(res) {
       console.log(res);
+      let data
       // console.log("返回数据类型"+typeof res);
       
         // 假设 res 是一个字符串，包含了 SSE 消息
-       const data = regexSSE(res)
-      //  console.log(data);
+       data = regexSSE(res)
+      //  data = convertMarkdown(data)
+       console.log(data);
        
        if(data){
         this.result.word +=data
@@ -444,7 +451,7 @@ export default {
     }
 
     .title{
-      text-align: center;
+      // text-align: center;
       flex:1;
       font-size:38rpx;
       font-weight: 600;

@@ -6,7 +6,7 @@
     }"></view> -->
     <view class="box-content" :style="{
       backgroundColor:`${bgColor}`
-    }">
+    }" @click="handleClick">
       <view class="box-content-text">
         {{ content }}
       </view>
@@ -23,7 +23,8 @@
             
           <text class="name">{{ author }}</text>
         </view>
-        <text class="like">{{likeCount}}</text>
+        <uni-icons type="eye-filled" size="20"></uni-icons>
+        <text class="like">{{viewCount}}</text>
       </view>
     </view>
   </view>
@@ -58,7 +59,7 @@ export default{
       type:String,
       required:true
     },
-    likeCount:{
+    viewCount:{
       type:Number,
       default:0
     }
@@ -66,6 +67,13 @@ export default{
   data(){
     return{
 
+    }
+  },
+  methods: {
+    handleClick(){
+      this.$emit('toDetail')
+      console.log('触发子组件');
+      
     }
   },
   computed:{
@@ -146,7 +154,7 @@ export default{
           margin-right: 6rpx;
           width: 60rpx;
           height: 60rpx;
-          border-radius: 20rpx;
+          border-radius: 50%;
         }
         
         .name {

@@ -53,10 +53,10 @@
 					</view>
 				</view>
 				<view class="options-list">
-					<view class="icon-list">
-						<u-icon name="photo-fill" @click="uploadImage" size="30"></u-icon>
-						<uni-icons type="paperclip" size="30" ></uni-icons>
-					</view>
+					<!-- <view class="icon-list"> -->
+						<!-- <u-icon name="photo-fill" @click="uploadImage" size="30"></u-icon> -->
+						<!-- <uni-icons type="paperclip" size="30"  color="#000000"></uni-icons> -->
+					<!-- </view> -->
 					<view class="publish-btn" @click="handlePublish">
 						<text>发表</text>
 					</view>
@@ -105,8 +105,8 @@
 						v-model="newTag"
 					></u--input>
 					<view class="popup-footer">
-						<view>取消</view>		
-						<view @click="addTag">确认</view>
+						<view @click.stop="handleCancel">取消</view>		
+						<view @click.stop="addTag">确认</view>
 					</view>
 			</view>
 		</u-popup>
@@ -114,7 +114,9 @@
 </template>
 
 <script>
+import pageTime from '../../mixins/pageTime'
 	export default {
+		mixins:[pageTime],
 		data() {
 			return {
 				inputText: '',
@@ -175,6 +177,10 @@
 				nowList:[]
     }
   },
+	mounted(){
+			this.checkUserId()
+			this.setType(3)
+		},
   onLoad() {
 		if(uni.getStorageSync('tags'))
 			this.nowList = uni.getStorageSync('tags')
@@ -192,6 +198,10 @@
 		uni.setStorageSync('tags',this.nowList)
 	},
 	methods: {
+		handleCancel(){
+			this.newTag = ""
+			this.show = false
+		},
 		uploadImage() {
 			// 这里可以使用 uni.chooseImage 来选择图片
 			uni.chooseImage({
@@ -435,7 +445,7 @@
 	background-color: #ffffff;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: center;
 	border-bottom: 1px solid #e2e2e2;
 

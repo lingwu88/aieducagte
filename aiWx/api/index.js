@@ -18,10 +18,12 @@ import * as square from "./square"
 import * as learnResource from './learnResource'
 import * as classManagement from './classManagement'
 import * as selfStudy from './selfStudy'
+import * as progressFeedBack from './progressFeedBack'
 export default{
   personal,
   square,
   learnResource,
   classManagement,
-  selfStudy
+  selfStudy,
+  progressFeedBack
 }

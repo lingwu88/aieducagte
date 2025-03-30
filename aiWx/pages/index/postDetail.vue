@@ -21,22 +21,22 @@
       </view>
     </view>
     <view class="comment-introduce">
-      <view class="description">评论({{ commentList.length }})</view>
+      <view class="description">评论({{ info.commentCount }})</view>
       <u-line></u-line>
     </view>
     <view class="commentSection" >
       <view class="comment-list" v-if="commentList.length!=0">
-        <view class="comment-item" v-for="(item,index) in commentList" :key="index">
+        <view class="comment-item" v-for="(item,index) in commentList" :key="item.commentId">
           <view class="comment-header">
             <view class="comment-header-left">
-              <image class="avatar" :src="item.userAvatar" />
+              <image class="avatar" :src="item.fromAvatar" />
             </view>
             <view class="comment-header-right">
-              <view class="comment-name">{{ item.userName }}</view>
+              <view class="comment-name">{{ item.fromName }}</view>
               <view class="comment-time">{{ item.createTime }}</view>
             </view>
           </view>
-          <view class="comment-content">{{ item.cotent }}</view>
+          <view class="comment-content">{{ item.content }}</view>
         </view>
       </view>
     </view>
@@ -45,15 +45,13 @@
         <view class="input-box">
           <textarea
             v-model="inputText"
-            :adjust-position="false"
-            :cursor-spacing="20"
-            auto-height
-            :show-confirm-bar="false"
-            placeholder="请输入内容..."
-            :maxlength="-1"
-            @focus="handleFocus"
-            @blur="handleBlur"
-            class="input-textarea"
+						:adjust-position="false"
+						:cursor-spacing="20"
+						auto-height
+						:show-confirm-bar="false"
+						placeholder="请输入内容..."
+						:maxlength="-1"
+						class="input-textarea"
           />
         </view>
 
@@ -71,16 +69,23 @@
 </template>
 
 <script>
+import mixin from 'uview-ui/libs/mixin/mixin'
+import pageTime from '../../mixins/pageTime'
 export default{
+  mixins:[pageTime],
   props:{
     // info:{
     //   type:Object,
     //   required:true
     // }
   },
+  mounted(){
+			this.checkUserId()
+		},
   data() {
     return {
       articleId:"",
+      inputText:"",
       userId:"",
       info:{},
       commentList:[],
@@ -88,6 +93,36 @@ export default{
     }
   },
   methods: {
+      handleSend(){
+        if(this.inputText.trim() ==''){
+					uni.showToast({
+						title:'请输入评论内容',
+						icon:'none'
+					})
+				}
+				this.$api.square.comment({
+					fromId:this.userId,
+					content:this.inputText,
+					articleId:this.articleId
+				})
+				.then(res=>{
+					console.log(res);
+					this.$set(this.commentList,this.commentList.length,{
+						content:res.data.content,
+						fromName:res.data.fromName,
+						createTime:res.data.createTime,
+            fromAvatar:this.$request.baseUrl+res.data.fromAvatar
+					})
+					uni.showToast({
+						title:"成功评论"
+					})
+				})
+				.catch(err=>{
+					console.log(err);
+					
+				})
+				this.inputText = ""
+      },
      //控制（取消）点赞
      handleApprove(approved,item){
       this.$api.square.approve({
@@ -130,6 +165,16 @@ export default{
           })
         })
         
+      },
+      getComment(articleId){
+        this.$api.square.getComment(articleId)
+        .then(res=>{
+          const newArr = res.data.map(item=>({
+            ...item,
+            fromAvatar:this.$request.baseUrl+item.fromAvatar
+          }))
+          this.$set(this,'commentList',newArr)
+        })
       }
   },
   onLoad(options){
@@ -138,6 +183,7 @@ export default{
       this.articleId = options.articleId
       console.log(this.articleId);
       this.getInfo()
+      this.getComment(this.articleId)
     }
     else{
       uni.switchTab({
@@ -152,6 +198,9 @@ export default{
     },
     approve(){
       return this.info.approved?'/square/star-fill.png':'/square/star.png'
+    },
+    canSend() {
+      return this.inputText.trim().length > 0
     }
   }
 }
@@ -248,6 +297,54 @@ export default{
 
   .commentSection{
     flex:1;
+    width: 100%;
+
+    .comment{
+      &-list{
+        height: auto;
+      }
+      &-item{
+        width: 100%;
+        margin:30rpx auto;
+        box-sizing: border-box;
+      }
+
+      &-header{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        box-sizing: border-box;
+
+        &-left{
+          padding:10rpx 10rpx 10rpx 40rpx;
+
+          .avatar{
+            width: 80rpx;
+            height: 80rpx;
+            border-radius: 50%;
+          }
+        }
+
+        &-right{
+          .comment-name{
+            font-size: 32rpx;
+            color: #0c6ed8;
+            margin-bottom: 10rpx;
+          }
+          .comment-time{
+            font-size: 20rpx;
+            color: #c9cbdc;
+          }
+        }
+      }
+      &-content{
+        width: 90%;
+        margin: 0 auto 10rpx auto;
+        box-sizing: border-box;
+        padding-left: 90rpx;
+      }
+    }
   }
 
   .input-area {

@@ -2,7 +2,8 @@
 	"easycom": {
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	},
-	"pages": [{
+	"pages": [
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "课堂"
@@ -11,7 +12,7 @@
 		{
 			"path": "pages/index/selfStudy",
 			"style": {
-				"navigationBarTitleText": "自习空间"
+				"navigationBarTitleText": "课后复习"
 			}
 		},
 		{
@@ -31,20 +32,30 @@
 			"style": {
 				"navigationBarTitleText": "帖子详情"
 			}
+		},
+		{
+			"path": "pages/index/videoPlay",
+			"style": {
+				"navigationBarTitleText": "视频播放"
+			}
 		}
 	],
-	"subPackages": [{
+	"subPackages": [
+		{
 			"root": "pages/selfStudy",
-			"pages": [{
-				"path": "index",
-				"style": {
-					"navigationBarTitleText": "课后复习"
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "课后复习"
+					}
 				}
 			}]
 		},
 		{
 			"root": "pages/square",
-			"pages": [{
+			"pages": [
+				{
 					"path": "check",
 					"style": {
 						"navigationBarTitleText": "打卡圈"
@@ -60,7 +71,8 @@
 		},
 		{
 			"root": "pages/classManagement",
-			"pages": [{
+			"pages": [
+				{
 					"path": "aiChats",
 					"style": {
 						"navigationBarTitleText": "课程管理"
@@ -88,7 +100,8 @@
 		},
 		{
 			"root": "pages/learnResource",
-			"pages": [{
+			"pages": [
+				{
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "学习资源"
@@ -112,14 +125,12 @@
 						"navigationBarTitleText": "课程库"
 					}
 				},
-
 				{
 					"path": "DocLib",
 					"style": {
 						"navigationBarTitleText": "资料库"
 					}
 				},
-
 				{
 					"path": "webview",
 					"style": {
@@ -130,7 +141,8 @@
 		},
 		{
 			"root": "pages/progressFeedback",
-			"pages": [{
+			"pages": [
+				{
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "进度反馈"
@@ -139,7 +151,7 @@
 				{
 					"path": "learningProgress",
 					"style": {
-						"navigationBarTitleText": "学习进度"
+						"navigationBarTitleText": "综合评估"
 					}
 				},
 				{
@@ -152,7 +164,8 @@
 		},
 		{
 			"root": "pages/learnDashboard",
-			"pages": [{
+			"pages": [
+				{
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "学能图谱"
@@ -176,17 +189,18 @@
 						"navigationBarTitleText": "学习建议"
 					}
 				}
-
 			]
 		},
 		{
 			"root": "pages/login",
-			"pages": [{
-				"path": "login",
-				"style": {
-					"navigationBarTitleText": "登录"
+			"pages": [
+				{
+					"path": "login",
+					"style": {
+						"navigationBarTitleText": "登录"
+					}
 				}
-			}]
+			]
 		},
 		{
 			"root": "pages/personal",
@@ -208,7 +222,48 @@
 						"navigationBarTitleText": "收藏"
 					}
 				}
-			}]
+			]
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {},
+	"tabBar": {
+		"color": "#ccc",
+		"selectedColor": "#6F55D2",
+		"backgroundColor": "",
+		"position": "bottom",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "课堂",
+				"iconPath": "static/classroom/class.png",
+				"selectedIconPath": "static/classroom/classSelected.png"
+			},
+			{
+				"pagePath": "pages/index/selfStudy",
+				"text": "课后复习",
+				"iconPath": "static/selfStudy/selfStudy.png",
+				"selectedIconPath": "static/selfStudy/selfStudySelected.png"
+			},
+			{
+				"pagePath": "pages/index/square",
+				"text": "广场",
+				"iconPath": "static/square/square.png",
+				"selectedIconPath": "static/square/squareSelected.png"
+			},
+			{
+				"pagePath": "pages/index/my",
+				"text": "我的",
+				"iconPath": "static/my/avatar.png",
+				"selectedIconPath": "static/my/avatarSelected.png"
+			}
+		]
 	}
 ],
 "globalStyle": {

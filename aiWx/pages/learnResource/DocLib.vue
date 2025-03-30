@@ -1,16 +1,19 @@
 <template>
   <view class="container" @tap="handleContainerTap">
     <toast ref="toast"></toast>
-    <scroll-view scroll-x class="categories-scroll">
-      <view class="categories">
-        <view v-for="(category, index) in categories" :key="index" class="category" :class="{ active: currentCategory === category }" @click="changeCategory(category)">
-          {{ category }}
+    <!-- 添加固定顶部区域容器 -->
+    <view class="fixed-header">
+      <scroll-view scroll-x class="categories-scroll">
+        <view class="categories">
+          <view v-for="(category, index) in categories" :key="index" class="category" :class="{ active: currentCategory === category }" @click="changeCategory(category)">
+            {{ category }}
+          </view>
         </view>
+      </scroll-view>
+      <!-- 搜索框 -->
+      <view class="search-container">
+        <input type="text" class="search-input" placeholder-class="placeholder" placeholder="搜索资源..." v-model="searchQuery" @input="filterResources" />
       </view>
-    </scroll-view>
-    <!-- Added Search Box -->
-    <view class="search-container">
-      <input type="text" placeholder="搜索资源..." v-model="searchQuery" @input="filterResources" />
     </view>
     <view class="load-container">
       <scroll-view
@@ -42,20 +45,20 @@
                 <image
                   :src="
                     item.isFavorited
-                      ? '/static/classroom/learnResource/ResourceLibrary/icon/star-filled.ico'
-                      : '/static/classroom/learnResource/ResourceLibrary/icon/star.ico'
+                      ? 'http://120.26.132.46:8091/classroom/learnResource/ResourceLibrary/icon/star-filled.ico'
+                      : 'http://120.26.132.46:8091/classroom/learnResource/ResourceLibrary/icon/star.ico'
                   "
                   class="btn-icon"
                 ></image>
                 <text>{{ item.isFavorited ? '已收藏' : '未收藏' }}</text>
               </view>
               <view class="menu-btn" @tap.stop="downloadFile(item)">
-                <image src="/static/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
+                <image src="http://120.26.132.46:8091/classroom/learnResource/ResourceLibrary/icon/download.ico" class="btn-icon"></image>
                 <text>下载</text>
               </view>
               <view class="menu-btn" open-type="share" @tap.stop="handleShareButton(item)">
                 <button open-type="share" class="share-btn" :data-item="item" @tap.stop="handleShareButton(item)">
-                  <image src="/static/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
+                  <image src="http://120.26.132.46:8091/classroom/learnResource/ResourceLibrary/icon/Forward.ico" class="btn-icon"></image>
                   <text>分享</text>
                 </button>
               </view>
@@ -75,8 +78,9 @@
 
 <script>
 import Toast from '@/pages/learnResource/components/Toast.vue';
-
+import pageTime from '../../mixins/pageTime';
 export default {
+  mixins:[pageTime],
   components: { Toast },
   data() {
     return {
@@ -88,7 +92,7 @@ export default {
       pageSize: 20,
       page: 1,
       loading: false,
-      defaultImg: '/static/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
+      defaultImg: 'http://120.26.132.46:8091/classroom/learnResource/ResourceLibrary/Pic/Doc_unfounded.png',
       maxTitleLength: 17,
       maxPreviewLength: 40,
       loadingHeight: 0,
@@ -107,6 +111,10 @@ export default {
   onLoad() {
     this.loadData();
   },
+  mounted(){
+			this.checkUserId()
+      this.setType(2)
+		},
   methods: {
     // Existing methods unchanged unless specified
     changeCategory(category) {
@@ -414,102 +422,161 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Existing styles unchanged */
 .container {
   height: 100vh;
-  background-color: #fafafa;
+  background-color: #f8f9fd;
+  position: relative;
+  overflow: hidden;
 }
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
+}
+
 .categories-scroll {
   width: 100%;
   white-space: nowrap;
-  box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
+
 .categories {
   display: inline-flex;
   padding: 20rpx 0;
-  background-color: #fefefe;
 }
+
 .category {
   width: 180rpx;
   font-size: 32rpx;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
   padding: 10rpx 0;
+  transition: all 0.3s ease;
+  position: relative;
 }
+
 .category.active {
-  color: #007aff;
-  border-bottom: 4rpx solid #007aff;
+  color: #ffffff;
+  font-weight: 600;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rpx;
+    height: 4rpx;
+    background: #ffffff;
+    border-radius: 2rpx;
+  }
 }
+
+.load-container {
+  position: relative;
+  padding-top: 200rpx;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .resource-list {
   position: relative;
   z-index: 2;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: auto;
+  padding: 20rpx 0;
+  box-sizing: border-box;
 }
+
 .list-content {
   position: relative;
 }
+
 .bottom-spacer {
   height: 45rpx;
 }
+
 .load-hint {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #cecece;
+  background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   font-size: 28rpx;
-  color: #666;
-  transition: opacity 0.2s ease;
+  color: #ffffff;
+  transition: all 0.3s ease;
   z-index: 1;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
 }
+
 .resource-item {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  background-color: #fff;
-  margin: 15rpx 20rpx 20rpx 20rpx;
-  border-radius: 10rpx;
-  width: 675rpx;
-  height: 135rpx;
-  box-shadow: 0 7rpx 9rpx rgba(0, 0, 0, 0.17);
+  padding: 25rpx;
+  background-color: #ffffff;
+  margin: 15rpx 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.1);
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease;
+  box-sizing: border-box;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.08);
+  }
 }
+
 .item-img {
   width: 100rpx;
   height: 100rpx;
   margin-right: 20rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
 }
+
 .item-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+
 .item-title {
   font-size: 32rpx;
   color: #333;
   line-height: 40rpx;
   max-width: 500rpx;
   display: block;
+  font-weight: 600;
 }
+
 .item-title.ellipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .item-desc {
-  font-size: 24rpx;
-  color: #999;
-  line-height: 30rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 34rpx;
   max-width: 500rpx;
   display: block;
-  margin-top: 10rpx;
+  margin-top: 8rpx;
 }
+
 .item-desc.ellipsis-two {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -517,42 +584,58 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .item-more {
-  width: 40rpx;
-  height: 55rpx;
+  width: 44rpx;
+  height: 44rpx;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  background-color: #f0f0f0;
-  border-radius: 8rpx;
-  padding-bottom: 0rpx;
-  margin-top: auto;
+  background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
+  border-radius: 22rpx;
+  margin-left: 15rpx;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.9);
+  }
 }
+
 .more-icon {
-  font-size: 40rpx;
-  color: #666;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  font-size: 36rpx;
+  color: #ffffff;
 }
+
 .menu-buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 0 20rpx 10rpx 60rpx;
   background-color: transparent;
-  z-index: 10000;
+  z-index: 5;
   gap: 20rpx;
+  position: relative;
 }
+
 .menu-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
-  padding: 10rpx;
+  padding: 12rpx;
   margin: 0 10rpx;
-  background-color: transparent;
+  background: #ffffff;
   z-index: 10001;
   box-sizing: border-box;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.1);
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
+
 .share-btn {
   display: flex;
   align-items: center;
@@ -568,37 +651,55 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .share-btn::after {
   border: none;
 }
+
 .btn-icon {
   width: 40rpx;
   height: 40rpx;
   margin-right: 10rpx;
   z-index: 10001;
 }
+
 .menu-btn text {
   font-size: 28rpx;
   color: #333;
+  font-weight: 500;
 }
+
 .loading,
 .empty {
   text-align: center;
   font-size: 28rpx;
-  color: #999;
+  color: #666;
   padding: 20rpx;
 }
-/* Added styles for search box */
+
 .search-container {
-  padding: 20rpx;
-  background-color: #fff;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  padding: 30rpx 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
 }
-.search-container input {
-  width: 100%;
-  padding: 10rpx;
-  font-size: 28rpx;
-  border: 1rpx solid #ccc;
-  border-radius: 8rpx;
+
+.search-input {
+  width: calc(100% - 48rpx);
+  padding: 30rpx 32rpx;
+  font-size: 30rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 12rpx;
+  color: #333;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.placeholder {
+  color: rgba(102, 102, 102, 0.6);
+  font-size: 30rpx;
 }
 </style>

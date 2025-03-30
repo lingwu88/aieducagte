@@ -24,12 +24,17 @@ import aiConnection from './components/aiConnection.vue';
 import request from '../../tools/request';
 import { regexSSE } from '../../tools/tool'
 import { convertMarkdown } from '../../tools/markdownUtils';
+import pageTime from '../../mixins/pageTime';
 // import AiConnection from './components/aiConnection.vue';
 export default{
+  mixins:[pageTime],
   components:{
     // menuNavigate,
     aiConnection
   },
+  mounted(){
+			this.checkUserId()
+		},
   data() {
     return {
       showNavigator:false,
@@ -132,15 +137,16 @@ export default{
   align-items: center;
   
   .header{
-    position:sticky;
+    position: -webkit-sticky;
+    /* position: fixed; */
     top: 0;
-    left: 0;
+    /* left: 0; */
     display: flex;
-    width:100vw;
+    width: 100vw;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding-top:80rpx;
+    padding-top: 80rpx;
     padding-left: 40rpx;
     height: 100rpx;
     background-color: #fff;

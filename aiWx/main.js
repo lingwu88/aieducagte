@@ -13,9 +13,23 @@ App.mpType = 'app'
 const app = new Vue({
   ...App
 })
+//全局混入
+Vue.mixin({
+  methods: {
+    checkUserId() {
+      const userId = uni.getStorageSync('userId');
+      if (!userId) {
+        uni.navigateTo({ url: '/pages/login/login' });
+        return false;
+      }
+      return true;
+    }
+  }
+})
 Vue.prototype.$api = api
 Vue.prototype.$request = request
 app.$mount()
+
 // #endif
 
 // #ifdef VUE3

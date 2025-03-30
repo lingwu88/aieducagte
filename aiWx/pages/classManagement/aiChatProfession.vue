@@ -79,8 +79,9 @@
 <script>
 import expectedSelect from '../../component/classManagement/expectedSelect.vue';
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
-
+import pageTime from '../../mixins/pageTime';
 export default{
+  mixins:[pageTime],
   components:{
     expectedSelect,
     mpHtml
@@ -105,10 +106,26 @@ export default{
       this.type = true
     }
   },
+  mounted(){
+    this.checkUserId()
+    this.setType(1)
+  },
   methods: {
     handleProduce(){
       console.log(this.form);
-      
+      if(this.list.length === 0){
+        uni.showToast({
+          title:'请先生成路径!',
+          icon:"error"
+        })
+        return
+      }
+      else if(this.form.courses.length === 0){
+        uni.showToast({
+          title:'请先选择路径',
+          icon:'warning'
+        })
+      }
       uni.setStorageSync('aiSetting',this.form)
       uni.navigateTo({
         url:"/pages/classManagement/searchResultProfession"
@@ -140,28 +157,23 @@ export default{
         this.form.courses.push(this.list[index])
         this.list[index].isSelect = true
       }
-
-      // if(index == currentIndex)
-      //   return
-      // this.$set(this.list[currentIndex],'isSelect',false)
-      // this.$set(this.list[index],'isSelect',true)
-      //判断之前是否有元素
-      //判断是否选择的是当前元素
-      //
     },
     handlePath(){
       this.$api.classManagement.learnPath({
         userId:this.userId,
         inputs:this.keyword
       }).then(res=>{
-        console.log(res);
-        console.log(JSON.parse(res.data).course_name);
-        const arr = JSON.parse(res.data).course_name
-        this.$set(this,'list',arr.map((item,index)=>({
-          id:index,
-          desc:item,
-          isSelect:false
-        })))
+        console.log(res.data);
+        const arr = res.data.map(item=>{
+          const data = JSON.parse(item)
+
+          return {
+            id:data.aid,
+            desc:data.title,
+            isSelect:false
+          }
+        })
+        this.$set(this,'list',arr)
         this.currentIndex = 0
       })
       .catch(err=>{

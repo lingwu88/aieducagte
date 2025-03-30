@@ -11,6 +11,13 @@ export function getComment(articleId){
   return request.get(`/api/square/getCommentList?articleId=${articleId}`)
 }
 
+//获取收藏文章
+export function getStarArticle(userId){
+  return request.get(
+    `/api/user/getCollectArticleList?userId=${userId}`,
+  )
+}
+
 //控制点赞
 export function approve(data){
   return request.post(

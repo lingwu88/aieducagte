@@ -72,7 +72,9 @@
 
 <script>
 import request from '../../tools/request';
+import pageTime from '../../mixins/pageTime';
 export default {
+  mixins:[pageTime],
   data() {
       return {
         label:{
@@ -121,30 +123,41 @@ export default {
   onLoad(){
     if(uni.getStorageSync('userId'))
       this.userId = uni.getStorageSync('userId')
-  },
-  onShow(){
     this.getAvatar()
     this.getInfo()
+  },
+  onShow(){
   },
   onReady() {
 		//onReady 为uni-app支持的生命周期之一
     	this.$refs.uForm.setRules(this.rules)
 },
+mounted(){
+			this.checkUserId()
+		},
   methods: {
       chooseAvatar() {
           uni.chooseImage({
               count: 1,
               success: (res) => {
-                  let resSize = tempFiles[0].size;
-                  if(resSize > 1024*1024*10){
-                    uni.showToast({
-                      title:"上传图片大小不能超过10MB",
-                      icon:"error"
-                    })
-                    return
-                  }
-
-                  this.label.avatar = res.tempFilePaths[0];   
+                console.log(res);
+                
+                  // let resSize = tempFiles[0].size;
+                  // if(resSize > 1024*1024*10){
+                  //   uni.showToast({
+                  //     title:"上传图片大小不能超过10MB",
+                  //     icon:"error"
+                  //   })
+                  //   return
+                  // }
+                  console.log(res);
+                  
+                  this.$set(this,'label',{
+                    ...this.label,
+                    avatar:res.tempFilePaths[0]
+                  })   
+                  console.log(this.label);
+                  
                   //更新头像
                   this.$api.personal.uploadAvatar({
                     userId:this.userId,
@@ -162,7 +175,11 @@ export default {
       getAvatar(){
         this.$api.personal.getUserAvatar(this.userId).then(res=>{
           console.log(res);
-          this.label.avatar = request.baseUrl + res.data
+          this.$set(this,'label',{
+            ...this.label,
+            avatar:this.$request.baseUrl + res.data
+          })
+          // this.label.avatar = request.baseUrl + res.data
         })
         .catch(err=>{
           console.log(err);
