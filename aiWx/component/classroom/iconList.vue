@@ -2,7 +2,7 @@
 	<view class="content">
     <view class="list">
       <view class="list-item" v-for="(item,index) in menu" :key="index" @click="handleTo(item)">
-        <view class="icon-container">
+        <view class="icon-container" :class="'bg-color-' + index">
           <u-image :src="item.img" :lazy-load="true" height="80rpx" width="80rpx"></u-image>
         </view>
         <text class="text" selectable="false">{{ item.content }}</text>
@@ -79,11 +79,10 @@
         .icon-container {
           width: 120rpx;
           height: 120rpx;
-          background: rgba(255, 255, 255, 0.2);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           border-radius: 20rpx;
-          box-shadow: 0 8rpx 32rpx 0 rgba(91, 106, 240, 0.1);
+          box-shadow: 0 8rpx 32rpx 0 rgba(0, 0, 0, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.18);
           display: flex;
           justify-content: center;
@@ -92,7 +91,44 @@
           
           &:active {
             transform: scale(0.95);
-            box-shadow: 0 4rpx 16rpx 0 rgba(91, 106, 240, 0.15);
+            box-shadow: 0 4rpx 16rpx 0 rgba(0, 0, 0, 0.15);
+          }
+        }
+        
+        /* 为每个图标添加指定的背景颜色 */
+        .bg-color-0 {
+          background-color: rgba(120, 132, 240, 0.4);
+          box-shadow: 0 8rpx 32rpx 0 rgba(120, 132, 240, 0.15);
+          
+          &:active {
+            box-shadow: 0 4rpx 16rpx 0 rgba(120, 132, 240, 0.2);
+          }
+        }
+        
+        .bg-color-1 {
+          background-color: rgba(100, 200, 140, 0.4);
+          box-shadow: 0 8rpx 32rpx 0 rgba(100, 200, 140, 0.15);
+          
+          &:active {
+            box-shadow: 0 4rpx 16rpx 0 rgba(100, 200, 140, 0.2);
+          }
+        }
+        
+        .bg-color-2 {
+          background-color: rgba(218, 106, 154, 0.4);
+          box-shadow: 0 8rpx 32rpx 0 rgba(218, 106, 154, 0.15);
+          
+          &:active {
+            box-shadow: 0 4rpx 16rpx 0 rgba(218, 106, 154, 0.2);
+          }
+        }
+        
+        .bg-color-3 {
+          background-color: rgba(241, 190, 27, 0.4);
+          box-shadow: 0 8rpx 32rpx 0 rgba(241, 190, 27, 0.15);
+          
+          &:active {
+            box-shadow: 0 4rpx 16rpx 0 rgba(241, 190, 27, 0.2);
           }
         }
 
