@@ -60,8 +60,14 @@
         >
       
         <u-textarea v-model="keyword" count maxlength="100" placeholder="请输入您的要求或关键词～" class="custom-textarea"></u-textarea>
-        <view class="green-btn" @click="handlePath">
-          生成路径
+        <view class="action-buttons">
+          <view class="green-btn" @click="handlePath">
+            生成路径
+          </view>
+          <view class="mode-switch-btn" @click="handleToNormal">
+            <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
+            <text>普通模式</text>
+          </view>
         </view>
         </u-form-item>
         <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
@@ -78,10 +84,6 @@
           <u-slider v-model="form.strength" max="4" min="0" step="1" showValue class="custom-slider"></u-slider>
         </u-form-item>
       </u--form>
-    </view>
-    <view class="navigate-box" @click="handleToNormal">
-      <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
-      <view>普通模式</view>
     </view>
     <view class="btn" @click="handleProduce" v-if="!type">生成</view>
     <view class="save-btn" @click="handleSave" v-else>保存</view>
@@ -294,34 +296,106 @@ export default{
     min-height: 80vh;
   }
 
-  // 自定义文本域样式
-  /deep/ .custom-textarea.u-textarea.data-v-81cd9d32 {
-    border-radius: 16rpx !important;
-    background-color: #f9f9fd !important;
-    border: 1px solid rgba(91, 106, 240, 0.1) !important;
-    box-shadow: inset 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-    width: 100% !important;
-    margin: auto;
+  // 按钮组样式
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20rpx 0;
+    width: 100%;
+  }
+
+  .mode-switch-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12rpx 24rpx;
+    border-radius: 35rpx;
+    background: linear-gradient(135deg, #ffffff, #f0f2ff);
+    border: 1px solid rgba(91, 106, 240, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.1);
     transition: all 0.3s ease;
-    height: 120rpx !important;
     
-    &:focus {
-      border-color: rgba(91, 106, 240, 0.3) !important;
-      box-shadow: inset 0 2rpx 8rpx rgba(91, 106, 240, 0.1);
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 2rpx 6rpx rgba(91, 106, 240, 0.1);
+    }
+    
+    image {
+      width: 32rpx;
+      height: 32rpx;
+      margin-right: 8rpx;
+    }
+    
+    text {
+      font-size: 26rpx;
+      color: #5b6af0;
+      font-weight: 500;
     }
   }
 
-  // 自定义滑块样式
-  /deep/ .custom-slider {
-    margin: 20rpx 0;
+  .green-btn{
+    width: 28vw;
+    height: 70rpx;
+    color: #ffffff;
+    border-radius: 35rpx;
+    background: linear-gradient(135deg, #42b983 0%, #57b985 100%);
+    text-align: center;
+    font-size: 30rpx;
+    font-weight: 500;
+    line-height: 70rpx;
+    margin: 20rpx auto;
+    box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
+    transition: all 0.3s ease;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
+    }
   }
 
-  .select{
-    width: 100%;
-    height: 600rpx;
-    margin: 20rpx 0;
+  .btn{
+    width: 60vw;
+    height: 90rpx;
+    color: #ffffff;
+    border-radius: 45rpx;
+    background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
+    text-align: center;
+    font-size: 36rpx;
+    font-weight: 500;
+    line-height: 90rpx;
+    margin: 30rpx auto;
+    box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.3);
+    }
   }
-
+  .save-btn{
+    width: 50vw;
+    height: 80rpx;
+    color: #ffffff;
+    border-radius: 40rpx;
+    background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
+    text-align: center;
+    font-size: 32rpx;
+    font-weight: 500;
+    line-height: 80rpx;
+    margin: 24rpx auto;
+    box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    
+    &:active {
+      transform: scale(0.96);
+      box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
+    }
+  }
   .navigate-box{
     position: relative;
     margin: 20rpx auto;
@@ -353,68 +427,6 @@ export default{
       font-size: 28rpx;
       color: #333;
       font-weight: 500;
-    }
-  }
-
-  .btn{
-    width: 60vw;
-    height: 90rpx;
-    color: #ffffff;
-    border-radius: 45rpx;
-    background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
-    text-align: center;
-    font-size: 36rpx;
-    font-weight: 500;
-    line-height: 90rpx;
-    margin: 30rpx auto;
-    box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.3);
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
-    
-    &:active {
-      transform: scale(0.96);
-      box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.3);
-    }
-  }
-  .green-btn{
-    width: 28vw;
-    height: 70rpx;
-    color: #ffffff;
-    border-radius: 35rpx;
-    background: linear-gradient(135deg, #42b983 0%, #57b985 100%);
-    text-align: center;
-    font-size: 30rpx;
-    font-weight: 500;
-    line-height: 70rpx;
-    margin: 20rpx auto;
-    box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
-    transition: all 0.3s ease;
-    
-    &:active {
-      transform: scale(0.96);
-      box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
-    }
-  }
-  .save-btn{
-    width: 50vw;
-    height: 80rpx;
-    color: #ffffff;
-    border-radius: 40rpx;
-    background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
-    text-align: center;
-    font-size: 32rpx;
-    font-weight: 500;
-    line-height: 80rpx;
-    margin: 24rpx auto;
-    box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
-    
-    &:active {
-      transform: scale(0.96);
-      box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
     }
   }
 }
