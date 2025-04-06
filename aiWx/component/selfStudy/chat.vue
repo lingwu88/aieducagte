@@ -689,9 +689,10 @@ export default {
     align-items: flex-end;
   }
   .input-area {
-    position: sticky;
-    bottom: 0;
+    position: fixed;
+    bottom: -10rpx;
     left: 0;
+    right: 0;
     padding: 20rpx;
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10rpx);
