@@ -11,12 +11,18 @@
       <view class="circle circle-3"></view>
     </view>
     
+    <!-- 关键修改：设置固定高度，并添加重要的style属性 -->
     <scroll-view 
       class="chat-content"
-      scroll-y
-      scroll-top="scrollTop" 
+      scroll-y="true"
+      :scroll-with-animation="scrollAnimation"
+      :scroll-top="scrollTop" 
       :scroll-into-view="lastMessageId"
       @scrolltoupper="loadMoreHistory"
+      show-scrollbar="true"
+      enhanced="true"
+      bounces="true"
+      style="height: calc(100vh - 300rpx); flex: none; overflow-y: scroll;"
       >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
@@ -132,6 +138,9 @@
           发送
         </view>
     </view>
+    <view class="navigate-box">
+      <image src="" mode="widthFix"></image>
+    </view>
   </view>
 
 </template>
@@ -178,7 +187,9 @@ export default {
       isAiTyping: false,
       requestbody:{},
       content:"",
-      messageList:[]
+      messageList:[],
+      scrollAnimation: true, // 添加滚动动画控制
+      scrollHeight: 0 // 添加滚动高度记录
     }
   },
   created() {
@@ -188,6 +199,16 @@ export default {
   },
   onShow(){
     this.initRequest()
+    // 获取系统信息，计算安全区域
+    uni.getSystemInfo({
+      success: (res) => {
+        // 考虑底部安全区域和导航栏高度
+        const safeBottom = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
+        const navHeight = 50; // 估计的导航栏高度，单位px
+        this.scrollHeight = res.windowHeight - navHeight - safeBottom;
+        console.log('计算的滚动区域高度:', this.scrollHeight);
+      }
+    });
   },
   methods: {
     getSession(){
@@ -381,11 +402,31 @@ export default {
       })
     },
     scrollToBottom() {
-      console.log(this.messageList.length);
+      console.log('滚动到底部，消息数量:', this.messageList.length);
       
       this.$nextTick(() => {
-        this.lastMessageId = 'msg-' + (this.messageList.length - 1)
-      })
+        // 延迟执行，确保DOM已更新
+        setTimeout(() => {
+          // 计算实际滚动高度
+          const query = uni.createSelectorQuery().in(this);
+          query.select('.message-list').boundingClientRect(data => {
+            if (data) {
+              console.log('消息列表高度:', data.height);
+              // 设置一个足够大的值确保滚动到底部
+              this.scrollTop = data.height * 2;
+              console.log('设置scrollTop:', this.scrollTop);
+              
+              // 先禁用动画，再启用，解决某些情况下不滚动的问题
+              this.scrollAnimation = false;
+              setTimeout(() => {
+                this.scrollAnimation = true;
+                // 同时设置最后一条消息ID
+                this.lastMessageId = 'msg-' + (this.messageList.length - 1);
+              }, 50);
+            }
+          }).exec();
+        }, 10);
+      });
     },
     sendToAI(content) {
       return new Promise((resolve,reject)=>{
@@ -474,14 +515,13 @@ export default {
   height: 95vh !important;
 }
 .chat-container {
-  width:inherit;
-  // height: auto;
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f8f9fd;
   position: relative;
-  overflow: hidden;
+  padding-bottom: 0; /* 移除底部内边距，由输入区域自身控制 */
   
   .background-decoration {
     position: absolute;
@@ -525,10 +565,11 @@ export default {
   }
 
   .chat-content {
-    flex: 1;
+    /* 移除flex: 1，避免弹性布局影响滚动 */
     position: relative;
     z-index: 1;
     padding: 10rpx 0;
+    /* 移除高度设置，由内联样式控制 */
     
     &::before {
       content: '';
@@ -697,7 +738,7 @@ export default {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10rpx);
     border-top: 1rpx solid rgba(238, 238, 238, 0.8);
-    z-index: 10;
+    z-index: 100; /* 增加z-index确保在最上层 */
     box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 
     .input{
