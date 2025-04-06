@@ -61,6 +61,7 @@
       
         <u-textarea v-model="keyword" count maxlength="100" placeholder="请输入您的要求或关键词～" class="custom-textarea"></u-textarea>
         <view class="action-buttons">
+          <view class="btn-left"></view>
           <view class="green-btn" @click="handlePath">
             生成路径
           </view>
@@ -305,12 +306,17 @@ export default{
     width: 100%;
   }
 
+  .btn-left {
+    width: 28vw;
+    visibility: hidden;
+  }
+
   .mode-switch-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12rpx 24rpx;
-    border-radius: 35rpx;
+    padding: 8rpx 16rpx;
+    border-radius: 30rpx;
     background: linear-gradient(135deg, #ffffff, #f0f2ff);
     border: 1px solid rgba(91, 106, 240, 0.2);
     box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.1);
@@ -322,13 +328,13 @@ export default{
     }
     
     image {
-      width: 32rpx;
-      height: 32rpx;
-      margin-right: 8rpx;
+      width: 24rpx;
+      height: 24rpx;
+      margin-right: 6rpx;
     }
     
     text {
-      font-size: 26rpx;
+      font-size: 22rpx;
       color: #5b6af0;
       font-weight: 500;
     }
@@ -344,7 +350,7 @@ export default{
     font-size: 30rpx;
     font-weight: 500;
     line-height: 70rpx;
-    margin: 20rpx auto;
+    margin: 0;
     box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
     transition: all 0.3s ease;
     
@@ -380,7 +386,7 @@ export default{
     height: 80rpx;
     color: #ffffff;
     border-radius: 40rpx;
-    background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
+    background: linear-gradient(135deg, #7886FE 0%, #707df4 100%);
     text-align: center;
     font-size: 32rpx;
     font-weight: 500;
