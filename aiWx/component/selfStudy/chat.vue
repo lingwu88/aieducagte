@@ -22,7 +22,7 @@
       show-scrollbar="true"
       enhanced="true"
       bounces="true"
-      style="height: calc(100vh - 300rpx); flex: none; overflow-y: scroll;"
+      style="height: calc(100vh - 180rpx); flex: none; overflow-y: scroll; padding-bottom: 20rpx;"
       >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
@@ -137,9 +137,6 @@
         >
           发送
         </view>
-    </view>
-    <view class="navigate-box">
-      <image src="" mode="widthFix"></image>
     </view>
   </view>
 
@@ -731,7 +728,7 @@ export default {
   }
   .input-area {
     position: fixed;
-    bottom: -10rpx;
+    bottom: 0;
     left: 0;
     right: 0;
     padding: 20rpx;
@@ -827,22 +824,6 @@ export default {
           box-shadow: 0 2rpx 8rpx rgba(91, 106, 240, 0.15);
         }
       }
-    }
-  }
-  .navigate-box{
-    position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 30vw;
-    height: auto;
-    image{
-      width:30rpx;
-      height: 30rpx;
     }
   }
 }
