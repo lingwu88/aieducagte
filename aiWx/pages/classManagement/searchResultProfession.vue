@@ -1,5 +1,12 @@
 <template>
   <view class="result-box">
+    <!-- 添加装饰元素 -->
+    <view class="decoration-circles">
+      <view class="circle circle-1"></view>
+      <view class="circle circle-2"></view>
+      <view class="circle circle-3"></view>
+    </view>
+    
     <view class="header">
       <view class="navigation-icon" @click="back"></view>
       <view class="title">课程规划与建议</view>
@@ -14,7 +21,9 @@
     <view class="control">
       <!-- <image src="/static/classroom/classManagement/control.png" class="control-icon" @click="showNavigator=!showNavigator"></image> -->
     </view>
-    <aiConnection :content="result" class="connection" :messageList="list" @push="handlePush" :userAvatar="img"></aiConnection>  
+    <view class="connection-container">
+      <aiConnection :content="result" class="connection" :messageList="list" @push="handlePush" :userAvatar="img"></aiConnection>
+    </view>
   </view>
 </template>
 
@@ -129,12 +138,54 @@ export default{
   width: 100vw;
   min-height: 100vh;
   display: flex;
-  // flex-direction: row;
-  // flex-wrap: nowrap;
-  // justify-content: flex-start;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  background: linear-gradient(to bottom, #f8f9fd, #f0f2ff);
+  position: relative;
+  overflow: hidden;
+  
+  // 装饰圆形元素
+  .decoration-circles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+
+      &-1 {
+        top: -100rpx;
+        right: -100rpx;
+        width: 400rpx;
+        height: 400rpx;
+        background: linear-gradient(135deg, #5b6af0, #7b89ff);
+      }
+
+      &-2 {
+        bottom: 20%;
+        left: -150rpx;
+        width: 300rpx;
+        height: 300rpx;
+        background: linear-gradient(135deg, #7b89ff, #5b6af0);
+      }
+
+      &-3 {
+        top: 40%;
+        right: 10%;
+        width: 200rpx;
+        height: 200rpx;
+        background: linear-gradient(135deg, #5b6af0, #7b89ff);
+      }
+    }
+  }
   
   .header{
     position: -webkit-sticky;
@@ -142,70 +193,93 @@ export default{
     top: 0;
     /* left: 0; */
     display: flex;
-    width: 100vw;
+    width: 100%;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    padding-top: 80rpx;
-    padding-left: 40rpx;
-    height: 100rpx;
-    background-color: #fff;
+    padding: 80rpx 40rpx 20rpx;
+    height: 120rpx;
+    background: linear-gradient(135deg, #5b6af0 0%, #7b89ff 100%);
+    box-shadow: 0 4rpx 20rpx rgba(91, 106, 240, 0.2);
+    position: relative;
+    z-index: 1;
 
     .navigation-icon{
-      width:20rpx;
-      height: 20rpx;
-      border-left: 3px solid #000000;
-      border-top: 3px solid #000000;
+      width: 24rpx;
+      height: 24rpx;
+      border-left: 3px solid #ffffff;
+      border-top: 3px solid #ffffff;
       transform: rotate(-45deg);
+      margin-right: 20rpx;
+      transition: all 0.3s ease;
+      
+      &:active {
+        transform: rotate(-45deg) scale(0.9);
+      }
     }
 
     .title{
       text-align: center;
-      flex:1;
-      font-size:38rpx;
+      flex: 1;
+      font-size: 38rpx;
       font-weight: 600;
-      color:#000000;
+      color: #ffffff;
     }
 
     .collection{
       margin-right: 30vw;
     }
-
+    
+    .play {
+      width: auto;
+      padding-right: 20rpx;
+      
+      /deep/ .u-icon {
+        color: #ffffff !important;
+      }
+    }
   }
 
-  .play{
-    width: 40vw;
+  .connection-container {
+    width: 100%;
+    flex: 1;
+    padding: 20rpx;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    max-height: 80vh;
   }
-
-  // .menu-navigator{
-  //   // visibility: hidden;
-  //   // display: none;
-  //   position: relative;
-  //   width: 40vw;
-  //   min-height: 100vh;
-  //   // background-color: #f3f3f378;
-  //   background-color: #e8e8e878;
-  //   border-radius: 0 50rpx 50rpx 0;
-  //   transition:opacity 0.5s ease;
-  // }
   
   .control{
     top: 50%;
     left: 0;
     position: relative;
-    // transform: translate(0, -50%);
     transform: translate(-50%,0);
+    z-index: 2;
+    
     .control-icon{
       width: 45rpx;
       height: 45rpx;
     }
   }
 }
+
 .connection{
   flex: 1;
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 70vh;
+  max-height: 75vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 30rpx rgba(91, 106, 240, 0.1);
+  overflow: hidden;
+  margin-bottom: 30rpx;
 }
+
 .hidden{
   display: none;
 }

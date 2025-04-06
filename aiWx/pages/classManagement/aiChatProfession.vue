@@ -1,71 +1,83 @@
 <template>
   <view class="box">
-    <view class="form">
+    <!-- 添加顶部装饰元素 -->
+    <view class="decoration-circles">
+      <view class="circle circle-1"></view>
+      <view class="circle circle-2"></view>
+      <view class="circle circle-3"></view>
+    </view>
+    
+    <view class="page-header">
+      <text class="page-title">专业模式</text>
+      <text class="page-subtitle">定制您的专业学习路径</text>
+    </view>
+    
+    <view class="form-container">
       <u--form
-				labelPosition="top"
-				:model="form"
-				ref="uForm"
+        labelPosition="top"
+        :model="form"
+        ref="uForm"
         labelWidth="150"
-		>
-			<!-- <u-form-item
-					label="标题"
-					prop="title"
-					borderBottom
-					ref="item1"
+      >
+        <!-- <u-form-item
+          label="标题"
+          prop="title"
+          borderBottom
+          ref="item1"
           leftIcon="star-fill"
           :leftIconStyle="{
             'color':'#FFEB3B',
             'width':'30rpx',
             'height':'30rpx'
           }"
-			>
-        <u-textarea v-model="form.title" count maxlength="40" placeholder="请输入您想要的内容主题或关键词,内容越详细准确，生成的内容越好～"></u-textarea>
-			</u-form-item>
-			<u-form-item
-					label="特色 要求"
-					prop="feature"
-					borderBottom
-					ref="item1"
+        >
+          <u-textarea v-model="form.title" count maxlength="40" placeholder="请输入您想要的内容主题或关键词,内容越详细准确，生成的内容越好～"></u-textarea>
+        </u-form-item>
+        <u-form-item
+          label="特色 要求"
+          prop="feature"
+          borderBottom
+          ref="item1"
           leftIcon="star-fill"
           :leftIconStyle="{
             'color':'#FFEB3B',
             'width':'30rpx',
             'height':'30rpx'
           }"
-			>
-        <u-textarea v-model="form.feature" count maxlength="400" height="200" placeholder="这里可以填写框架,也可以填写必要的主题～"></u-textarea>
-			</u-form-item> -->
-      <u-form-item
-					label="内容 关键字"
-					borderBottom
-					ref="item1"
+        >
+          <u-textarea v-model="form.feature" count maxlength="400" height="200" placeholder="这里可以填写框架,也可以填写必要的主题～"></u-textarea>
+        </u-form-item> -->
+        <u-form-item
+          label="内容 关键字"
+          borderBottom
+          ref="item1"
           leftIcon="star-fill"
           :leftIconStyle="{
             'color':'#FFEB3B',
             'width':'30rpx',
             'height':'30rpx'
           }"
-			>
+        >
       
-      <u-textarea v-model="keyword   " count maxlength="100" placeholder="请输入您的要求或关键词～"></u-textarea>
-      <view class="green-btn" @click="handlePath">
-        生成路径
-      </view>
-			</u-form-item>
-      <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
-      <u-form-item
-         label="学习强度"
-         ref="item1"
-         leftIcon="star-fill"
-         :leftIconStyle="{
-           'color':'#FFEB3B',
-           'width':'30rpx',
-           'height':'30rpx'
-         }"
-     >
-       <u-slider v-model="form.strength" max="4" min="0" step="1" showValue></u-slider>
-     </u-form-item>
-		</u--form>
+        <u-textarea v-model="keyword" count maxlength="100" placeholder="请输入您的要求或关键词～" class="custom-textarea"></u-textarea>
+        <view class="green-btn" @click="handlePath">
+          生成路径
+        </view>
+        </u-form-item>
+        <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
+        <u-form-item
+          label="学习强度"
+          ref="item1"
+          leftIcon="star-fill"
+          :leftIconStyle="{
+            'color':'#FFEB3B',
+            'width':'30rpx',
+            'height':'30rpx'
+          }"
+        >
+          <u-slider v-model="form.strength" max="4" min="0" step="1" showValue class="custom-slider"></u-slider>
+        </u-form-item>
+      </u--form>
     </view>
     <view class="navigate-box" @click="handleToNormal">
       <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
@@ -197,28 +209,122 @@ export default{
 .box{
   min-height: 100vh;
   width: 100vw;
+  background: linear-gradient(to bottom, #f8f9fd, #f0f2ff);
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 40rpx;
+
+  // 装饰圆形元素
+  .decoration-circles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+
+      &-1 {
+        top: -100rpx;
+        right: -100rpx;
+        width: 400rpx;
+        height: 400rpx;
+        background: linear-gradient(135deg, #5b6af0, #7b89ff);
+      }
+
+      &-2 {
+        bottom: 20%;
+        left: -150rpx;
+        width: 300rpx;
+        height: 300rpx;
+        background: linear-gradient(135deg, #7b89ff, #5b6af0);
+      }
+
+      &-3 {
+        top: 40%;
+        right: 10%;
+        width: 200rpx;
+        height: 200rpx;
+        background: linear-gradient(135deg, #5b6af0, #7b89ff);
+      }
+    }
+  }
+
+  // 页面标题
+  .page-header {
+    padding: 80rpx 40rpx 30rpx;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    
+    .page-title {
+      font-size: 46rpx;
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-bottom: 10rpx;
+    }
+    
+    .page-subtitle {
+      font-size: 28rpx;
+      color: #666;
+      display: block;
+    }
+  }
+
+  // 表单容器
+  .form-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 30rpx;
+    padding: 30rpx;
+    margin: 0 30rpx 30rpx;
+    box-shadow: 0 10rpx 30rpx rgba(91, 106, 240, 0.1);
+    position: relative;
+    z-index: 1;
+  }
 
   .form{
     min-height: 80vh;
+  }
 
-    /deep/.u-textarea.data-v-81cd9d32 {
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        border: none;
-        width: 90vw;
-        margin: auto;
+  // 自定义文本域样式
+  /deep/ .custom-textarea.u-textarea.data-v-81cd9d32 {
+    border-radius: 16rpx !important;
+    background-color: #f9f9fd !important;
+    border: 1px solid rgba(91, 106, 240, 0.1) !important;
+    box-shadow: inset 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+    width: 100% !important;
+    margin: auto;
+    transition: all 0.3s ease;
+    height: 120rpx !important;
+    
+    &:focus {
+      border-color: rgba(91, 106, 240, 0.3) !important;
+      box-shadow: inset 0 2rpx 8rpx rgba(91, 106, 240, 0.1);
     }
-    .select{
-      width: 100vw;
-      height: 600rpx;
-    }
+  }
+
+  // 自定义滑块样式
+  /deep/ .custom-slider {
+    margin: 20rpx 0;
+  }
+
+  .select{
+    width: 100%;
+    height: 600rpx;
+    margin: 20rpx 0;
   }
 
   .navigate-box{
     position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
+    margin: 20rpx auto;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -226,13 +332,15 @@ export default{
     width: 30vw;
     height: auto;
     background-color: #ffffff;
-    padding: 12rpx 24rpx;
+    padding: 16rpx 30rpx;
     border-radius: 40rpx;
-    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4rpx 16rpx rgba(91, 106, 240, 0.15);
     transition: all 0.3s ease;
+    z-index: 2;
     
     &:active {
-      transform: translate(-50%, -20%) scale(0.96);
+      transform: scale(0.96);
+      box-shadow: 0 2rpx 8rpx rgba(91, 106, 240, 0.1);
     }
     
     image{
@@ -261,14 +369,15 @@ export default{
     margin: 30rpx auto;
     box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.3);
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
     
     &:active {
       transform: scale(0.96);
       box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.3);
     }
   }
-}
-.green-btn{
+  .green-btn{
     width: 28vw;
     height: 70rpx;
     color: #ffffff;
@@ -278,7 +387,7 @@ export default{
     font-size: 30rpx;
     font-weight: 500;
     line-height: 70rpx;
-    margin: 16rpx auto;
+    margin: 20rpx auto;
     box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
     transition: all 0.3s ease;
     
@@ -286,24 +395,27 @@ export default{
       transform: scale(0.96);
       box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
     }
-}
-.save-btn{
-    width: 60vw;
-    height: 90rpx;
+  }
+  .save-btn{
+    width: 50vw;
+    height: 80rpx;
     color: #ffffff;
-    border-radius: 45rpx;
+    border-radius: 40rpx;
     background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
     text-align: center;
-    font-size: 36rpx;
+    font-size: 32rpx;
     font-weight: 500;
-    line-height: 90rpx;
-    margin: 30rpx auto;
+    line-height: 80rpx;
+    margin: 24rpx auto;
     box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
     
     &:active {
       transform: scale(0.96);
       box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
     }
+  }
 }
 </style>
