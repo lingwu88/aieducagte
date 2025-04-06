@@ -97,7 +97,7 @@ import card from './card.vue'
           currentPage:1,
           list:[]
         },
-        colorList:['#ca9e9e','#cec0a3','#cdcea3','#accea3','#a3cec0','#a3c2ce','#a3aece','#b1a3ce','#cea3c5','#cea3a3'],
+        colorList:['#64C88C','#DA6A9A','#F1BE1B','#8793FE','#4ECDC4','#FF6B6B','#8982FF','#EFC2D6','#F19595','#7884F0'],
         userId:"",
         //一个数据源二维数组 —— 队列状态
         queueState:{

@@ -209,7 +209,7 @@ export default{
     padding: 10rpx;
     color: #ffffff;
     margin-left: 10rpx;
-    background-color: #7a6b9e;
+    background-color: #64C88C;
     width:fit-content;
     margin-top:10rpx;
   }
