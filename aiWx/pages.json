@@ -126,15 +126,15 @@
 					}
 				},
 				{
-					"path": "DocLib",
+					"path": "docLib/index",
 					"style": {
 						"navigationBarTitleText": "资料库"
 					}
 				},
 				{
-					"path": "webview",
+					"path": "components/webview",
 					"style": {
-						"navigationBarTitleText": "资料详情"
+						"navigationBarTitleText": "webview"
 					}
 				}
 			]

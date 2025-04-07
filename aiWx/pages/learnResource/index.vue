@@ -61,7 +61,7 @@ export default {
           description: "资料库",
           subtitle: "海量学习资料汇总",
           img: this.$request.baseUrl+"/classroom/learnResource/essay.png",
-          url: "/pages/learnResource/DocLib"
+          url: "/pages/learnResource/docLib/index"
         }
       ]
     }

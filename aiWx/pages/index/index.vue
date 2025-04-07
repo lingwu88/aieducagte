@@ -95,7 +95,7 @@ import pageTime from '../../mixins/pageTime';
 				console.log(item.urk);
 				
 				uni.navigateTo({
-						url: `/pages/learnResource/webview?url=${item.url}`
+						url: `/pages/learnResource/components/webview?url=${item.url}`
 					});
 			},
 			getInfo(page,pageSize){
