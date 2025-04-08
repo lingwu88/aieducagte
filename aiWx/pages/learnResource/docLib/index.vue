@@ -126,29 +126,47 @@ export default {
 		},
 		/* 加载数据过程 */
 		loadData() {
-			this.loadServerJson()
-				.then((data) => {
-					/*处理返回的数据*/
-
+			this.loadServerRes()
+				.then((data_Res_Server_Handled) => {
+					/* 处理返回的数据 */
+					this.processJsonData(data_Res_Server_Handled.res_Server_Unhandled.data.data);
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err_Res_Server_Handled) => {
-					console.log('errssssssssssssss');
-					console.log(err_Res_Server_Handled.code);
-					let info = '[info] 远程JSON加载失败，使用静态数据';
-
-					console.log(info, err);
-					this.showToast(this.DEBUG ? `${info}\n[BEGUG] ${err}` : info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
-					this.loadStaticData();
+					/* 统一的错误处理 */
+					let errorMessage = '';
+					switch (err_Res_Server_Handled.code) {
+						case 1001:
+						case 1002:
+						case 1003:
+						case 1004:
+							errorMessage = `网络请求失败: ${err_Res_Server_Handled.message}`;
+							break;
+						case 2001:
+						case 2002:
+						case 2003:
+						case 2004:
+							errorMessage = `服务器错误: ${err_Res_Server_Handled.message}`;
+							break;
+						case 3001:
+						case 3002:
+							errorMessage = `未知错误: ${err_Res_Server_Handled.message}`;
+							break;
+						default:
+							errorMessage = `未预料的错误: ${err_Res_Server_Handled.message}`;
+					}
+					this.showToast(errorMessage, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
+					this.loadStaticData(); // 加载备用数据
 				});
 		},
-		loadServerJson() {
+
+		loadServerRes() {
 			return new Promise((resolve, reject) => {
 				let res_Server_Handled = {
 					type: 'raw',
-					targetUrl: 'https://fugui.mynatapp.cc/fg/DocLibSource',
+					targetUrl: 'https://fugui.mynatapp.cc/ai-assist/DocLibSource',
 					code: 0,
-					message: `100`,
+					message: '',
 					res_Server_Unhandled: {}
 				};
 				uni.request({
@@ -156,51 +174,98 @@ export default {
 					method: 'GET',
 					timeout: 5000,
 					success: (res) => {
-						//输出返回结果便于调试
 						console.log(res);
-						//检测是否存在statusCode,没有就返回处理
 						if (!res.statusCode) {
+							res_Server_Handled.code = 1001;
 							res_Server_Handled.type = 'error';
-							res_Server_Handled.message = 'res缺少statusCode';
+							res_Server_Handled.message = '目标服务器响应缺少 statusCode';
 							res_Server_Handled.res_Server_Unhandled = res;
 							reject(res_Server_Handled);
+							return;
 						}
-						//存在statusCode情况下，如果返回结果了，检查结果是什么类型502隧道开了，但是端口没开404隧道没开statusCode
 						switch (res.statusCode) {
 							case 200:
-								res_Server_Handled.message = '目标服务器正常返回结果';
-								console.log('目标服务器正常返回结果');
+								if (!res.data.code) {
+									res_Server_Handled.code = 2004;
+									res_Server_Handled.type = 'error';
+									res_Server_Handled.message = '不是目标服务器返回的状态:200';
+									res_Server_Handled.res_Server_Unhandled = res;
+									reject(res_Server_Handled);
+									return;
+								}
+								switch (res.data.code) {
+									case 200:
+										res_Server_Handled.code = 200;
+										res_Server_Handled.type = 'data';
+										res_Server_Handled.message = '目标服务器返回了正确的结果';
+										res_Server_Handled.res_Server_Unhandled = res;
+										resolve(res_Server_Handled);
+										break;
+									case 250:
+										res_Server_Handled.code = 2001;
+										res_Server_Handled.type = 'error';
+										res_Server_Handled.message = `目标服务器 JSON 解析错误: ${res.data.message || '未知错误'}`;
+										res_Server_Handled.res_Server_Unhandled = res;
+										reject(res_Server_Handled);
+										break;
+									case 404:
+										res_Server_Handled.code = 2002;
+										res_Server_Handled.type = 'error';
+										res_Server_Handled.message = `目标服务器文件不存在: ${res.data.message || '未知错误'}`;
+										res_Server_Handled.res_Server_Unhandled = res;
+										reject(res_Server_Handled);
+										break;
+									case 500:
+										res_Server_Handled.code = 2003;
+										res_Server_Handled.type = 'error';
+										res_Server_Handled.message = `目标服务器其他未知错误: ${res.data.message || '未知错误'}`;
+										res_Server_Handled.res_Server_Unhandled = res;
+										reject(res_Server_Handled);
+										break;
+									default:
+										res_Server_Handled.code = 3001;
+										res_Server_Handled.type = 'error';
+										res_Server_Handled.message = `目标服务器返回未知错误码: ${res.data.code}`;
+										res_Server_Handled.res_Server_Unhandled = res;
+										reject(res_Server_Handled);
+								}
 								break;
 							case 404:
+								res_Server_Handled.code = 1002;
+								res_Server_Handled.type = 'error';
 								res_Server_Handled.message = '目标服务器隧道闲置';
-								console.log('目标服务器隧道闲置');
+								res_Server_Handled.res_Server_Unhandled = res;
+								reject(res_Server_Handled);
 								break;
 							case 502:
+								res_Server_Handled.code = 1003;
+								res_Server_Handled.type = 'error';
 								res_Server_Handled.message = '目标服务器端口闲置';
-								console.log('目标服务器端口闲置');
+								res_Server_Handled.res_Server_Unhandled = res;
+								reject(res_Server_Handled);
 								break;
 							default:
-								res_Server_Handled.message = '目标服务器未预料的情况';
-								console.log('目标服务器未预料的情况');
+								res_Server_Handled.code = 3002;
+								res_Server_Handled.type = 'error';
+								res_Server_Handled.message = `目标服务器返回未预料的 HTTP 状态码: ${res.statusCode}`;
+								res_Server_Handled.res_Server_Unhandled = res;
+								reject(res_Server_Handled);
 						}
-						//如果类型无误返回data即可
-						if (res.data) resolve(res.data);
-						else
-							reject({
-								code: 'success_empty',
-								message: `code:我 ${jsonUrl}`,
-								url: jsonUrl
-							});
 					},
 					fail: (err) => {
-						reject(`${err.errMsg}code:fail ${jsonUrl}`);
+						res_Server_Handled.type = 'error';
+						res_Server_Handled.code = 1004;
+						res_Server_Handled.message = `请求失败: ${err.errMsg}`;
+						reject(res_Server_Handled);
 					}
 				});
 			});
 		},
+		
 		loadStaticData() {
 			this.processJsonData(StaticData.data().staticData);
 		},
+		
 		processJsonData(jsonData) {
 			const allItems = [];
 			if (jsonData.WebView) {

@@ -13,7 +13,7 @@ export default {
 								'这是一个专注于Java全栈知识体系的网站，它提供了丰富的Java相关内容，包括但不限于Java基础、源码、JVM、Spring框架、数据库原理、开发工具、源码阅读、读书笔记、开源项目等。网站旨在帮助用户构建自己的知识体系，提供系统性的学习资源，助力用户夯实基础，构建完整的全栈开发知识体系。此外，该网站还提供了关于全栈面试、方法论、产品、团队等方面的内容，以及与Java开发相关的DevOps实践。',
 							url: 'https://pdai.tech/',
 							id: 'c4385020-e52b-44f7-a834-c43acac0b61d',
-							img: ''
+							img: 'https://avatars.githubusercontent.com/u/6094984?v=4'
 						},
 						{
 							title: 'CS DIY',
@@ -21,7 +21,7 @@ export default {
 							preview: 'CSDIY Wiki 是一个计算机科学自学的资源平台，它提供了丰富的学习资料和指导，旨在帮助用户自学计算机科学。',
 							url: 'https://csdiy.wiki/',
 							id: 'a152fdf7-1479-4aba-810e-3090e9db4956',
-							img: ''
+							img: 'https://csdiy.wiki/images/favicon.ico'
 						},
 						{
 							title: '菜鸟教程',
@@ -30,7 +30,7 @@ export default {
 								'菜鸟教程的Python基础教程是一个全面的学习资源，它涵盖了Python编程语言的各个方面，从简介到环境搭建，再到基础语法、数据类型、运算符、条件语句、循环语句等。教程还包括了函数、模块、文件I/O、异常处理、OS文件/目录方法、内置函数等内容。此外，还涉及了面向对象编程、正则表达式、CGI编程、数据库操作、网络编程、多线程、XML解析、GUI编程等高级主题。这个教程适合初学者从零开始学习Python编程，同时也为有一定基础的读者提供了深入学习的路径。',
 							url: 'https://www.runoob.com/',
 							id: 'b912c5ae-98bd-4594-ae60-d8dc8b26af16',
-							img: ''
+							img: 'https://static.jyshare.com/images/favicon.ico'
 						},
 						{
 							title: '人工智能中的编程基础：Python基础',
@@ -39,7 +39,7 @@ export default {
 								'该项目是一个名为“聪明办法学Python”的Python入门教程的第二版，由Datawhale团队制作。这个教程旨在通过简明且系统的方式教授Python编程，特别强调了计算机科学与人工智能相关的内容，旨在制作一个“面向人工智能的Python专项教程”。',
 							url: 'https://github.com/datawhalechina/learn-python-the-smart-way-v2',
 							id: '503ad2ef-fd87-4161-934d-05fafd797d82',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: '人工智能中的数据处理基础：NumPy基础',
@@ -47,7 +47,7 @@ export default {
 							preview: '该项目是一个名为“巨硬的NumPy”的GitHub项目，旨在提供NumPy库的教程和资源。',
 							url: 'https://github.com/datawhalechina/powerful-numpy',
 							id: '773c0605-d503-4b3a-8c4b-e5210d9daa07',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: '人工智能中的数据处理基础：Pandas基础',
@@ -56,7 +56,7 @@ export default {
 								'Joyful Pandas 是一个由 Datawhale China 开发和维护的 pandas 中文教程项目。该项目旨在提供全面、系统且易于理解的 pandas 教程，帮助用户更好地学习和掌握 pandas 数据分析库。',
 							url: 'https://github.com/datawhalechina/joyful-pandas',
 							id: '0a0f70f9-ff8c-4101-b1a0-dbdedd40756e',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: '人工智能中的数据可视化基础：Matplotlib基础',
@@ -65,7 +65,7 @@ export default {
 								'项目《Fantastic-Matplotlib》是由Datawhale数据可视化小组开发的一个开源项目。该项目旨在为用户提供一个系统性的Matplotlib中文教程，帮助用户深入理解和掌握Python数据可视化中常用的Matplotlib库。',
 							url: 'https://github.com/datawhalechina/fantastic-matplotlib',
 							id: '7ad38e5f-99c2-49b8-99a8-55f1733e8396',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: '机器学习框架：scikit-learn',
@@ -73,7 +73,7 @@ export default {
 							preview: '该项目是《机器学习》（西瓜书）的代码实战教程，旨在通过结合数学公式与相关代码，帮助读者加深对公式的理解以及代码的熟练。',
 							url: 'https://github.com/datawhalechina/machine-learning-toy-code',
 							id: '5943ef6c-18e7-4855-9f0e-b08df285b65d',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: '深度学习框架：PyTorch',
@@ -82,7 +82,7 @@ export default {
 								'项目“深入浅出PyTorch”是一个旨在帮助用户从入门到熟练掌握PyTorch深度学习框架的教程。该项目由DataWhale团队开发，提供了一系列的教程和文档，旨在通过理论与实践相结合的方式，帮助用户深入理解PyTorch的基础知识、高级操作以及实际应用。',
 							url: 'https://github.com/datawhalechina/thorough-pytorch',
 							id: '21bf81b5-2eeb-4ff5-a971-f302cb70a943',
-							img: ''
+							img: 'https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png'
 						},
 						{
 							title: 'NLP工具库: transformers',
