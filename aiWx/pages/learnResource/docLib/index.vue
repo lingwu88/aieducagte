@@ -77,7 +77,6 @@
 </template>
 
 <script>
-	
 import pageTime from '../../../mixins/pageTime';
 import Toast from '../components/Toast.vue';
 import StaticData from '../docLib/src/data/staticData.vue';
@@ -129,11 +128,15 @@ export default {
 		loadData() {
 			this.loadServerJson()
 				.then((data) => {
-					this.processJsonData(data);
+					/*处理返回的数据*/
+
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
-				.catch((err) => {
+				.catch((err_Res_Server_Handled) => {
+					console.log('errssssssssssssss');
+					console.log(err_Res_Server_Handled.code);
 					let info = '[info] 远程JSON加载失败，使用静态数据';
+
 					console.log(info, err);
 					this.showToast(this.DEBUG ? `${info}\n[BEGUG] ${err}` : info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 					this.loadStaticData();
@@ -141,13 +144,47 @@ export default {
 		},
 		loadServerJson() {
 			return new Promise((resolve, reject) => {
-				const jsonUrl = 'https://fugui.mynatapp.cc/fg/DocLibSource.json';
+				let res_Server_Handled = {
+					type: 'raw',
+					targetUrl: 'https://fugui.mynatapp.cc/fg/DocLibSource',
+					code: 0,
+					message: `100`,
+					res_Server_Unhandled: {}
+				};
 				uni.request({
-					url: jsonUrl,
+					url: res_Server_Handled.targetUrl,
 					method: 'GET',
 					timeout: 5000,
 					success: (res) => {
-						if (!res.data) resolve(res.data);
+						//输出返回结果便于调试
+						console.log(res);
+						//检测是否存在statusCode,没有就返回处理
+						if (!res.statusCode) {
+							res_Server_Handled.type = 'error';
+							res_Server_Handled.message = 'res缺少statusCode';
+							res_Server_Handled.res_Server_Unhandled = res;
+							reject(res_Server_Handled);
+						}
+						//存在statusCode情况下，如果返回结果了，检查结果是什么类型502隧道开了，但是端口没开404隧道没开statusCode
+						switch (res.statusCode) {
+							case 200:
+								res_Server_Handled.message = '目标服务器正常返回结果';
+								console.log('目标服务器正常返回结果');
+								break;
+							case 404:
+								res_Server_Handled.message = '目标服务器隧道闲置';
+								console.log('目标服务器隧道闲置');
+								break;
+							case 502:
+								res_Server_Handled.message = '目标服务器端口闲置';
+								console.log('目标服务器端口闲置');
+								break;
+							default:
+								res_Server_Handled.message = '目标服务器未预料的情况';
+								console.log('目标服务器未预料的情况');
+						}
+						//如果类型无误返回data即可
+						if (res.data) resolve(res.data);
 						else
 							reject({
 								code: 'success_empty',
@@ -156,7 +193,7 @@ export default {
 							});
 					},
 					fail: (err) => {
-						reject(`${err}code:fail ${jsonUrl}`);
+						reject(`${err.errMsg}code:fail ${jsonUrl}`);
 					}
 				});
 			});
