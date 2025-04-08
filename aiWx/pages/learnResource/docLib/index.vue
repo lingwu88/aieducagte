@@ -77,9 +77,12 @@
 </template>
 
 <script>
-import Toast from '../components/Toast.vue';
+	
 import pageTime from '../../../mixins/pageTime';
+import Toast from '../components/Toast.vue';
 import StaticData from '../docLib/src/data/staticData.vue';
+import regularMatch from '../docLib/src/utils/regularMatch.vue';
+
 export default {
 	mixins: [pageTime],
 	components: { Toast },
@@ -110,6 +113,8 @@ export default {
 		};
 	},
 	onLoad() {
+		console.log(regularMatch.methods.isValidUrl('https://fugui.mynatapp.cc/fg/DocLibSource.json'));
+
 		this.loadData();
 	},
 	mounted() {
@@ -122,20 +127,19 @@ export default {
 		},
 		/* 加载数据过程 */
 		loadData() {
-			this.loadRemoteJson()
+			this.loadServerJson()
 				.then((data) => {
 					this.processJsonData(data);
 					this.showToast('数据请求成功', { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
 				})
 				.catch((err) => {
-					let info = '[error] 远程JSON加载失败，使用静态数据';
+					let info = '[info] 远程JSON加载失败，使用静态数据';
 					console.log(info, err);
 					this.showToast(this.DEBUG ? `${info}\n[BEGUG] ${err}` : info, { heightPercent: 0.15 }, { direction: 'down' }, { StayTime: 2000 });
-					console.log('zzzzzzzzzzzzzzzzzzzzzz');
 					this.loadStaticData();
 				});
 		},
-		loadRemoteJson() {
+		loadServerJson() {
 			return new Promise((resolve, reject) => {
 				const jsonUrl = 'https://fugui.mynatapp.cc/fg/DocLibSource.json';
 				uni.request({
@@ -158,7 +162,6 @@ export default {
 			});
 		},
 		loadStaticData() {
-			console.log('zzzzzzzzzzzzzzzzzzzzzz');
 			this.processJsonData(StaticData.data().staticData);
 		},
 		processJsonData(jsonData) {
@@ -166,7 +169,8 @@ export default {
 			if (jsonData.WebView) {
 				jsonData = jsonData.WebView;
 			}
-			console.log('zzzzzzzzzzzzzzzzzzzzzz', jsonData);
+			console.log('渲染数据有:', jsonData);
+
 			for (const category in jsonData) {
 				jsonData[category].forEach((item) => allItems.push({ ...item, category }));
 			}
@@ -174,8 +178,8 @@ export default {
 				id: item.id,
 				title: item.title,
 				preview: item.preview,
-				img: this.isValidUrl(item.img) ? item.img : this.defaultImg,
-				url: this.isValidUrl(item.url) ? item.url : null,
+				img: regularMatch.methods.isValidUrl(item.img) ? item.img : this.defaultImg,
+				url: regularMatch.methods.isValidUrl(item.url) ? item.url : null,
 				category: item.category,
 				showMenu: false,
 				isFavorited: false
@@ -296,11 +300,6 @@ export default {
 				.exec();
 		},
 
-		isValidUrl(str) {
-			if (!str) return false;
-			const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
-			return urlPattern.test(str);
-		},
 		handleTouchStart(e) {
 			if (this.loading) return;
 			const touch = e.touches[0];
@@ -353,7 +352,7 @@ export default {
 			});
 		},
 		downloadFile(item) {
-			if (!item.url || !this.isValidUrl(item.url)) {
+			if (!item.url || !regularMatch.methods.isValidUrl(item.url)) {
 				this.showToast('无效的下载链接', { heightPercent: 0.6 }, { direction: 'up' }, { StayTime: 2000 });
 				return;
 			}
