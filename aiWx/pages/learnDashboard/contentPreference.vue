@@ -85,29 +85,13 @@ export default {
 		},
 
 		fetchPreferenceData() {
+			
 			this.isLoading = true;
-			const keywordsArray = [
-				'土木工程',
-				'计算机科学',
-				'人工智能',
-				'数据结构与算法 贪心算法',
-				'目前土木工程专业的就业前景如何？',
-				'数据结构与算法 动态规划',
-				'材料力学',
-				'数据结构与算法 回溯算法',
-				'人工智能 广度优先搜索算法',
-				'深圳大学计算系研究生的往年分数线如何？面试难吗？',
-				'RAG',
-				'Agent Memory',
-				'工程制图',
-				'房屋建筑学 楼梯',
-				'我是广东工业大学大一的土木工程专业的学生，现在有点犹豫要不要投身人工智能领域创业，请给我分析一下'
-			];
 
 			wx.request({
-				url: 'https://fugui.mynatapp.cc/ai/analyze',
+				url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
 				method: 'POST',
-				data: { inputArray: keywordsArray, type: 'contentPreference' },
+				data: { userid: "user_12345", type: 'contentPreference' },
 				header: { 'content-type': 'application/json' },
 				success: (res) => {
 					if (res.statusCode === 200 && res.data.success) {
@@ -119,6 +103,11 @@ export default {
 						const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
 						this.reportData = this.parseMarkdown(markdownText);
 					} else {
+						wx.showToast({
+						  title: res.data.message,      // 提示内容
+						  icon: 'none',          // 不显示图标（纯文字）
+						  duration: 2000         // 2秒后自动关闭
+						});
 						console.error('服务器返回错误', res);
 						this.useFallbackData();
 					}

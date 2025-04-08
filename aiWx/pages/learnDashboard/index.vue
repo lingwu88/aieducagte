@@ -122,9 +122,9 @@
 <script>
 import pageTime from '../../mixins/pageTime';
 export default {
-	mixins:[pageTime],
+	mixins: [pageTime],
 	mounted() {
-		this.setType(2)
+		this.setType(2);
 	},
 	data() {
 		return {
@@ -136,7 +136,9 @@ export default {
 	},
 
 	onReady() {
-		// 初始化词云数据
+		
+		
+		
 		this.generateWordCloudData();
 	},
 

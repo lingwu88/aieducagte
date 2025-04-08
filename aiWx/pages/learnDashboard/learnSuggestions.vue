@@ -39,9 +39,9 @@
 import pageTime from '../../mixins/pageTime';
 
 export default {
-	mixins:[pageTime],
+	mixins: [pageTime],
 	mounted() {
-		this.setType(2)
+		this.setType(2);
 	},
 	data() {
 		return {
@@ -57,24 +57,6 @@ export default {
 
 	methods: {
 		fetchSuggestions() {
-			const keywordsArray = [
-				'土木工程',
-				'计算机科学',
-				'人工智能',
-				'数据结构与算法 贪心算法',
-				'目前土木工程专业的就业前景如何？',
-				'数据结构与算法 动态规划',
-				'材料力学',
-				'数据结构与算法 回溯算法',
-				'人工智能 广度优先搜索算法',
-				'深圳大学计算系研究生的往年分数线如何？面试难吗？',
-				'RAG',
-				'Agent Memory',
-				'工程制图',
-				'房屋建筑学 楼梯',
-				'我是广东工业大学大一的土木工程专业的学生，现在有点犹豫要不要投身人工智能领域创业，请给我分析一下'
-			];
-
 			// 模拟数据（实际应删除此部分，依赖真实 API）
 			const mockResponse = {
 				result: '1. **考研方向建议**：  \n   您的目标院校是深圳大学，且当前专业为土木工程。建议优先巩固「材料力学」和「房屋建筑学」等核心课程，同时针对性复习目标院校的考研大纲内容。此外，可结合「工程制图」的实际案例提升解题能力，确保专业课分数优势。\n\n2. **转行人工智能路径**：  \n   您对「数据结构与算法」和「人工智能」有浓厚兴趣，这为核心转型提供了良好基础。建议从以下方向入手：  \n   - 深入学习「数据结构与算法」，掌握常见算法（如动态规划、图算法）并实践LeetCode或牛客网题目。'
@@ -82,10 +64,10 @@ export default {
 			this.suggestions = mockResponse.result;
 
 			wx.request({
-				url: 'https://fugui.mynatapp.cc/ai/analyze',
+				url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
 				method: 'POST',
 				data: {
-					inputArray: keywordsArray,
+					userid: 'user_12345',
 					type: 'learnSuggestions'
 				},
 				header: {
@@ -100,6 +82,11 @@ export default {
 						const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
 						this.suggestions = markdownText;
 					} else {
+						wx.showToast({
+							title: res.data.message, // 提示内容
+							icon: 'none', // 不显示图标（纯文字）
+							duration: 2000 // 2秒后自动关闭
+						});
 						console.error('服务器返回错误', res);
 					}
 					this.parseSuggestions();
@@ -157,20 +144,18 @@ export default {
 		},
 
 		formatMarkdown(text) {
-			return (
-				text
-					.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-					.replace(/\*(.*?)\*/g, '<em>$1</em>')
-					.replace(/「(.*?)」/g, '<span class="highlight">$1</span>')
-					.replace(/^\s*-\s+(.*?)$/gm, '<li>$1</li>')
-					.replace(/<li>.*?<\/li>(\n<li>.*?<\/li>)*/g, (match) => {
-						return '<ul class="suggestion-list">' + match + '</ul>';
-					})
-					.replace(/\n\n/g, '</p><p>')
-					.replace(/^(?!<p>|<ul>)(.+)/, '<p>$1</p>')
-					.replace(/<\/p><p><\/ul>/g, '</ul>')
-					.replace(/<p><ul/g, '<ul')
-			);
+			return text
+				.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+				.replace(/\*(.*?)\*/g, '<em>$1</em>')
+				.replace(/「(.*?)」/g, '<span class="highlight">$1</span>')
+				.replace(/^\s*-\s+(.*?)$/gm, '<li>$1</li>')
+				.replace(/<li>.*?<\/li>(\n<li>.*?<\/li>)*/g, (match) => {
+					return '<ul class="suggestion-list">' + match + '</ul>';
+				})
+				.replace(/\n\n/g, '</p><p>')
+				.replace(/^(?!<p>|<ul>)(.+)/, '<p>$1</p>')
+				.replace(/<\/p><p><\/ul>/g, '</ul>')
+				.replace(/<p><ul/g, '<ul');
 		}
 	}
 };
