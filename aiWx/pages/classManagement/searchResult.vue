@@ -1,58 +1,57 @@
 <template>
-  <!-- 头部导航栏 -->
-  <view class="chat-container">
-    <view class="header">
-      <view class="navigation-icon" @click="back"></view>
-      <view class="title">课程规划与建议</view>
-      <!-- <view class="voice-play">
+	<!-- 头部导航栏 -->
+	<view class="chat-container">
+		<view class="header">
+			<view class="navigation-icon" @click="back"></view>
+			<view class="title">课程规划与建议</view>
+			<!-- <view class="voice-play">
         <uni-icons type="sound" size="28"></uni-icons>
       </view>
       <view class="collection">
         <uni-icons :type="swtichStar==false?'star':'star-filled'" size="28" @click="swtichStars"></uni-icons>
       </view> -->
-    </view>
+		</view>
 
-    <view class="content">
-      <view class="content-title">搜索:{{ result.title }}</view>
-      <view class="second">
-        <!-- <view class="base">基于{{ result.base }}篇参考资料</view> -->
-        <!-- <view class="select">
+		<view class="content">
+			<view class="content-title">搜索:{{ result.title }}</view>
+			<view class="second">
+				<!-- <view class="base">基于{{ result.base }}篇参考资料</view> -->
+				<!-- <view class="select">
           <uni-data-select
             v-model="value"
             :localdata="range"
             @change="change"
           ></uni-data-select>
         </view> -->
-      </view>
-      <view :class="{'word':true,'word-finish':isFinish}">
-        <mp-html class="html-content" :content="result.word"/>
-      </view>
-    </view>
+			</view>
+			<view :class="{ word: true, 'word-finish': isFinish }">
+				<mp-html class="html-content" :content="result.word" />
+			</view>
+		</view>
 
-    <!-- 底部输入框 -->
-    <view class="input-area">
-
-      <view class="input">
-        <!-- <view class="mode-swtich" @tap="switchMode">
+		<!-- 底部输入框 -->
+		<view class="input-area">
+			<view class="input">
+				<!-- <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
         </view> -->
-        <view class="input-box" v-if="!isVoiceMode">
-          <textarea
-            v-model="inputText"
-            :adjust-position="false"
-            :cursor-spacing="20"
-            auto-height
-            :show-confirm-bar="false"
-            placeholder="请输入内容..."
-            :maxlength="-1"
-            @focus="handleFocus"
-            @blur="handleBlur"
-            class="input-textarea"
-          />
-          <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
-        </view>
-        
-        <!-- <view 
+				<view class="input-box" v-if="!isVoiceMode">
+					<textarea
+						v-model="inputText"
+						:adjust-position="false"
+						:cursor-spacing="20"
+						auto-height
+						:show-confirm-bar="false"
+						placeholder="请输入内容..."
+						:maxlength="-1"
+						@focus="handleFocus"
+						@blur="handleBlur"
+						class="input-textarea"
+					/>
+					<uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
+				</view>
+
+				<!-- <view 
           v-else
           class="voice-input"
           :class="{ recording: isRecording }"
@@ -62,93 +61,110 @@
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
         </view> -->
-      </view>
-      <view 
-          class="send-btn"
-          :class="{ active: canSend }"
-          @tap="handleSend"
-          v-if="!isVoiceMode"
-        >
-          发送
-        </view>
-    </view>
-  </view>
-
+			</view>
+			<view class="send-btn" :class="{ active: canSend }" @tap="handleSend" v-if="!isVoiceMode">发送</view>
+		</view>
+	</view>
 </template>
 
 <script>
-import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
-import { regexSSE } from '../../tools/tool'
-import { convertMarkdown } from '../../tools/markdownUtils'
-import pageTime from '../../mixins/pageTime'
+import { saveConversation } from '../learnDashboard/components/saveConversation.vue';
+import mpHtml from '../../components/mp-html/components/mp-html/mp-html';
+import { regexSSE } from '../../tools/tool';
+import { convertMarkdown } from '../../tools/markdownUtils';
+import pageTime from '../../mixins/pageTime';
 //recorderManager 录音管理器 ,用来录音
-const recorderManager = uni.getRecorderManager()
+const recorderManager = uni.getRecorderManager();
 //innerAudioContext 音频播放器 ，用来播放音频
-const innerAudioContext = uni.createInnerAudioContext()
+const innerAudioContext = uni.createInnerAudioContext();
 export default {
-  mixins:[pageTime],
-  props: {
-  },
-  components:{
-    mpHtml
-  },
-  data() {
-    return {
-      form:{
-        userId:'',
-        query:"",
-        conversationId:""
-      },
-      result:{
-        base:0,
-        title:"",
-        word:""
-      },
-      value: 0,
-      range: [
-        { value: 0, text: "简洁" },
-        { value: 1, text: "标准" },
-        { value: 2, text: "深入" },
-      ],
-      isLoading: false,
-      messageList: [],
-      isPlaying: false,
-      currentVoice: '',
-      isVoiceMode: false,
-      inputText: '',
-      isRecording: false,
-      swtichStar:false,
-      isFinish:false,
-      planId:""
-    }
-  },
-  onLoad(options){
-    if(uni.getStorageSync('userId')){
-      console.log(uni.getStorageSync('userId'));
-      
-      this.form.userId = uni.getStorageSync('userId')
-    }
-    
-    if(options){
-      console.log(options.query);
-      const decodedQuery = options.query ? decodeURIComponent(options.query) : '';
-      this.generateAi(decodedQuery)
-    }
-    this.getSessionId()
-  },
-  mounted() {
-			this.checkUserId()
-      this.setType(1)
-			// this.initHighLight()
-			// console.log(this.initHighLight);
-			// //先处理essay中的换行符
-			// this.result.word = this.result.word.replace(/\\n/g, '<br>')
-			// // console.log(this.mdEssay);
-			
-			// const word = marked(this.result.word).replace(/<pre>/g, "<pre class='hljs'>")
-			// this.$set(this.result,"word",word)
-      // console.log(this.result.word);
+	mixins: [pageTime],
+	props: {},
+	components: {
+		mpHtml
+	},
+	data() {
+		return {
+			form: {
+				userId: '',
+				query: '',
+				conversationId: ''
+			},
+			result: {
+				base: 0,
+				title: '',
+				word: ''
+			},
+			value: 0,
+			range: [
+				{ value: 0, text: '简洁' },
+				{ value: 1, text: '标准' },
+				{ value: 2, text: '深入' }
+			],
+			isLoading: false,
+			messageList: [],
+			isPlaying: false,
+			currentVoice: '',
+			isVoiceMode: false,
+			inputText: '',
+			isRecording: false,
+			swtichStar: false,
+			isFinish: false,
+			planId: ''
+		};
+	},
+	onLoad(options) {
+		if (uni.getStorageSync('userId')) {
+			console.log(uni.getStorageSync('userId'));
 
+			this.form.userId = uni.getStorageSync('userId');
+		}
+
+		if (options) {
+			console.log(options.query);
+			const decodedQuery = options.query ? decodeURIComponent(options.query) : '';
+			this.generateAi(decodedQuery);
+		}
+		this.getSessionId();
+	},
+	mounted() {
+		this.checkUserId();
+		this.setType(1);
+		// this.initHighLight()
+		// console.log(this.initHighLight);
+		// //先处理essay中的换行符
+		// this.result.word = this.result.word.replace(/\\n/g, '<br>')
+		// // console.log(this.mdEssay);
+
+		// const word = marked(this.result.word).replace(/<pre>/g, "<pre class='hljs'>")
+		// this.$set(this.result,"word",word)
+		// console.log(this.result.word);
+	},
+	created() {
+		this.initRecorder(), this.initAudioContext();
+	},
+	methods: {
+		back() {
+			uni.navigateBack({
+				delta: 1
+			});
+		},
+		change(e) {
+			console.log('e:', e);
+		},
+		initRecorder() {
+			recorderManager.onStart(() => {
+				console.log('onStart');
+
+				this.isRecording = true;
+			});
+
+			recorderManager.onStop((res) => {
+				console.log('onStop', res);
+
+				this.isRecording = false;
+				this.sendVoiceMessage(res.tempFilePath, res.duration);
+			});
 		},
   created() {
     this.initRecorder(),
@@ -421,160 +437,157 @@ export default {
 }
 </script>
 
-<style lang="scss"s scoped>
+<style lang="scss" s scoped>
 .chat-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-color: #f5f5f5;
 
-  .header{
-    position:sticky;
-    top: 0;
-    left: 0;
-    display: flex;
-    width:100vw;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top:80rpx;
-    padding-left: 40rpx;
-    height: 100rpx;
-    background-color: #fff;
+	.header {
+		position: sticky;
+		top: 0;
+		left: 0;
+		display: flex;
+		width: 100vw;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		padding-top: 80rpx;
+		padding-left: 40rpx;
+		height: 100rpx;
+		background-color: #fff;
 
-    .navigation-icon{
-      width:20rpx;
-      height: 20rpx;
-      border-left: 3px solid #000000;
-      border-top: 3px solid #000000;
-      transform: rotate(-45deg);
-    }
+		.navigation-icon {
+			width: 20rpx;
+			height: 20rpx;
+			border-left: 3px solid #000000;
+			border-top: 3px solid #000000;
+			transform: rotate(-45deg);
+		}
 
-    .title{
-      // text-align: center;
-      flex:1;
-      font-size:38rpx;
-      font-weight: 600;
-      color:#000000;
-    }
+		.title {
+			// text-align: center;
+			flex: 1;
+			font-size: 38rpx;
+			font-weight: 600;
+			color: #000000;
+		}
 
-    .collection{
-      margin-right: 30vw;
-    }
+		.collection {
+			margin-right: 30vw;
+		}
+	}
 
-  }
+	.content {
+		min-height: 80vh;
+		background-color: #fff;
 
-  .content{
-    min-height: 80vh;
-    background-color: #fff;
+		.html-content {
+			letter-spacing: 2rpx;
+			word-break: break-word;
+		}
 
-    .html-content{
-      letter-spacing: 2rpx;
-      word-break: break-word;
-    }
+		&-title {
+			font-size: 50rpx;
+			font-weight: 600;
+			padding: 30rpx;
+		}
+		.second {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			width: 90%;
+			font-size: 38rpx;
+			margin: 0 30rpx;
 
-    &-title{
-      font-size: 50rpx;
-      font-weight: 600;
-      padding:30rpx;
-    }
-    .second{
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      width: 90%;
-      font-size: 38rpx;
-      margin:0 30rpx;
+			/deep/.uni-select {
+				border: none;
+			}
 
-      /deep/.uni-select{
-        border:none;
-      }
+			/deep/ .uni-icons {
+				font-size: 20px;
+			}
+		}
 
-      /deep/ .uni-icons{
-          font-size: 20px;
-        }
-    }
+		.word {
+			width: 90vw;
+			margin: 0 auto;
+		}
+		.word-finish {
+			padding: 20rpx;
+			background-color: #8282821f;
+		}
+	}
 
-    .word{
-      width: 90vw;
-      margin:0 auto;
-    }
-    .word-finish{
-      padding: 20rpx;
-      background-color: #8282821f;
-    }
-  }
+	.input-area {
+		position: sticky;
+		bottom: 0;
+		left: 0;
+		display: flex;
+		align-items: flex-end;
+		padding: 20rpx;
+		background-color: #fff;
+		border-top: 1rpx solid #eee;
 
-  .input-area {
-    position:sticky;
-    bottom:0;
-    left: 0;
-    display: flex;
-    align-items: flex-end;
-    padding: 20rpx;
-    background-color: #fff;
-    border-top: 1rpx solid #eee;
+		.input {
+			flex: 1;
+			display: flex;
+			align-items: flex-end;
+			background-color: #f5f5f5;
+			border-radius: 10rpx;
+			margin: 0 20rpx;
+		}
 
-    .input{
-      flex:1;
-      display: flex;
-      align-items: flex-end;
-      background-color: #f5f5f5;
-      border-radius: 10rpx;
-      margin: 0 20rpx;
-    }
+		.mode-swtich {
+			padding: 10rpx;
+		}
 
-    .mode-swtich{
-      padding:10rpx;
-    }
+		.input-box {
+			padding: 0 20rpx 0 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			flex: 1;
 
-    .input-box{
-      padding:0 20rpx 0 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex: 1;
+			.input-textarea {
+				width: 100%;
+				padding: 20rpx;
+				max-height: 200rpx;
+				font-size: 28rpx;
+				line-height: 1.5;
+				box-sizing: border-box;
+			}
+		}
 
+		.voice-input {
+			flex: 1;
+			padding: 20rpx;
+			background-color: #f5f5f5;
+			border-radius: 10rpx;
+			margin: 0 20rpx;
+			text-align: center;
 
-      .input-textarea{
-        width: 100%;
-        padding:20rpx;
-        max-height: 200rpx;
-        font-size: 28rpx;
-        line-height: 1.5;
-        box-sizing: border-box;
-      }
-    }
+			&.recording {
+				background-color: #e6e6e6;
+			}
+		}
 
-    .voice-input{
-      flex:1;
-      padding:20rpx;
-      background-color: #f5f5f5;
-      border-radius: 10rpx;
-      margin: 0 20rpx;
-      text-align: center;
+		.send-btn {
+			width: 120rpx;
+			height: 80rpx;
+			line-height: 80rpx;
+			text-align: center;
+			background-color: #007aff;
+			color: #fff;
+			border-radius: 10rpx;
+			opacity: 0.5;
 
-      &.recording{
-        background-color: #e6e6e6;
-      }
-    }
-
-    .send-btn{
-      width:120rpx;
-      height:80rpx;
-      line-height: 80rpx;
-      text-align: center;
-      background-color: #007AFF;
-      color: #fff;
-      border-radius: 10rpx;
-      opacity: 0.5;
-
-      &.active{
-        opacity: 1;
-      }
-    }
-  }
+			&.active {
+				opacity: 1;
+			}
+		}
+	}
 }
-
 </style>

@@ -122,9 +122,9 @@
 <script>
 import pageTime from '../../mixins/pageTime';
 export default {
-	mixins:[pageTime],
+	mixins: [pageTime],
 	mounted() {
-		this.setType(2)
+		this.setType(2);
 	},
 	data() {
 		return {
@@ -136,7 +136,36 @@ export default {
 	},
 
 	onReady() {
-		// 初始化词云数据
+		wx.login({
+			success: (loginRes) => {
+				const code = loginRes.code;
+				console.log(code);
+				// 2. 发送 code 到开发者服务器（设置超时时间为 5000ms）
+				wx.request({
+					url: 'https://your-server.com/api/login',
+					method: 'POST',
+					data: { code },
+					timeout: 5000, // 关键点：设置超时时间（单位：毫秒）
+					success: (res) => {
+						if (res.data.token) {
+							wx.setStorageSync('token', res.data.token);
+							console.log('登录成功，Token 已存储');
+						}
+					},
+					fail: (err) => {
+						if (err.errMsg.includes('timeout')) {
+							console.error('请求超时，请检查网络或重试');
+						} else {
+							console.error('请求服务器失败:', err);
+						}
+					}
+				});
+			},
+			fail: (err) => {
+				console.error('获取 code 失败:', err);
+			}
+		});
+
 		this.generateWordCloudData();
 	},
 

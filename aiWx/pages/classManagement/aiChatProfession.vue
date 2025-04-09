@@ -93,119 +93,125 @@
 
 <script>
 import expectedSelect from '../../component/classManagement/expectedSelect.vue';
-import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
+import mpHtml from '../../components/mp-html/components/mp-html/mp-html';
 import pageTime from '../../mixins/pageTime';
-export default{
-  mixins:[pageTime],
-  components:{
-    expectedSelect,
-    mpHtml
-  },
-  data() {
-    return {
-      list:[
-      ],
-      userId:"",
-      form:{
-        courses:[],
-        strength:0
-      },
-      type:'',
-      keyword:"",
-      content:""
-    }
-  },
-  onLoad(options){
-    this.userId = uni.getStorageSync('userId')
-    if(options.type == 'setting'){
-      this.type = true
-    }
-  },
-  mounted(){
-    this.checkUserId()
-    this.setType(1)
-  },
-  methods: {
-    handleProduce(){
-      console.log(this.form);
-      if(this.list.length === 0){
-        uni.showToast({
-          title:'请先生成路径!',
-          icon:"error"
-        })
-        return
-      }
-      else if(this.form.courses.length === 0){
-        uni.showToast({
-          title:'请先选择路径',
-          icon:'warning'
-        })
-      }
-      uni.setStorageSync('aiSetting',this.form)
-      uni.navigateTo({
-        url:"/pages/classManagement/searchResultProfession"
-      })
-    },
-    handleToNormal(){
-      uni.navigateTo({
-        url:"/pages/classManagement/aiChats"
-      })
-    },
-    handleSelect(index){
-      console.log(this.form.courses);
-      
-      if(index == -1){
-        uni.showToast({
-          title:'出错',
-          icon:'none'
-        })
-      }
-      //如果被选中的是true，说明要从数组撤出
-      if(this.list[index].isSelect && this.form.courses){
-        //过滤后的数组
-        this.form.courses = this.form.courses.filter(item=>item.id!=index)
-        console.log('过滤后的数组',this.form.courses);
-        this.list[index].isSelect = false
-        // const deleteIndex = this.list.findIndex(item=>item.isSelect == true)
-      }
-      else if(this.list[index].isSelect == false){
-        this.form.courses.push(this.list[index])
-        this.list[index].isSelect = true
-      }
-    },
-    handlePath(){
-      this.$api.classManagement.learnPath({
-        userId:this.userId,
-        inputs:this.keyword
-      }).then(res=>{
-        console.log(res.data);
-        const arr = res.data.map(item=>{
-          const data = JSON.parse(item)
+import { saveConversation } from '../learnDashboard/components/saveConversation.vue';
+export default {
+	mixins: [pageTime],
+	components: {
+		expectedSelect,
+		mpHtml
+	},
+	data() {
+		return {
+			list: [],
+			userId: '',
+			form: {
+				courses: [],
+				strength: 0
+			},
+			type: '',
+			keyword: '',
+			content: ''
+		};
+	},
+	onLoad(options) {
+		this.userId = uni.getStorageSync('userId');
+		if (options.type == 'setting') {
+			this.type = true;
+		}
+	},
+	mounted() {
+		this.checkUserId();
+		this.setType(1);
+	},
+	methods: {
+		handleProduce() {
+			console.log(this.form);
+			if (this.list.length === 0) {
+				uni.showToast({
+					title: '请先生成路径!',
+					icon: 'error'
+				});
+				return;
+			} else if (this.form.courses.length === 0) {
+				uni.showToast({
+					title: '请先选择路径',
+					icon: 'warning'
+				});
+			}
+			uni.setStorageSync('aiSetting', this.form);
+			uni.navigateTo({
+				url: '/pages/classManagement/searchResultProfession'
+			});
+		},
+		handleToNormal() {
+			uni.navigateTo({
+				url: '/pages/classManagement/aiChats'
+			});
+		},
+		handleSelect(index) {
+			console.log(this.form.courses);
 
-          return {
-            id:data.aid,
-            desc:data.title,
-            isSelect:false
-          }
-        })
-        this.$set(this,'list',arr)
-        this.currentIndex = 0
-      })
-      .catch(err=>{
-        console.log(err);
-        
-      })
-    },
-    handleSave(){
-      console.log(this.form);
-      
-      uni.setStorageSync('aiSetting',this.form)
-      uni.navigateBack({
-        delta:1
-      })
-    }
-  },
-}
+			if (index == -1) {
+				uni.showToast({
+					title: '出错',
+					icon: 'none'
+				});
+			}
+			//如果被选中的是true，说明要从数组撤出
+			if (this.list[index].isSelect && this.form.courses) {
+				//过滤后的数组
+				this.form.courses = this.form.courses.filter((item) => item.id != index);
+				console.log('过滤后的数组', this.form.courses);
+				this.list[index].isSelect = false;
+				// const deleteIndex = this.list.findIndex(item=>item.isSelect == true)
+			} else if (this.list[index].isSelect == false) {
+				this.form.courses.push(this.list[index]);
+				this.list[index].isSelect = true;
+			}
+		},
+		handlePath() {
+			saveConversation(this.keyword)
+				.then((res) => {
+					console.log('保存成功');
+				})
+				.catch((err) => {
+					console.log('保存失败');
+				});
+			this.$api.classManagement
+				.learnPath({
+					userId: this.userId,
+					inputs: this.keyword
+				})
+				.then((res) => {
+					console.log(res.data);
+					const arr = res.data.map((item) => {
+						const data = JSON.parse(item);
+
+						return {
+							id: data.aid,
+							desc: data.title,
+							isSelect: false
+						};
+					});
+					this.$set(this, 'list', arr);
+					this.currentIndex = 0;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		handleSave() {
+			console.log(this.form);
+
+			uni.setStorageSync('aiSetting', this.form);
+			uni.navigateBack({
+				delta: 1
+			});
+		}
+	}
+};
 </script>
 
 <style lang="scss" scoped>

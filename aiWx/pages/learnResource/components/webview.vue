@@ -45,7 +45,7 @@ export default {
                 delta: 1
             });
         },
-        envTest(interval = 100, timeout = 4500) {
+        envTest(interval = 10, timeout = 4500) {
             const eventChannel = this.getOpenerEventChannel();
             const startTime = Date.now();
 
@@ -55,8 +55,12 @@ export default {
                 }
                 if (this.pageError == true) {
                     setTimeout(() => {
-                        this.goBack();
-                        this.returnStatus('ERROR');
+						if (this.checkInWebView()){
+							this.goBack();
+							this.returnStatus('ERROR');
+						}else{
+							this.returnStatus('ERROR_hasHandle');
+						}
                     }, 1000);
                     return;
                 }
@@ -91,8 +95,8 @@ export default {
         checkInWebView() {
             const pages = getCurrentPages();
             const currentPage = pages[pages.length - 1];
-
-			return currentPage.options.url?true:false;
+			console.log(currentPage);
+			return (currentPage.options.url?true:false);
         },
         checkVPN() {
             return new Promise((resolve, reject) => {

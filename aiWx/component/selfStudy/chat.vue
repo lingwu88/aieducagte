@@ -1,6 +1,6 @@
 <template>
-  <view class="chat-container" :class="[{'char-container-minHeight':show}]">
-    <!-- 聊天内容区域  
+	<view class="chat-container" :class="[{ 'char-container-minHeight': show }]">
+		<!-- 聊天内容区域  
 			scrolltoupper 上拉加载更多
 			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
@@ -50,22 +50,16 @@
             class="text-content" 
             :content="item.content">
             </mp-html> -->
-            <mp-html
-            v-if="item.contentType === 'text'" 
-            class="text-content" 
-            :content="item.content">
-            </mp-html>
+						<mp-html v-if="item.contentType === 'text'" class="text-content" :content="item.content"></mp-html>
 
-
-            <!-- 图片消息 -->
-             <!-- <image 
+						<!-- 图片消息 -->
+						<!-- <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
             /> -->
-
             <!-- 语音消息 -->
             <view 
               v-else-if="item.contentType === 'voice'"
@@ -128,27 +122,20 @@
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
         </view> -->
-      </view>
-      <view 
-          class="send-btn"
-          :class="{ active: canSend }"
-          @tap="handleSend"
-          v-if="!isVoiceMode"
-        >
-          发送
-        </view>
-    </view>
-  </view>
-
+			</view>
+			<view class="send-btn" :class="{ active: canSend }" @tap="handleSend" v-if="!isVoiceMode">发送</view>
+		</view>
+	</view>
 </template>
 
 <script>
-import { regexSSE } from '../../tools/tool'
+import { saveConversation } from '../../pages/learnDashboard/components/saveConversation.vue';
+import { regexSSE } from '../../tools/tool';
 import { convertMarkdown } from '../../tools/markdownUtils';
 //recorderManager 录音管理器 ,用来录音
-const recorderManager = uni.getRecorderManager()
+const recorderManager = uni.getRecorderManager();
 //innerAudioContext 音频播放器 ，用来播放音频
-const innerAudioContext = uni.createInnerAudioContext()
+const innerAudioContext = uni.createInnerAudioContext();
 export default {
   name:"chat",
   props: {
@@ -212,15 +199,16 @@ export default {
 			if(this.sessionId!=""){
 				return
 			}
-			this.$api.classManagement.getSessionId({userId:uni.getStorageSync('userId'),type:1}).then(res=>{
-        console.log(res);
-        this.sessionId= res.data
-        console.log(this.sessionId);
-        
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+			this.$api.classManagement
+				.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+				.then((res) => {
+					console.log(res);
+					this.sessionId = res.data;
+					console.log(this.sessionId);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		},
     toggleShow(){
       this.$emit('controlSetting')
@@ -507,9 +495,9 @@ export default {
 }
 </script>
 
-<style lang="scss"s scoped>
-.char-container-minHeight{
-  height: 95vh !important;
+<style lang="scss" s scoped>
+.char-container-minHeight {
+	height: 95vh !important;
 }
 .chat-container {
   width: 100%;
@@ -828,11 +816,12 @@ export default {
   }
 }
 @keyframes typing {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6rpx);
-  }
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-6rpx);
+	}
 }
 </style>
