@@ -97,7 +97,7 @@ import card from './card.vue'
           currentPage:1,
           list:[]
         },
-        colorList:['#ca9e9e','#cec0a3','#cdcea3','#accea3','#a3cec0','#a3c2ce','#a3aece','#b1a3ce','#cea3c5','#cea3a3'],
+        colorList:['#64C88C','#DA6A9A','#F1BE1B','#8793FE','#4ECDC4','#FF6B6B','#8982FF','#EFC2D6','#F19595','#7884F0'],
         userId:"",
         //一个数据源二维数组 —— 队列状态
         queueState:{
@@ -351,7 +351,8 @@ import card from './card.vue'
           articleId:item.articleId,
           userName:item.userName,
           likeCount:item.likeCount,
-          bgColor:this.colorList[Math.floor(Math.random()*10)]
+          bgColor:this.colorList[Math.floor(Math.random()*10)],
+          viewCount:item.viewCount
         }))
          console.log(list);
          //如果没长度即没数据，那么return
@@ -363,6 +364,8 @@ import card from './card.vue'
         newArr = [...this.renderList,...list]
         //如果有数据
         this.$set(this,'renderList',newArr)
+        console.log(this.renderList);
+        
         // this.dataState.list.push(...list)
         this.dataState.loading = false
         // console.log(this.dataState);
@@ -387,7 +390,7 @@ import card from './card.vue'
     },
     computed:{
       lastId(){
-        return this.dataState.list.length!==0?this.dataState.list[this.dataState.list.length-1].articleId:""
+        return this.renderList.length!==0?this.renderList[this.renderList.length-1]?.articleId:""
       },
       // hasMoreData(){
       //   console.log(this.queueState);

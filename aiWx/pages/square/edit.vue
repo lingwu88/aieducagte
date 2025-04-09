@@ -366,7 +366,7 @@ import pageTime from '../../mixins/pageTime'
 			margin: 10rpx;
 			line-height: 25rpx;
 			height: 50rpx;
-			background-color: #a38bd2;
+			background-color: #64C88C;
 			color: white;
 		}
 		.active{
@@ -521,7 +521,7 @@ import pageTime from '../../mixins/pageTime'
 .publish-btn{
 	width: 200rpx;
 	max-height: 50rpx;
-	background-color: #6984a0;
+	background-color: #7884F0;
 	color: #fff;
 	text-align: center;
 	padding: 10rpx;

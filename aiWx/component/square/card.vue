@@ -61,6 +61,7 @@ export default{
     },
     viewCount:{
       type:Number,
+      required:true,
       default:0
     }
   },
