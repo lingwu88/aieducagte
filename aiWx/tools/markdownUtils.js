@@ -16,7 +16,7 @@ const initHighLight = () => {
     renderer: new marked.Renderer(),
     gfm: true,
     tables: true,
-    breaks: true,
+    breaks: false,
     pedantic: false,
     highlight: (code, lang) => {
       try {

@@ -16,14 +16,37 @@ function regexSSE(res) {
   // .map(line => line.replace(/^(retry:\d+|data:)\s*/, '').trim())
   // .filter(Boolean)
   // .join(' ');
-  let result = res
-    .split(/\r?\n/) // 兼容不同操作系统的换行符（\n 或 \r\n）
-    .map(line => line.replace(/^(retry:\d+|data:)\s*/, '').trim())
+
+
+  // let result = res
+  //   .split(/\r?\n/) // 兼容不同操作系统的换行符（\n 或 \r\n）
+  //   .map(line => line.replace(/^(retry:\d+|data:)\s*/, ''))
+  //   .filter(Boolean)
+  //   .join('')        // 初步拼接
+
+
+
+  let data = res.split('\n\n')
+  data = data.join("\n")
+  console.log(data);
+  let data2 = data.split('\n')
+    .map(line => line.replace(/^(retry:\d+|data:)\s*/, ""))
     .filter(Boolean)
-    .join('')        // 初步拼接
-    // .replace(/\s+/g, ' ') // 合并连续空格为一个
-    // .trim();          // 去除首尾空格
-  console.log(result);
+    .join("")
+  // 处理列表项符号 -（假设列表项后跟空格）
+
+  data2 = data2.replace(/(#+| - )/g, '\n$1 ');
+  data2 = data2.replace(/(1.\s*)/g, '\n$1')
+  data2 = data2.replace(/(2.\s*)/g, '\n$1')
+  data2 = data2.replace(/(3.\s*)/g, '\n$1')
+  data2 = data2.replace(/(4.\s*)/g, '\n$1')
+  data2 = data2.replace(/(5.\s*)/g, '\n$1')
+  // 合并连续换行符
+  data2 = data2.replace(/\n+/g, '\n');
+
+  // .replace(/\s+/g, ' ') // 合并连续空格为一个
+  // .trim();          // 去除首尾空格
+  console.log(data2);
   //提取出自打第一个data起的所有数据
   // const dataPattern = /data:([\s\S]*)/gm; // 匹配以 "data: " 开头的行
   // const dataPattern1 = /data:\s*(.*)/     //用来匹配子串的data
@@ -50,7 +73,7 @@ function regexSSE(res) {
   //   }
   // }
 
-  return result
+  return data2
   // return null
 }
 
