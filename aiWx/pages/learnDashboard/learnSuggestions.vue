@@ -62,43 +62,65 @@ export default {
 				result: '1. **考研方向建议**：  \n   您的目标院校是深圳大学，且当前专业为土木工程。建议优先巩固「材料力学」和「房屋建筑学」等核心课程，同时针对性复习目标院校的考研大纲内容。此外，可结合「工程制图」的实际案例提升解题能力，确保专业课分数优势。\n\n2. **转行人工智能路径**：  \n   您对「数据结构与算法」和「人工智能」有浓厚兴趣，这为核心转型提供了良好基础。建议从以下方向入手：  \n   - 深入学习「数据结构与算法」，掌握常见算法（如动态规划、图算法）并实践LeetCode或牛客网题目。'
 			};
 			this.suggestions = mockResponse.result;
+			wx.login({
+				success: (loginRes) => {
+					const code = loginRes.code; // 获取用户 code 令牌
+					if (code) {
+						console.log('获取登录 code 成功:', code);
 
-			wx.request({
-				url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
-				method: 'POST',
-				data: {
-					userid: 'user_12345',
-					type: 'learnSuggestions'
-				},
-				header: {
-					'content-type': 'application/json'
-				},
-				success: (res) => {
-					if (res.statusCode === 200 && res.data.success) {
-						console.log('后端返回数据:', res.data);
-						if (Object.keys(res.data.data).length === 0) {
-							return;
-						}
-						const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
-						this.suggestions = markdownText;
-					} else {
-						wx.showToast({
-							title: res.data.message, // 提示内容
-							icon: 'none', // 不显示图标（纯文字）
-							duration: 2000 // 2秒后自动关闭
+						// 第二步：使用 code 作为 userid 保存对话
+						wx.request({
+							url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
+							method: 'POST',
+							data: {
+								userCode: code,
+								type: 'learnSuggestions'
+							},
+							header: {
+								'content-type': 'application/json'
+							},
+							success: (res) => {
+								if (res.statusCode === 200 && res.data.success) {
+									console.log('后端返回数据:', res.data);
+									if (Object.keys(res.data.data).length === 0) {
+										wx.showToast({
+											title: "用户的数据信息过少不支持生成内容", // 提示内容
+											icon: 'none', // 不显示图标（纯文字）
+											duration: 2000 // 2秒后自动关闭
+										});
+										this.parseSuggestions();
+										return;
+									}
+									const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
+									this.suggestions = markdownText;
+								} else {
+									wx.showToast({
+										title: res.data.message, // 提示内容
+										icon: 'none', // 不显示图标（纯文字）
+										duration: 2000 // 2秒后自动关闭
+									});
+									console.error('服务器返回错误', res);
+								}
+								this.parseSuggestions();
+							},
+							fail: (err) => {
+								console.error('请求失败', err);
+								this.parseSuggestions();
+							},
+							complete: () => {
+								setTimeout(() => {
+									this.loading = false;
+								}, 800);
+							}
 						});
-						console.error('服务器返回错误', res);
+					} else {
+						console.log('未获取到 code');
+						reject(new Error('登录失败，未获取到 code')); // 未返回 code
 					}
-					this.parseSuggestions();
 				},
 				fail: (err) => {
-					console.error('请求失败', err);
-					this.parseSuggestions();
-				},
-				complete: () => {
-					setTimeout(() => {
-						this.loading = false;
-					}, 800);
+					console.log('wx.login 调用失败:', err);
+					reject(err); // 获取 code 失败时抛出错误
 				}
 			});
 		},

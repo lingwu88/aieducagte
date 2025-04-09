@@ -85,39 +85,59 @@ export default {
 		},
 
 		fetchPreferenceData() {
-			
 			this.isLoading = true;
+			wx.login({
+				success: (loginRes) => {
+					const code = loginRes.code; // 获取用户 code 令牌
+					if (code) {
+						console.log('获取登录 code 成功:', code);
 
-			wx.request({
-				url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
-				method: 'POST',
-				data: { userid: "user_12345", type: 'contentPreference' },
-				header: { 'content-type': 'application/json' },
-				success: (res) => {
-					if (res.statusCode === 200 && res.data.success) {
-						console.log('后端返回数据:', res.data);
-						if (Object.keys(res.data.data).length === 0) {
-							this.useFallbackData();
-							return;
-						}
-						const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
-						this.reportData = this.parseMarkdown(markdownText);
-					} else {
-						wx.showToast({
-						  title: res.data.message,      // 提示内容
-						  icon: 'none',          // 不显示图标（纯文字）
-						  duration: 2000         // 2秒后自动关闭
+						// 第二步：使用 code 作为 userid 保存对话
+						wx.request({
+							url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
+							method: 'POST',
+							data: { userCode: code, type: 'contentPreference' },
+							header: { 'content-type': 'application/json' },
+							success: (res) => {
+								if (res.statusCode === 200 && res.data.success) {
+									console.log('后端返回数据:', res.data);
+									if (Object.keys(res.data.data).length === 0) {
+										wx.showToast({
+											title: "用户的数据信息过少不支持生成内容", // 提示内容
+											icon: 'none', // 不显示图标（纯文字）
+											duration: 2000 // 2秒后自动关闭
+										});
+										this.useFallbackData();
+										return;
+									}
+									const markdownText = typeof res.data.data === 'string' ? res.data.data : String(res.data.data || '');
+									this.reportData = this.parseMarkdown(markdownText);
+								} else {
+									wx.showToast({
+										title: res.data.message, // 提示内容
+										icon: 'none', // 不显示图标（纯文字）
+										duration: 2000 // 2秒后自动关闭
+									});
+									console.error('服务器返回错误', res);
+									this.useFallbackData();
+								}
+							},
+							fail: (err) => {
+								console.error('请求失败', err);
+								this.useFallbackData();
+							},
+							complete: () => {
+								setTimeout(() => (this.isLoading = false), 800);
+							}
 						});
-						console.error('服务器返回错误', res);
-						this.useFallbackData();
+					} else {
+						console.log('未获取到 code');
+						reject(new Error('登录失败，未获取到 code')); // 未返回 code
 					}
 				},
 				fail: (err) => {
-					console.error('请求失败', err);
-					this.useFallbackData();
-				},
-				complete: () => {
-					setTimeout(() => (this.isLoading = false), 800);
+					console.log('wx.login 调用失败:', err);
+					reject(err); // 获取 code 失败时抛出错误
 				}
 			});
 		},
