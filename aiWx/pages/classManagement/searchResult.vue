@@ -1,22 +1,22 @@
 <template>
-  <!-- 头部导航栏 -->
-  <view class="chat-container">
-    <view class="header">
-      <view class="navigation-icon" @click="back"></view>
-      <view class="title">课程规划与建议</view>
-      <!-- <view class="voice-play">
+	<!-- 头部导航栏 -->
+	<view class="chat-container">
+		<view class="header">
+			<view class="navigation-icon" @click="back"></view>
+			<view class="title">课程规划与建议</view>
+			<!-- <view class="voice-play">
         <uni-icons type="sound" size="28"></uni-icons>
       </view>
       <view class="collection">
         <uni-icons :type="swtichStar==false?'star':'star-filled'" size="28" @click="swtichStars"></uni-icons>
       </view> -->
-    </view>
+		</view>
 
-    <view class="content">
-      <view class="content-title">搜索:{{ result.title }}</view>
-      <view class="second">
-        <!-- <view class="base">基于{{ result.base }}篇参考资料</view> -->
-        <!-- <view class="select">
+		<view class="content">
+			<view class="content-title">搜索:{{ result.title }}</view>
+			<view class="second">
+				<!-- <view class="base">基于{{ result.base }}篇参考资料</view> -->
+				<!-- <view class="select">
           <uni-data-select
             v-model="value"
             :localdata="range"
@@ -29,21 +29,29 @@
       </view>
     </view>
 
-    <!-- 底部输入框 -->
-    <view class="input-area">
-
-      <view class="input">
-        <!-- <view class="mode-swtich" @tap="switchMode">
+		<!-- 底部输入框 -->
+		<view class="input-area">
+			<view class="input">
+				<!-- <view class="mode-swtich" @tap="switchMode">
           <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
         </view> -->
-        <view class="input-box" v-if="!isVoiceMode">
-          <textarea v-model="inputText" :adjust-position="false" :cursor-spacing="20" auto-height
-            :show-confirm-bar="false" placeholder="请输入内容..." :maxlength="-1" @focus="handleFocus" @blur="handleBlur"
-            class="input-textarea" />
-          <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
-        </view>
+				<view class="input-box" v-if="!isVoiceMode">
+					<textarea
+						v-model="inputText"
+						:adjust-position="false"
+						:cursor-spacing="20"
+						auto-height
+						:show-confirm-bar="false"
+						placeholder="请输入内容..."
+						:maxlength="-1"
+						@focus="handleFocus"
+						@blur="handleBlur"
+						class="input-textarea"
+					/>
+					<uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
+				</view>
 
-        <!-- <view 
+				<!-- <view 
           v-else
           class="voice-input"
           :class="{ recording: isRecording }"
@@ -63,14 +71,15 @@
 </template>
 
 <script>
-import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
-import { regexSSE } from '../../tools/tool'
-import { convertMarkdown } from '../../tools/markdownUtils'
-import pageTime from '../../mixins/pageTime'
+import { saveConversation } from '../learnDashboard/components/saveConversation.vue';
+import mpHtml from '../../components/mp-html/components/mp-html/mp-html';
+import { regexSSE } from '../../tools/tool';
+import { convertMarkdown } from '../../tools/markdownUtils';
+import pageTime from '../../mixins/pageTime';
 //recorderManager 录音管理器 ,用来录音
-const recorderManager = uni.getRecorderManager()
+const recorderManager = uni.getRecorderManager();
 //innerAudioContext 音频播放器 ，用来播放音频
-const innerAudioContext = uni.createInnerAudioContext()
+const innerAudioContext = uni.createInnerAudioContext();
 export default {
   mixins: [pageTime],
   props: {
@@ -410,10 +419,10 @@ export default {
 
 <style lang="scss" s scoped>
 .chat-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-color: #f5f5f5;
 
   .header {
     position: sticky;

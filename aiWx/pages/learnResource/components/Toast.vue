@@ -60,7 +60,6 @@ export default {
 	},
 	methods: {
 		show(context, ...args) {
-			
 			if (typeof context !== 'string') {
 				throw new Error('Toast context must be a string');
 			}
@@ -106,7 +105,7 @@ export default {
 			// 等待 DOM 更新后，获取 toast 的位置，并根据需要调整
 			this.$nextTick(() => {
 				uni.createSelectorQuery()
-				.in(this)
+					.in(this)
 					.select(`#toast-${newToast.id}`)
 					.boundingClientRect((rect) => {
 						if (rect) {
@@ -125,7 +124,6 @@ export default {
 								adjustedTop = newToast.top + (0 - rect.top) + topMargin;
 							}
 							newToast.top = adjustedTop;
-							
 						}
 						// 调整完毕后显示 toast
 						newToast.opacity = 1;
@@ -136,7 +134,6 @@ export default {
 								this.toastQueue = this.toastQueue.filter((t) => t.id !== newToast.id);
 							}, 600); // 固定 500ms 渐隐动画
 						}, mergedParams.StayTime);
-						
 					})
 					.exec();
 			});

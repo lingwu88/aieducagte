@@ -1,6 +1,6 @@
 <template>
-  <view class="chat-container" :class="[{'char-container-minHeight':show}]">
-    <!-- 聊天内容区域  
+	<view class="chat-container" :class="[{ 'char-container-minHeight': show }]">
+		<!-- 聊天内容区域  
 			scrolltoupper 上拉加载更多
 			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
@@ -11,12 +11,18 @@
       <view class="circle circle-3"></view>
     </view>
     
+    <!-- 关键修改：设置固定高度，并添加重要的style属性 -->
     <scroll-view 
       class="chat-content"
-      scroll-y
-      scroll-top="scrollTop" 
+      scroll-y="true"
+      :scroll-with-animation="scrollAnimation"
+      :scroll-top="scrollTop" 
       :scroll-into-view="lastMessageId"
       @scrolltoupper="loadMoreHistory"
+      show-scrollbar="true"
+      enhanced="true"
+      bounces="true"
+      style="height: calc(100vh - 180rpx); flex: none; overflow-y: scroll; padding-bottom: 20rpx;"
       >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
@@ -44,22 +50,16 @@
             class="text-content" 
             :content="item.content">
             </mp-html> -->
-            <mp-html
-            v-if="item.contentType === 'text'" 
-            class="text-content" 
-            :content="item.content">
-            </mp-html>
+						<mp-html v-if="item.contentType === 'text'" class="text-content" :content="item.content"></mp-html>
 
-
-            <!-- 图片消息 -->
-             <!-- <image 
+						<!-- 图片消息 -->
+						<!-- <image 
               v-else-if="item.contentType === 'image'"
               class="image-content"
               :src="item.content"
               mode="widthFix"
               @tap="previewImage(item.content)"
             /> -->
-
             <!-- 语音消息 -->
             <view 
               v-else-if="item.contentType === 'voice'"
@@ -122,27 +122,20 @@
         >
           {{ isRecording ? '松开发送' : '按住说话' }}
         </view> -->
-      </view>
-      <view 
-          class="send-btn"
-          :class="{ active: canSend }"
-          @tap="handleSend"
-          v-if="!isVoiceMode"
-        >
-          发送
-        </view>
-    </view>
-  </view>
-
+			</view>
+			<view class="send-btn" :class="{ active: canSend }" @tap="handleSend" v-if="!isVoiceMode">发送</view>
+		</view>
+	</view>
 </template>
 
 <script>
-import { regexSSE } from '../../tools/tool'
+import { saveConversation } from '../../pages/learnDashboard/components/saveConversation.vue';
+import { regexSSE } from '../../tools/tool';
 import { convertMarkdown } from '../../tools/markdownUtils';
 //recorderManager 录音管理器 ,用来录音
-const recorderManager = uni.getRecorderManager()
+const recorderManager = uni.getRecorderManager();
 //innerAudioContext 音频播放器 ，用来播放音频
-const innerAudioContext = uni.createInnerAudioContext()
+const innerAudioContext = uni.createInnerAudioContext();
 export default {
   name:"chat",
   props: {
@@ -178,7 +171,9 @@ export default {
       isAiTyping: false,
       requestbody:{},
       content:"",
-      messageList:[]
+      messageList:[],
+      scrollAnimation: true, // 添加滚动动画控制
+      scrollHeight: 0 // 添加滚动高度记录
     }
   },
   created() {
@@ -188,21 +183,32 @@ export default {
   },
   onShow(){
     this.initRequest()
+    // 获取系统信息，计算安全区域
+    uni.getSystemInfo({
+      success: (res) => {
+        // 考虑底部安全区域和导航栏高度
+        const safeBottom = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
+        const navHeight = 50; // 估计的导航栏高度，单位px
+        this.scrollHeight = res.windowHeight - navHeight - safeBottom;
+        console.log('计算的滚动区域高度:', this.scrollHeight);
+      }
+    });
   },
   methods: {
     getSession(){
 			if(this.sessionId!=""){
 				return
 			}
-			this.$api.classManagement.getSessionId({userId:uni.getStorageSync('userId'),type:1}).then(res=>{
-        console.log(res);
-        this.sessionId= res.data
-        console.log(this.sessionId);
-        
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+			this.$api.classManagement
+				.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+				.then((res) => {
+					console.log(res);
+					this.sessionId = res.data;
+					console.log(this.sessionId);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		},
     toggleShow(){
       this.$emit('controlSetting')
@@ -381,11 +387,31 @@ export default {
       })
     },
     scrollToBottom() {
-      console.log(this.messageList.length);
+      console.log('滚动到底部，消息数量:', this.messageList.length);
       
       this.$nextTick(() => {
-        this.lastMessageId = 'msg-' + (this.messageList.length - 1)
-      })
+        // 延迟执行，确保DOM已更新
+        setTimeout(() => {
+          // 计算实际滚动高度
+          const query = uni.createSelectorQuery().in(this);
+          query.select('.message-list').boundingClientRect(data => {
+            if (data) {
+              console.log('消息列表高度:', data.height);
+              // 设置一个足够大的值确保滚动到底部
+              this.scrollTop = data.height * 2;
+              console.log('设置scrollTop:', this.scrollTop);
+              
+              // 先禁用动画，再启用，解决某些情况下不滚动的问题
+              this.scrollAnimation = false;
+              setTimeout(() => {
+                this.scrollAnimation = true;
+                // 同时设置最后一条消息ID
+                this.lastMessageId = 'msg-' + (this.messageList.length - 1);
+              }, 50);
+            }
+          }).exec();
+        }, 10);
+      });
     },
     sendToAI(content) {
       return new Promise((resolve,reject)=>{
@@ -469,13 +495,12 @@ export default {
 }
 </script>
 
-<style lang="scss"s scoped>
-.char-container-minHeight{
-  height: 95vh !important;
+<style lang="scss" s scoped>
+.char-container-minHeight {
+	height: 95vh !important;
 }
 .chat-container {
-  width:inherit;
-  // height: auto;
+  width: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -525,10 +550,11 @@ export default {
   }
 
   .chat-content {
-    flex: 1;
+    /* 移除flex: 1，避免弹性布局影响滚动 */
     position: relative;
     z-index: 1;
     padding: 10rpx 0;
+    /* 移除高度设置，由内联样式控制 */
     
     &::before {
       content: '';
@@ -689,14 +715,15 @@ export default {
     align-items: flex-end;
   }
   .input-area {
-    position: sticky;
+    position: fixed;
     bottom: 0;
     left: 0;
+    right: 0;
     padding: 20rpx;
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10rpx);
     border-top: 1rpx solid rgba(238, 238, 238, 0.8);
-    z-index: 10;
+    z-index: 100; /* 增加z-index确保在最上层 */
     box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 
     .input{
@@ -787,29 +814,14 @@ export default {
       }
     }
   }
-  .navigate-box{
-    position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 30vw;
-    height: auto;
-    image{
-      width:30rpx;
-      height: 30rpx;
-    }
-  }
 }
 @keyframes typing {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6rpx);
-  }
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-6rpx);
+	}
 }
 </style>
