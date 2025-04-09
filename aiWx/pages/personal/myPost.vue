@@ -187,7 +187,7 @@ export default{
 							...item,
 							approved:item.approved,
 							userAvatar:this.$request.baseUrl+item.userAvatar,
-							tags:item.tags==="[]"?[]:item.tags.slice(1, -1).split(',')
+							tags:item.tags==="[[]]"?[]:item.tags.slice(1, -1).split(',')
 						}))
 						if(lastId === ""){
 							arr = newArr
