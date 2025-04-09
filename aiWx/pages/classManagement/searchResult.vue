@@ -182,13 +182,13 @@ export default {
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');
-        
+
         this.isRecording = true
       })
 
       recorderManager.onStop((res) => {
         console.log('onStop', res);
-        
+
         this.isRecording = false
         this.sendVoiceMessage(res.tempFilePath, res.duration)
       })
@@ -205,7 +205,7 @@ export default {
     },
     loadMoreHistory() {
       if (this.isLoading) return
-      
+
       this.isLoading = true
       // 模拟加载更多消息
       setTimeout(() => {
@@ -234,7 +234,7 @@ export default {
         ...this.form,
         query:text
       });
-      
+
       //开启sse
       this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,undefined,this.closeSSE)
       this.$api.classManagement.generalAi({
@@ -246,7 +246,7 @@ export default {
       })
       .catch(err=>{
         console.log(err);
-        
+
       })
     },
     //SSE结束回调
@@ -260,7 +260,7 @@ export default {
       // })
       // .catch(err=>{
       //   console.log(err);
-        
+
       // })
     },
     //sse回调函数
@@ -268,16 +268,16 @@ export default {
       console.log(res);
       let data
       // console.log("返回数据类型"+typeof res);
-      
+
         // 假设 res 是一个字符串，包含了 SSE 消息
        data = regexSSE(res)
       //  data = convertMarkdown(data)
        console.log(data);
-       
+
        if(data){
         this.result.word +=data
         // console.log(this.result.word);
-        
+
        }
             // this.result.word += data; // 将提取的数据添加到 result.word
     },
@@ -289,7 +289,7 @@ export default {
     },
     getSessionId(){
       if(this.form.conversationId!=''){
-        return 
+        return
       }
       this.$api.classManagement.getSessionId({userId:this.form.userId,type:2}).then(res=>{
         console.log(res);
@@ -297,7 +297,7 @@ export default {
       })
       .catch(err=>{
         console.log(err);
-        
+
       })
     },
     handleCamera(){
@@ -365,7 +365,7 @@ export default {
     },
     //切换收藏
     async swtichStars(){
-      let data 
+      let data
       try{
         data = await this.toggleStar(this.swtichStar)
       }
@@ -378,12 +378,12 @@ export default {
         icon:'none'
       })
       console.log(this.swtichStar);
-      
+
       if(data.status){
           this.swtichStar = !this.swtichStar
       }
       console.log(this.swtichStar);
-      
+
     },
     //控制收藏
     async toggleStar(status){
@@ -409,7 +409,7 @@ export default {
         //收藏
         else{
           console.log(this.result.word);
-          
+
           this.$api.classManagement.saveGeneral({
             userId:this.form.userId,
             plan:this.result.word
@@ -431,7 +431,7 @@ export default {
   },
   computed: {
     canSend() {
-      return this.inputText.trim().length > 0
+      return this.inputText.trim().length > 0;
     }
   }
 }
