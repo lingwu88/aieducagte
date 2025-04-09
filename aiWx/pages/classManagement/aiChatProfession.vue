@@ -1,13 +1,8 @@
 <template>
   <view class="box">
     <view class="form">
-      <u--form
-				labelPosition="top"
-				:model="form"
-				ref="uForm"
-        labelWidth="150"
-		>
-			<!-- <u-form-item
+      <u--form labelPosition="top" :model="form" ref="uForm" labelWidth="150">
+        <!-- <u-form-item
 					label="标题"
 					prop="title"
 					borderBottom
@@ -35,43 +30,32 @@
 			>
         <u-textarea v-model="form.feature" count maxlength="400" height="200" placeholder="这里可以填写框架,也可以填写必要的主题～"></u-textarea>
 			</u-form-item> -->
-      <u-form-item
-					label="内容 关键字"
-					borderBottom
-					ref="item1"
-          leftIcon="star-fill"
-          :leftIconStyle="{
-            'color':'#FFEB3B',
-            'width':'30rpx',
-            'height':'30rpx'
-          }"
-			>
-      
-      <u-textarea v-model="keyword   " count maxlength="100" placeholder="请输入您的要求或关键词～"></u-textarea>
-      <view class="green-btn" @click="handlePath">
-        生成路径
-      </view>
-			</u-form-item>
-      <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
-      <u-form-item
-         label="学习强度"
-         ref="item1"
-         leftIcon="star-fill"
-         :leftIconStyle="{
-           'color':'#FFEB3B',
-           'width':'30rpx',
-           'height':'30rpx'
-         }"
-     >
-       <u-slider v-model="form.strength" max="4" min="0" step="1" showValue></u-slider>
-     </u-form-item>
-		</u--form>
+        <u-form-item label="内容 关键字" borderBottom ref="item1" leftIcon="star-fill" :leftIconStyle="{
+          'color': '#FFEB3B',
+          'width': '30rpx',
+          'height': '30rpx'
+        }">
+
+          <u-textarea v-model="keyword" count maxlength="100" placeholder="请输入您的要求或关键词～"></u-textarea>
+          <view class="green-btn" @click="handlePath">
+            生成路径
+          </view>
+        </u-form-item>
+        <expectedSelect class="select" :list="list" @select="handleSelect"></expectedSelect>
+        <u-form-item label="学习强度" ref="item1" leftIcon="star-fill" :leftIconStyle="{
+          'color': '#FFEB3B',
+          'width': '30rpx',
+          'height': '30rpx'
+        }">
+          <u-slider v-model="form.strength" max="4" min="0" step="1" showValue></u-slider>
+        </u-form-item>
+      </u--form>
     </view>
     <view class="navigate-box" @click="handleToNormal">
       <image :src="'http://120.26.132.46:8091/classroom/classManagement/professional.png'"></image>
       <view>普通模式</view>
     </view>
-    <view class="btn" @click="handleProduce" v-if="!type">生成</view>
+    <view class="btn" @click="handleProduce" v-if=!btnType>生成</view>
     <view class="save-btn" @click="handleSave" v-else>保存</view>
   </view>
 </template>
@@ -80,113 +64,114 @@
 import expectedSelect from '../../component/classManagement/expectedSelect.vue';
 import mpHtml from '../../components/mp-html/components/mp-html/mp-html'
 import pageTime from '../../mixins/pageTime';
-export default{
-  mixins:[pageTime],
-  components:{
+export default {
+  mixins: [pageTime],
+  components: {
     expectedSelect,
     mpHtml
   },
   data() {
     return {
-      list:[
+      list: [
       ],
-      userId:"",
-      form:{
-        courses:[],
-        strength:0
+      userId: "",
+      form: {
+        courses: [],
+        strength: 0
       },
-      type:'',
-      keyword:"",
-      content:""
+      btnType: false,
+      keyword: "",
+      content: ""
     }
   },
-  onLoad(options){
+  onLoad(options) {
     this.userId = uni.getStorageSync('userId')
-    if(options.type == 'setting'){
-      this.type = true
+    if (options.type == 'setting') {
+      this.btnType = true
     }
+
   },
-  mounted(){
+  mounted() {
     this.checkUserId()
     this.setType(1)
   },
   methods: {
-    handleProduce(){
+    handleProduce() {
       console.log(this.form);
-      if(this.list.length === 0){
+      if (this.list.length === 0) {
         uni.showToast({
-          title:'请先生成路径!',
-          icon:"error"
+          title: '请先生成路径!',
+          icon: "error"
         })
         return
       }
-      else if(this.form.courses.length === 0){
+      else if (this.form.courses.length === 0) {
         uni.showToast({
-          title:'请先选择路径',
-          icon:'warning'
+          title: '请先选择路径',
+          icon: 'warning'
         })
       }
-      uni.setStorageSync('aiSetting',this.form)
+      uni.setStorageSync('aiSetting', this.form)
       uni.navigateTo({
-        url:"/pages/classManagement/searchResultProfession"
+        url: "/pages/classManagement/searchResultProfession"
       })
     },
-    handleToNormal(){
+    handleToNormal() {
       uni.navigateTo({
-        url:"/pages/classManagement/aiChats"
+        url: "/pages/classManagement/aiChats"
       })
     },
-    handleSelect(index){
+    handleSelect(index) {
       console.log(this.form.courses);
-      
-      if(index == -1){
+
+      if (index == -1) {
         uni.showToast({
-          title:'出错',
-          icon:'none'
+          title: '出错',
+          icon: 'none'
         })
       }
       //如果被选中的是true，说明要从数组撤出
-      if(this.list[index].isSelect && this.form.courses){
+      if (this.list[index].isSelect && this.form.courses) {
         //过滤后的数组
-        this.form.courses = this.form.courses.filter(item=>item.id!=index)
-        console.log('过滤后的数组',this.form.courses);
+        this.form.courses = this.form.courses.filter(item => item.id != index)
+        console.log('过滤后的数组', this.form.courses);
         this.list[index].isSelect = false
         // const deleteIndex = this.list.findIndex(item=>item.isSelect == true)
       }
-      else if(this.list[index].isSelect == false){
+      else if (this.list[index].isSelect == false) {
         this.form.courses.push(this.list[index])
         this.list[index].isSelect = true
       }
     },
-    handlePath(){
+    handlePath() {
       this.$api.classManagement.learnPath({
-        userId:this.userId,
-        inputs:this.keyword
-      }).then(res=>{
+        userId: this.userId,
+        inputs: this.keyword
+      }).then(res => {
         console.log(res.data);
-        const arr = res.data.map(item=>{
+        const arr = res.data.map(item => {
           const data = JSON.parse(item)
 
           return {
-            id:data.aid,
-            desc:data.title,
-            isSelect:false
+            id: data.aid,
+            desc: data.title,
+            isSelect: false
           }
         })
-        this.$set(this,'list',arr)
+        this.$set(this, 'list', arr)
         this.currentIndex = 0
       })
-      .catch(err=>{
-        console.log(err);
-        
-      })
+        .catch(err => {
+          console.log(err);
+
+        })
     },
-    handleSave(){
+    handleSave() {
       console.log(this.form);
-      
-      uni.setStorageSync('aiSetting',this.form)
+
+      uni.setStorageSync('aiSetting', this.form)
       uni.navigateBack({
-        delta:1
+        delta: 1
       })
     }
   },
@@ -194,31 +179,32 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-.box{
+.box {
   min-height: 100vh;
   width: 100vw;
 
-  .form{
+  .form {
     min-height: 80vh;
 
     /deep/.u-textarea.data-v-81cd9d32 {
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        border: none;
-        width: 90vw;
-        margin: auto;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      border: none;
+      width: 90vw;
+      margin: auto;
     }
-    .select{
+
+    .select {
       width: 100vw;
       height: 600rpx;
     }
   }
 
-  .navigate-box{
+  .navigate-box {
     position: relative;
-    margin:0 0 20rpx 0;
+    margin: 0 0 20rpx 0;
     left: 50%;
-    transform: translate(-50%,-20%);
+    transform: translate(-50%, -20%);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -230,17 +216,17 @@ export default{
     border-radius: 40rpx;
     box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    
+
     &:active {
       transform: translate(-50%, -20%) scale(0.96);
     }
-    
-    image{
+
+    image {
       width: 36rpx;
       height: 36rpx;
       margin-right: 10rpx;
     }
-    
+
     view {
       font-size: 28rpx;
       color: #333;
@@ -248,7 +234,7 @@ export default{
     }
   }
 
-  .btn{
+  .btn {
     width: 60vw;
     height: 90rpx;
     color: #ffffff;
@@ -261,49 +247,51 @@ export default{
     margin: 30rpx auto;
     box-shadow: 0 8rpx 16rpx rgba(91, 106, 240, 0.3);
     transition: all 0.3s ease;
-    
+
     &:active {
       transform: scale(0.96);
       box-shadow: 0 4rpx 8rpx rgba(91, 106, 240, 0.3);
     }
   }
 }
-.green-btn{
-    width: 28vw;
-    height: 70rpx;
-    color: #ffffff;
-    border-radius: 35rpx;
-    background: linear-gradient(135deg, #42b983 0%, #57b985 100%);
-    text-align: center;
-    font-size: 30rpx;
-    font-weight: 500;
-    line-height: 70rpx;
-    margin: 16rpx auto;
-    box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
-    transition: all 0.3s ease;
-    
-    &:active {
-      transform: scale(0.96);
-      box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
-    }
+
+.green-btn {
+  width: 28vw;
+  height: 70rpx;
+  color: #ffffff;
+  border-radius: 35rpx;
+  background: linear-gradient(135deg, #42b983 0%, #57b985 100%);
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 70rpx;
+  margin: 16rpx auto;
+  box-shadow: 0 6rpx 12rpx rgba(87, 185, 133, 0.25);
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.96);
+    box-shadow: 0 3rpx 6rpx rgba(87, 185, 133, 0.25);
+  }
 }
-.save-btn{
-    width: 60vw;
-    height: 90rpx;
-    color: #ffffff;
-    border-radius: 45rpx;
-    background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
-    text-align: center;
-    font-size: 36rpx;
-    font-weight: 500;
-    line-height: 90rpx;
-    margin: 30rpx auto;
-    box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
-    transition: all 0.3s ease;
-    
-    &:active {
-      transform: scale(0.96);
-      box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
-    }
+
+.save-btn {
+  width: 60vw;
+  height: 90rpx;
+  color: #ffffff;
+  border-radius: 45rpx;
+  background: linear-gradient(135deg, #fbc02d 0%, #fbc94a 100%);
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 500;
+  line-height: 90rpx;
+  margin: 30rpx auto;
+  box-shadow: 0 8rpx 16rpx rgba(251, 192, 74, 0.3);
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.96);
+    box-shadow: 0 4rpx 8rpx rgba(251, 192, 74, 0.3);
+  }
 }
 </style>

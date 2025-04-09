@@ -1,36 +1,36 @@
 <template>
-	<view>
-		<view class="card-box" @click="handlePlay">
-			<view class="img-box">
-				<image :src="img" class="img" mode="aspectFill"></image>
-				<view class="overlay"></view>
-			</view>
-			<view class="title">{{ title }}</view>
-		</view>
-	</view>
+  <view>
+    <view class="card-box" @click="handlePlay">
+      <view class="img-box">
+        <image :src="img" class="img" mode="aspectFill"></image>
+        <view class="overlay"></view>
+      </view>
+      <view class="title">{{ title }}</view>
+    </view>
+  </view>
 </template>
 
 <script>
 export default {
-	props: {
-		title: {
-			type: String,
-			required: true
-		},
-		img: {
-			type: String,
-			default: 'http://120.26.132.46:8091/classroom/learnResource/course_default.png'
-		}
-	},
-	data() {
-		return {};
-	},
-	onLoad() {},
-	methods: {
-		handlePlay(){
-			this.$emit('play')
-		}
-	}
+  props: {
+    title: {
+      type: String,
+      required: true
+    },
+    img: {
+      type: String,
+      default: 'http://120.26.132.46:8091/classroom/learnResource/course_default.png'
+    }
+  },
+  data() {
+    return {};
+  },
+  onLoad() { },
+  methods: {
+    handlePlay() {
+      this.$emit('play')
+    }
+  }
 };
 </script>
 
@@ -42,7 +42,7 @@ export default {
   overflow: hidden;
   background-color: #ffffff;
   transition: all 0.3s ease;
-  
+
   &:active {
     transform: scale(0.98);
   }
@@ -52,14 +52,14 @@ export default {
     width: 100%;
     height: 200rpx;
     overflow: hidden;
-    
+
     .img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s ease;
     }
-    
+
     .overlay {
       position: absolute;
       bottom: 0;
@@ -76,7 +76,8 @@ export default {
     font-weight: 500;
     color: #333;
     line-height: 1.4;
-    max-height: 78rpx; /* 确保只显示两行，28rpx * 1.4 * 2 = 78.4rpx */
+    max-height: 65rpx;
+    /* 确保只显示两行，28rpx * 1.4 * 2 = 78.4rpx */
     word-break: break-all;
     display: -webkit-box;
     -webkit-box-orient: vertical;

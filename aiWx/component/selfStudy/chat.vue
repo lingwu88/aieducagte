@@ -432,7 +432,7 @@ export default {
     },
     closeSSE(){
       // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
-        console.log(res);
+        // console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.messageList[this.messageList.length-1].content)
         console.log(this.messageList);
@@ -476,12 +476,12 @@ export default {
 .chat-container {
   width:inherit;
   // height: auto;
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #f8f9fd;
   position: relative;
-  overflow: hidden;
+  overflow: scroll;
   
   .background-decoration {
     position: absolute;

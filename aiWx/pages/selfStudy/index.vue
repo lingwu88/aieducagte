@@ -72,7 +72,7 @@ export default{
     },
     closeSSE(){
       // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
-        console.log(res);
+        // console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.result)
         this.$set(this,'result',word)
