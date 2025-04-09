@@ -166,275 +166,254 @@ export default {
 				this.sendVoiceMessage(res.tempFilePath, res.duration);
 			});
 		},
-  created() {
-    this.initRecorder(),
-    this.initAudioContext()
-  },
-  methods: {
-      back(){
-        uni.navigateBack({
-          delta:1
-        })
-      },
-    change(e) {
-      console.log("e:", e);
-    },
-    initRecorder() {
-      recorderManager.onStart(() => {
-        console.log('onStart');
+		initAudioContext() {
+			innerAudioContext.onEnded(() => {
+				this.isPlaying = false;
+				this.currentVoice = '';
+			});
+		},
+		cancelRecording() {
+			recorderManager.stop();
+			this.isRecording = false;
+		},
+		loadMoreHistory() {
+			if (this.isLoading) return;
 
-        this.isRecording = true
-      })
+			this.isLoading = true;
+			// 模拟加载更多消息
+			setTimeout(() => {
+				// TODO: 实际加载逻辑
+				this.isLoading = false;
+			}, 1000);
+		},
+		handleFocus() {
+			this.isVoiceMode = false;
+		},
+		handleBlur() {
+			this.isVoiceMode = false;
+		},
+		generateAi(query = '') {
+			let text;
+			if (query != '') {
+				text = query;
+				this.result.title = query;
+			} else {
+				text = this.inputText;
+				this.result.title = text;
+			}
+			console.log(this.form);
+			console.log({
+				...this.form,
+				query: text
+			});
 
-      recorderManager.onStop((res) => {
-        console.log('onStop', res);
+			//开启sse
+			this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`, this.logData, undefined, this.closeSSE);
+			this.$api.classManagement
+				.generalAi({
+					...this.form,
+					query: text
+				})
+				.then((res) => {
+					console.log(res);
+					this.inputText = '';
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		//SSE结束回调
+		closeSSE(id) {
+			this.$api.classManagement
+				.endSSE(id)
+				.then((res) => {
+					console.log('关闭');
+					const word = convertMarkdown(this.result.word);
+					this.$set(this.result, 'word', word);
+					this.inputText = '';
+					this.isFinish = true;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		//sse回调函数
+		logData(res) {
+			console.log(res);
+			let data;
+			// console.log("返回数据类型"+typeof res);
 
-        this.isRecording = false
-        this.sendVoiceMessage(res.tempFilePath, res.duration)
-      })
-    },
-    initAudioContext() {
-      innerAudioContext.onEnded(() => {
-        this.isPlaying = false
-        this.currentVoice = ''
-      })
-    },
-    cancelRecording() {
-      recorderManager.stop()
-      this.isRecording = false
-    },
-    loadMoreHistory() {
-      if (this.isLoading) return
+			// 假设 res 是一个字符串，包含了 SSE 消息
+			data = regexSSE(res);
+			//  data = convertMarkdown(data)
+			console.log(data);
 
-      this.isLoading = true
-      // 模拟加载更多消息
-      setTimeout(() => {
-        // TODO: 实际加载逻辑
-        this.isLoading = false
-      }, 1000)
-    },
-    handleFocus() {
-      this.isVoiceMode = false
-    },
-    handleBlur() {
-      this.isVoiceMode = false
-    },
-    generateAi(query=''){
-      let text
-      if(query!=''){
-        text = query
-        this.result.title = query
-      }
-      else{
-        text = this.inputText
-        this.result.title = text
-      }
-      console.log(this.form);
-      console.log({
-        ...this.form,
-        query:text
-      });
+			if (data) {
+				this.result.word += data;
+				// console.log(this.result.word);
+			}
+			// this.result.word += data; // 将提取的数据添加到 result.word
+		},
+		async handleSend() {
+			if (!this.canSend) return;
+			saveConversation(this.inputText)
+				.then((res) => {
+					console.log('保存成功');
+				})
+				.catch((err) => {
+					console.log('保存失败');
+				});
+			this.result.word = '';
+			this.isFinish = false;
+			this.generateAi();
+		},
+		getSessionId() {
+			if (this.form.conversationId != '') {
+				return;
+			}
+			this.$api.classManagement
+				.getSessionId({ userId: this.form.userId, type: 2 })
+				.then((res) => {
+					console.log(res);
+					this.form.conversationId = res.data;
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		},
+		handleCamera() {
+			uni.chooseImage({
+				count: 1,
+				sizeType: ['original', 'compressed'],
+				sourceType: ['album', 'camera'],
+				success: (res) => {
+					console.log('选择的图片:', res.tempFilePaths[0]);
+				}
+			});
+		},
+		playVoice(filePath) {
+			if (this.isPlaying && this.currentVoice === filePath) {
+				innerAudioContext.stop();
+				this.isPlaying = false;
+				this.currentVoice = '';
+				return;
+			}
+			innerAudioContext.src = filePath;
+			innerAudioContext.play();
+			this.isPlaying = true;
+			this.currentVoice = filePath;
+		},
+		previewImage(url) {
+			uni.previewImage({
+				urls: [url]
+			});
+		},
+		switchMode() {
+			this.isVoiceMode = !this.isVoiceMode;
+		},
+		// 开始录音
+		startRecording() {
+			recorderManager.start({
+				duration: 60000,
+				sampleRate: 16000,
+				numberOfChannels: 1,
+				encodeBitRate: 96000,
+				format: 'mp3'
+			});
+		},
+		stopRecording() {
+			recorderManager.stop();
+		},
 
-      //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`,this.logData,undefined,this.closeSSE)
-      this.$api.classManagement.generalAi({
-        ...this.form,
-        query:text
-      }).then(res=>{
-        console.log(res);
-        this.inputText = ''
-      })
-      .catch(err=>{
-        console.log(err);
+		//拿到音频暂存文件
+		sendVoiceMessage(tempFilePath, duration) {
+			console.log('sendVoiceMessage', tempFilePath, duration);
+			this.messageList.push({
+				type: 'user',
+				contentType: 'voice',
+				content: tempFilePath,
+				duration: Math.round(duration / 1000)
+			});
+			this.scrollToBottom();
+		},
+		sendToAI(content) {
+			// TODO: 实现实际的AI服务调用
+			return new Promise((resolve) => {
+				setTimeout(() => {
+					resolve('这是AI的回复消息...');
+				}, 1000);
+			});
+		},
+		//切换收藏
+		async swtichStars() {
+			let data;
+			try {
+				data = await this.toggleStar(this.swtichStar);
+			} catch (e) {
+				data = e;
+			}
 
-      })
-    },
-    //SSE结束回调
-    closeSSE(id){
-      // this.$api.classManagement.endSSE(id).then(res=>{
-        console.log('关闭');
-        const word = convertMarkdown(this.result.word)
-        this.$set(this.result,'word',word)
-        this.inputText = ''
-        this.isFinish = true
-      // })
-      // .catch(err=>{
-      //   console.log(err);
+			uni.showToast({
+				title: data.msg,
+				icon: 'none'
+			});
+			console.log(this.swtichStar);
 
-      // })
-    },
-    //sse回调函数
-    logData(res) {
-      console.log(res);
-      let data
-      // console.log("返回数据类型"+typeof res);
+			if (data.status) {
+				this.swtichStar = !this.swtichStar;
+			}
+			console.log(this.swtichStar);
+		},
+		//控制收藏
+		async toggleStar(status) {
+			//若当前为真，则是取消收藏
+			return new Promise((resolve, reject) => {
+				if (status) {
+					this.$api.classManagement
+						.cancelSave({
+							userId: this.form.userId,
+							planId: this.planId
+						})
+						.then((res) => {
+							console.log(res);
+							resolve({ status: true, msg: '成功取消收藏' });
+							// return  {status:true,msg:"成功取消收藏"}
+						})
+						.catch((err) => {
+							console.log(err);
+							reject({ status: false, msg: '取消收藏失败' + err.data.info });
+							// return {status:false,msg:"取消收藏失败"+err}
+						});
+				}
+				//收藏
+				else {
+					console.log(this.result.word);
 
-        // 假设 res 是一个字符串，包含了 SSE 消息
-       data = regexSSE(res)
-      //  data = convertMarkdown(data)
-       console.log(data);
-
-       if(data){
-        this.result.word +=data
-        // console.log(this.result.word);
-
-       }
-            // this.result.word += data; // 将提取的数据添加到 result.word
-    },
-    async handleSend() {
-      if(!this.canSend) return
-      this.result.word = ''
-      this.isFinish = false
-      this.generateAi()
-    },
-    getSessionId(){
-      if(this.form.conversationId!=''){
-        return
-      }
-      this.$api.classManagement.getSessionId({userId:this.form.userId,type:2}).then(res=>{
-        console.log(res);
-        this.form.conversationId = res.data
-      })
-      .catch(err=>{
-        console.log(err);
-
-      })
-    },
-    handleCamera(){
-      uni.chooseImage({
-        count: 1,
-        sizeType: ['original', 'compressed'],
-        sourceType: ['album', 'camera'],
-        success: (res) => {
-          console.log('选择的图片:', res.tempFilePaths[0])
-        }
-      })
-    },
-    playVoice(filePath) {
-      if(this.isPlaying && this.currentVoice === filePath) {
-        innerAudioContext.stop()
-        this.isPlaying = false
-        this.currentVoice = ''
-        return
-      }
-      innerAudioContext.src = filePath
-      innerAudioContext.play()
-      this.isPlaying = true
-      this.currentVoice = filePath
-    },
-    previewImage(url) {
-      uni.previewImage({
-        urls: [url]
-      })
-    },
-    switchMode() {
-      this.isVoiceMode = !this.isVoiceMode
-    },
-    // 开始录音
-    startRecording() {
-      recorderManager.start({
-        duration: 60000,
-        sampleRate: 16000,
-        numberOfChannels: 1,
-        encodeBitRate: 96000,
-        format: 'mp3'
-      })
-    },
-    stopRecording() {
-      recorderManager.stop()
-    },
-
-    //拿到音频暂存文件
-    sendVoiceMessage(tempFilePath, duration) {
-      console.log('sendVoiceMessage', tempFilePath, duration)
-      this.messageList.push({
-        type: 'user',
-        contentType: 'voice',
-        content: tempFilePath,
-        duration: Math.round(duration / 1000)
-      })
-      this.scrollToBottom()
-    },
-    sendToAI(content) {
-        // TODO: 实现实际的AI服务调用
-        return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve('这是AI的回复消息...')
-        }, 1000)
-      })
-    },
-    //切换收藏
-    async swtichStars(){
-      let data
-      try{
-        data = await this.toggleStar(this.swtichStar)
-      }
-      catch(e){
-        data = e
-      }
-
-      uni.showToast({
-        title:data.msg,
-        icon:'none'
-      })
-      console.log(this.swtichStar);
-
-      if(data.status){
-          this.swtichStar = !this.swtichStar
-      }
-      console.log(this.swtichStar);
-
-    },
-    //控制收藏
-    async toggleStar(status){
-      //若当前为真，则是取消收藏
-      return new Promise((resolve,reject)=>{
-
-        if(status){
-          this.$api.classManagement.cancelSave({
-            userId:this.form.userId,
-            planId:this.planId
-          })
-          .then(res=>{
-            console.log(res);
-            resolve({status:true,msg:"成功取消收藏"})
-            // return  {status:true,msg:"成功取消收藏"}
-          })
-          .catch(err=>{
-            console.log(err);
-            reject({status:false,msg:"取消收藏失败"+err.data.info})
-            // return {status:false,msg:"取消收藏失败"+err}
-          })
-        }
-        //收藏
-        else{
-          console.log(this.result.word);
-
-          this.$api.classManagement.saveGeneral({
-            userId:this.form.userId,
-            plan:this.result.word
-          })
-          .then(res=>{
-            console.log(res);
-            resolve({status:true,msg:"成功收藏"})
-            // return {status:true,msg:"成功收藏"}
-          })
-          .catch(err=>{
-            console.log(err);
-            reject({status:false,msg:"收藏失败"+err})
-            // return {status:false,msg:"收藏失败"+err}
-          })
-        }
-      })
-
-    }
-  },
-  computed: {
-    canSend() {
-      return this.inputText.trim().length > 0;
-    }
-  }
-}
+					this.$api.classManagement
+						.saveGeneral({
+							userId: this.form.userId,
+							plan: this.result.word
+						})
+						.then((res) => {
+							console.log(res);
+							resolve({ status: true, msg: '成功收藏' });
+							// return {status:true,msg:"成功收藏"}
+						})
+						.catch((err) => {
+							console.log(err);
+							reject({ status: false, msg: '收藏失败' + err });
+							// return {status:false,msg:"收藏失败"+err}
+						});
+				}
+			});
+		}
+	},
+	computed: {
+		canSend() {
+			return this.inputText.trim().length > 0;
+		}
+	}
+};
 </script>
 
 <style lang="scss" s scoped>
