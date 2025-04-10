@@ -259,6 +259,13 @@ export default {
     },
     async handleSend() {
       if (!this.canSend) return
+      saveConversation(this.inputText)
+				.then((res) => {
+					console.log('保存成功');
+				})
+				.catch((err) => {
+					console.log('保存失败');
+				});
       this.result.word = ''
       this.isFinish = false
       this.generateAi()
