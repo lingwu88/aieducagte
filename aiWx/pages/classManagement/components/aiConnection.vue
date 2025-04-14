@@ -287,6 +287,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
+  overflow: scroll;
 
   .chat-content {
     flex: 1;

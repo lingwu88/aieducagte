@@ -14,9 +14,9 @@
         :style="getStyle(item.style) || {} "
         :data-index="index"
       >
-        <card 
+        <card  
           :src="item.item.avatar"
-          :content="item.item.content"
+          :content="item.item.ent"
           :title="item.item.title" 
           :author="item.item.userName" 
           :bgColor="item.item.bgColor" 

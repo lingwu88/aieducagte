@@ -228,7 +228,7 @@ export default{
         const newArr = res.data.map(item=>({
 							...item,
 							userAvatar:this.$request.baseUrl+item.userAvatar,
-							tags:(item.tags==="[[]]"||item.tags==="")?[]:item.tags.slice(1, -1).split(',')
+							tags:(item.tags==="[[]]" || item.tags==="[]" || item.tags==="")?[]:item.tags.slice(1, -1).split(',')
 						}))
         this.$set(this,'List',newArr)
         console.log(this.List);

@@ -78,7 +78,7 @@ export default {
 
           this.dataList = this.data.map((item, index) => {
             return {
-              value: Math.floor(item * 100 / sum),
+              value: sum === 0 ? 0 : Math.floor(item * 100 / sum),
               name: this.typeList[index]
             }
           })

@@ -44,12 +44,11 @@ export function delComment(data) {
 
 //发表文章
 export function pushlishArticle(data) {
-  // return request.post(
-  //   '/api/square/postArticle',
-  //   data,
-  //   'application/x-www-form-urlencoded'
-  // )
-  return request.requestUploadForm(data)
+  return request.post(
+    '/api/square/postArticle',
+    data
+  )
+  // return request.requestUploadForm(data)
 }
 
 //删除文章

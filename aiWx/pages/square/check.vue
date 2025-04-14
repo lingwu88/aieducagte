@@ -227,9 +227,9 @@ export default {
 						...item,
 						approved: item.approved,
 						userAvatar: request.baseUrl + item.userAvatar,
-						tags: (item.tags === "[[]]" || item.tags === "") ? [] : item.tags.slice(1, -1).split(',')
+						tags: (item.tags === "[[]]" || item.tags === "[]" || item.tags === "") ? [] : item.tags.slice(1, -1).split(',')
 					}))
-					if (lastId === "") {
+					if (lastId === null) {
 						arr = newArr
 					}
 					else {
@@ -239,9 +239,6 @@ export default {
 
 					this.$set(this, 'list', arr)
 					console.log(this.list);
-
-					console.log('list:' + this.list);
-
 					resolve(res.data?.length ? res.data.length : 0)
 
 				})
@@ -367,7 +364,7 @@ export default {
 
 			this.$api.square.getArticleList({
 				...this.articleListBody,
-				articleId: '',
+				articleId: null,
 				userId: this.userId,
 			}).then(res => {
 				console.log(res);
@@ -375,9 +372,11 @@ export default {
 					...item,
 					approved: item.approved,
 					userAvatar: request.baseUrl + item.userAvatar,
-					tags: item.tags.split(',')
+					tags: (item.tags === "[[]]" || item.tags === "[]" || item.tags === "") ? [] : item.tags.slice(1, -1).split(',')
 				}))
 				this.$set(this, 'list', newArr)
+				console.log(this.list);
+				
 			})
 				.catch(err => {
 					console.log(err);

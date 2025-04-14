@@ -91,7 +91,6 @@
 
 <script>
 import pageTime from '../../mixins/pageTime'
-import FormData from '../../tools/formdata/index'
 export default {
 	mixins: [pageTime],
 	data() {

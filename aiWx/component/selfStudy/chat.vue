@@ -176,10 +176,18 @@ export default {
       scrollHeight: 0 // 添加滚动高度记录
     }
   },
-  created() {
+  async created() {
     // this.initRecorder(),
     // this.initAudioContext()
-    this.getSession()
+    console.log('执行获取会话');
+    
+    let res = await this.getSession()
+    if (!res) {
+      uni.showToast({
+        title: "获取会话id失败",
+        icon: "none"
+      })
+    }
   },
   onShow(){
     this.initRequest()
@@ -196,19 +204,34 @@ export default {
   },
   methods: {
     getSession(){
-			if(this.sessionId!=""){
-				return
-			}
-			this.$api.classManagement
-				.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
-				.then((res) => {
-					console.log(res);
-					this.sessionId = res.data;
-					console.log(this.sessionId);
-				})
-				.catch((err) => {
-					console.log(err);
-				});
+      return new Promise((resolve, reject) => {
+        if (this.sessionId != '') {
+          resolve(true)
+        }
+        this.$api.classManagement.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+          .then(res => {
+            console.log(res);
+            this.sessionId = res.data
+            resolve(true)
+          })
+          .catch(err => {
+            console.log(err);
+            reject(false)
+          })
+      })
+			// if(this.sessionId!=""){
+			// 	return
+			// }
+			// this.$api.classManagement
+			// 	.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+			// 	.then((res) => {
+			// 		console.log(res);
+			// 		this.sessionId = res.data;
+			// 		console.log(this.sessionId);
+			// 	})
+			// 	.catch((err) => {
+			// 		console.log(err);
+			// 	});
 		},
     toggleShow(){
       this.$emit('controlSetting')

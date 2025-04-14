@@ -149,7 +149,7 @@ export default {
           this.$set(this, 'info', {
             ...res.data,
             userAvatar: this.$request.baseUrl + res.data.userAvatar,
-            tags: (res.data.tags === "[[]]" || res.data.tags === "") ? [] : res.data.tags.slice(1, -1).split(',')
+            tags: (res.data.tags === "[[]]" || res.data.tags === "[]" || res.data.tags === "") ? [] : res.data.tags.slice(1, -1).split(',')
           })
         })
 
