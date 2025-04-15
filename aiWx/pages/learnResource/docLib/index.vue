@@ -164,7 +164,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				let res_Server_Handled = {
 					type: 'raw',
-					targetUrl: 'https://fugui.mynatapp.cc/ai-assist/DocLibSource',
+					targetUrl: 'http://120.24.243.227:13100/api/learning-resources/doc-lib-resource',
 					code: 0,
 					message: '',
 					res_Server_Unhandled: {}

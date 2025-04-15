@@ -11,7 +11,7 @@ export const saveConversation = (inputText) => {
 
 					// 第二步：使用 code 作为 userid 保存对话
 					wx.request({
-						url: 'http://fugui.mynatapp.cc/api/save-conversation', // 后端 API 地址
+						url: 'http://120.24.243.227:13100/api/conversation/save', // 后端 API 地址
 						method: 'POST',
 						header: {
 							'content-type': 'application/json'
