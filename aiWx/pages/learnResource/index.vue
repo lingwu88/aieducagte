@@ -74,8 +74,8 @@ export default {
         {
           description: "题库刷题",
           subtitle: "巩固知识点，提高能力",
-          img: this.$request.baseUrl + "/classroom/learnResource/question.png",
-          url: "/pages/questionBank/index",
+          img: this.$request.baseUrl + "/classroom/learnResourse/question.png",
+          url: "../questionBank/index",
         },
       ],
     };
@@ -92,6 +92,13 @@ export default {
     },
     navigateTo(item) {
       if (item.url) {
+        if (item.description === "题库刷题") {
+          uni.showToast({
+            title: "功能开发中，敬请期待",
+            icon: "none",
+          });
+          return;
+        }
         uni.navigateTo({
           url: item.url,
         });
