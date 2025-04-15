@@ -1,73 +1,87 @@
 <template>
-	<view class="container">
-		<!-- 背景装饰元素 -->
-		<view class="bg-decoration bg-circle-1"></view>
-		<view class="bg-decoration bg-circle-2"></view>
-		<view class="bg-decoration bg-wave"></view>
-		<view class="bg-decoration bg-circle-3"></view>
-		<view class="bg-decoration bg-circle-4"></view>
-		<view class="bg-decoration bg-dots"></view>
-		<view class="bg-decoration bg-pattern"></view>
-		
-		<!-- 页面标题区域 -->
-		<view class="header">
-			<text class="title">学习资源</text>
-			<text class="subtitle">丰富多样的学习工具与资料</text>
-		</view>
-		
-		<!-- AI变文卡片 -->
-		<view class="ai-card" @tap="handleto(1)">
-			<view class="ai-card-content">
-				<view class="ai-card-left">
-					<text class="ai-card-title">AI变文</text>
-					<text class="ai-card-subtitle">智能改写，一键生成精彩内容</text>
-					<text class="ai-card-action">点击体验 ></text>
-				</view>
-				<view class="ai-card-right">
-					<image :src="'http://120.26.132.46:8091/classroom/learnResource/aiWrite.png'" class="ai-card-image"></image>
-				</view>
-			</view>
-		</view>
-		
-		<!-- 底部资源卡片 -->
-		<view class="resource-cards">
-			<view class="resource-card" v-for="(item,index) in list" :key="index" @tap="navigateTo(item)">
-				<view class="resource-card-icon">
-					<image :src="item.img" class="resource-card-image"></image>
-				</view>
-				<view class="resource-card-content">
-					<text class="resource-card-title">{{item.description}}</text>
-					<text class="resource-card-subtitle">{{item.subtitle}}</text>
-				</view>
-			</view>
-		</view>
-	</view>
+  <view class="container">
+    <!-- 背景装饰元素 -->
+    <view class="bg-decoration bg-circle-1"></view>
+    <view class="bg-decoration bg-circle-2"></view>
+    <view class="bg-decoration bg-wave"></view>
+    <view class="bg-decoration bg-circle-3"></view>
+    <view class="bg-decoration bg-circle-4"></view>
+    <view class="bg-decoration bg-dots"></view>
+    <view class="bg-decoration bg-pattern"></view>
+
+    <!-- 页面标题区域 -->
+    <view class="header">
+      <text class="title">学习资源</text>
+      <text class="subtitle">丰富多样的学习工具与资料</text>
+    </view>
+
+    <!-- AI变文卡片 -->
+    <view class="ai-card" @tap="handleto(1)">
+      <view class="ai-card-content">
+        <view class="ai-card-left">
+          <text class="ai-card-title">AI变文</text>
+          <text class="ai-card-subtitle">智能改写，一键生成精彩内容</text>
+          <text class="ai-card-action">点击体验 ></text>
+        </view>
+        <view class="ai-card-right">
+          <image
+            :src="'http://120.26.132.46:8091/classroom/learnResource/aiWrite.png'"
+            class="ai-card-image"
+          ></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部资源卡片 -->
+    <view class="resource-cards">
+      <view
+        class="resource-card"
+        v-for="(item, index) in list"
+        :key="index"
+        @tap="navigateTo(item)"
+      >
+        <view class="resource-card-icon">
+          <image :src="item.img" class="resource-card-image"></image>
+        </view>
+        <view class="resource-card-content">
+          <text class="resource-card-title">{{ item.description }}</text>
+          <text class="resource-card-subtitle">{{ item.subtitle }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
-import pageTime from '../../mixins/pageTime';
+import pageTime from "../../mixins/pageTime";
 export default {
-  mixins:[pageTime],
+  mixins: [pageTime],
   data() {
     return {
       list: [
         {
           description: "课件库",
           subtitle: "AI规划的高质量课程",
-          img: this.$request.baseUrl+"/classroom/learnResource/book.png",
-          url: "/pages/learnResource/courseLibrary"
+          img: this.$request.baseUrl + "/classroom/learnResource/book.png",
+          url: "/pages/learnResource/courseLibrary",
         },
         {
           description: "资料库",
           subtitle: "海量学习资料汇总",
-          img: this.$request.baseUrl+"/classroom/learnResource/essay.png",
-          url: "/pages/learnResource/docLib/index"
-        }
-      ]
-    }
+          img: this.$request.baseUrl + "/classroom/learnResource/essay.png",
+          url: "/pages/learnResource/docLib/index",
+        },
+        {
+          description: "题库刷题",
+          subtitle: "巩固知识点，提高能力",
+          img: this.$request.baseUrl + "/classroom/learnResource/question.png",
+          url: "/pages/questionBank/index",
+        },
+      ],
+    };
   },
-  mounted(){
-    this.checkUserId()
+  mounted() {
+    this.checkUserId();
   },
   onLoad() {},
   methods: {
@@ -79,12 +93,12 @@ export default {
     navigateTo(item) {
       if (item.url) {
         uni.navigateTo({
-          url: item.url
+          url: item.url,
         });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -110,7 +124,11 @@ export default {
   width: 400rpx;
   height: 400rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(91, 106, 240, 0.15), rgba(123, 137, 255, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(91, 106, 240, 0.15),
+    rgba(123, 137, 255, 0.08)
+  );
   top: -100rpx;
   right: -150rpx;
   animation: float 8s ease-in-out infinite;
@@ -120,7 +138,11 @@ export default {
   width: 300rpx;
   height: 300rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(123, 137, 255, 0.1), rgba(91, 106, 240, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(123, 137, 255, 0.1),
+    rgba(91, 106, 240, 0.05)
+  );
   bottom: 10%;
   left: -100rpx;
   animation: float 10s ease-in-out infinite reverse;
@@ -130,7 +152,11 @@ export default {
   width: 200rpx;
   height: 200rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(91, 106, 240, 0.1), rgba(123, 137, 255, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(91, 106, 240, 0.1),
+    rgba(123, 137, 255, 0.05)
+  );
   top: 20%;
   left: -50rpx;
   animation: float 12s ease-in-out infinite;
@@ -140,7 +166,11 @@ export default {
   width: 250rpx;
   height: 250rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(123, 137, 255, 0.1), rgba(91, 106, 240, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(123, 137, 255, 0.1),
+    rgba(91, 106, 240, 0.05)
+  );
   bottom: 20%;
   right: -50rpx;
   animation: float 15s ease-in-out infinite reverse;
@@ -149,7 +179,10 @@ export default {
 .bg-dots {
   width: 200rpx;
   height: 300rpx;
-  background-image: radial-gradient(rgba(91, 106, 240, 0.2) 2px, transparent 2px);
+  background-image: radial-gradient(
+    rgba(91, 106, 240, 0.2) 2px,
+    transparent 2px
+  );
   background-size: 18px 18px;
   top: 40%;
   right: 10%;
@@ -159,8 +192,11 @@ export default {
 .bg-pattern {
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(rgba(91, 106, 240, 0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(91, 106, 240, 0.03) 1px, transparent 1px);
+  background-image: linear-gradient(
+      rgba(91, 106, 240, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(91, 106, 240, 0.03) 1px, transparent 1px);
   background-size: 30px 30px;
   opacity: 0.5;
 }
@@ -168,7 +204,11 @@ export default {
 .bg-wave {
   width: 100vw;
   height: 200rpx;
-  background: linear-gradient(135deg, rgba(91, 106, 240, 0.03), rgba(123, 137, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    rgba(91, 106, 240, 0.03),
+    rgba(123, 137, 255, 0.06)
+  );
   transform: skewY(-3deg);
   top: 30%;
   left: 0;
@@ -293,6 +333,7 @@ export default {
   width: 95%;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
   margin-top: 20rpx;
   position: relative;
@@ -300,7 +341,7 @@ export default {
 }
 
 .resource-card {
-  width: 40%;
+  width: 30%;
   background-color: #fff;
   border-radius: 20rpx;
   padding: 30rpx;
@@ -309,6 +350,7 @@ export default {
   flex-direction: column;
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 20rpx;
 }
 
 .resource-card:active {
