@@ -17,12 +17,12 @@ function regexSSE(res) {
   // .filter(Boolean)
   // .join(' ');
   let result = res
-  .split(/\r?\n/) // 兼容不同操作系统的换行符（\n 或 \r\n）
-  .map(line => line.replace(/^(retry:\d+|data:)\s*/, '').trim())
-  .filter(Boolean)
-  .join(' ')        // 初步拼接
-  .replace(/\s+/g, ' ') // 合并连续空格为一个
-  .trim();          // 去除首尾空格
+    .split(/\r?\n/) // 兼容不同操作系统的换行符（\n 或 \r\n）
+    .map(line => line.replace(/^(retry:\d+|data:)\s*/, '').trim())
+    .filter(Boolean)
+    .join('')        // 初步拼接
+    // .replace(/\s+/g, ' ') // 合并连续空格为一个
+    // .trim();          // 去除首尾空格
   console.log(result);
   //提取出自打第一个data起的所有数据
   // const dataPattern = /data:([\s\S]*)/gm; // 匹配以 "data: " 开头的行
@@ -36,7 +36,7 @@ function regexSSE(res) {
   //   //以两个换行符为分割
   //   let str = data.split(/\n\n/)
   //   for (let item of str) {
-      
+
   //     //包含retry时，才需要正则提取，否则直接添加
   //     if (item.includes("retry")) {
   //       console.log('包含retry');
@@ -49,7 +49,7 @@ function regexSSE(res) {
   //       result += item
   //   }
   // }
-  
+
   return result
   // return null
 }

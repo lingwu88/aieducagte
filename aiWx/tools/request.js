@@ -15,7 +15,7 @@ function postParams(url, params, contentType, token) {
 }
 
 function get(url, contentType, token, ...args) {
-  return request(baseUrl + url, undefined, undefined, "GET", contentType, token, args)
+  return request(baseUrl + url, undefined, undefined, "GET", contentType, undefined, args)
 }
 
 function postFile(url, data, contentType, token, responseType) {
@@ -26,7 +26,7 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
   return new Promise((resolve, reject) => {
     console.log(args.map(item => { console.log(...item) }));
     uni.showLoading({
-      title:"加载中"
+      title: "加载中"
     })
     uni.request({
       url,
@@ -35,23 +35,24 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
       params,
       timeout,
       header: {
-        Authorization: token ? access_token : '',
+        Authorization: token ? uni.getStorageSync('accessToken') : '',
+        // userId: uni.getStorageSync('userId'),
         contentType,
       },
       ...args,
       success(res) {
         uni.hideLoading()
         console.log(res)
-        if (res.statusCode === 200  && res?.data.code === 200) {
+        if (res.statusCode === 200 && res?.data.code === 200) {
           resolve(res.data)
         }
-        else if(res.statusCode === 200 && res.data === ''){
+        else if (res.statusCode === 200 && res.data === '') {
           resolve(res)
         }
         //如果响应失败
-        else if(res.statusCode !=200){
+        else if (res.statusCode != 200) {
           uni.showToast({
-            title:res.data.info?res.data.info:'系统繁忙',
+            title: res.data.info ? res.data.info : '系统繁忙',
             icon: 'error'
           })
           reject(res)
@@ -59,7 +60,7 @@ function request(url, params = {}, data = {}, method = "POST", contentType = "ap
         //响应成功，但状态码非200
         else {
           uni.showToast({
-            title: res.data.info?res.data.info:'系统繁忙',
+            title: res.data.info ? res.data.info : '系统繁忙',
             icon: 'error'
           })
           reject(res.data.info)
@@ -91,7 +92,8 @@ function requestPostFile(url, data = {}, method = "POST", contentType = "applica
       timeout,
       responseType: 'arraybuffer',
       header: {
-        Authorization: token ? access_token : '',
+        Authorization: token ? uni.getStorageSync('accessToken') : '',
+        // userId: uni.getStorageSync('userId'),
         contentType,
       },
       // responseType:'blob'

@@ -279,7 +279,7 @@ export default{
     padding:10rpx;
     font-size: 32rpx;
     color: #ffffff;
-    background-color: #9176da;
+    background-color: #64C88C;
     border-radius: 10rpx;
     width: fit-content;
   }

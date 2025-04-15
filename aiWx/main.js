@@ -29,6 +29,8 @@ Vue.mixin({
 Vue.prototype.$api = api
 Vue.prototype.$request = request
 app.$mount()
+//初始化高亮md设置
+initHighLight()
 
 // #endif
 
@@ -41,6 +43,3 @@ export function createApp() {
   }
 }
 // #endif
-
-//初始化高亮md设置
-initHighLight()

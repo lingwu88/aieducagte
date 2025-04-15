@@ -8,7 +8,7 @@
     <view class="overlay"></view>
     <view class="box">
       <view class="header">
-        <image class="logo" :src="this.$request.baseUrl+'/index.png'" lazy-load="false" />
+        <image class="logo" :src="this.$request.baseUrl + '/index.png'" lazy-load="false" />
         <view class="teamName">智趣学坊</view>
       </view>
       <view class="footer">
@@ -34,7 +34,7 @@ export default {
       checked: false
     };
   },
-  onLoad() {},
+  onLoad() { },
   methods: {
     async login() {
       if (!this.checked) {
@@ -54,7 +54,7 @@ export default {
           uni.setStorageSync("accessToken", res.data.accessToken);
           uni.setStorageSync("refreshToken", res.data.refreshToken);
           uni.showToast({
-            title:"登录成功"
+            title: "登录成功"
           })
           uni.switchTab({
             url: "/pages/index/index"
@@ -186,11 +186,11 @@ export default {
 .check {
   display: flex;
   flex-direction: row;
-  align-items: center; 
+  align-items: center;
   justify-content: center;
 
   .agreement {
-    margin-left: 10rpx; 
+    margin-left: 10rpx;
     font-size: 28rpx;
     color: #FFFFFF;
     font-family: "Source Han Sans", sans-serif;
