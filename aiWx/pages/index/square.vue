@@ -62,6 +62,9 @@ import pageTime from '../../mixins/pageTime.js'
 						]
 				}
 		},
+		onShow(){
+			uni.$emit('squareEnter')
+		},
 		methods: {
 			changeColumn(width){
 				if (width > 960) {

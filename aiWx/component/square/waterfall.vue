@@ -89,6 +89,7 @@ export default {
       }
     }
   },
+  
   methods: {
     handleClick(id) {
       // console.log('这是id',id);
@@ -436,6 +437,10 @@ export default {
       this.userId = uni.getStorageSync('userId')
       // console.log(this.userId);
       console.log('赋值', this.userId);
+      // 监听squareEnter事件
+      uni.$on('squareEnter', () => {
+        this.init()
+      });
     }
 
     // this.fContainerRef = uni.createSelectorQuery().in(this).select('.waterfall-container');
@@ -449,6 +454,7 @@ export default {
   },
   beforeDestroy() {
     this.throttleScroll = null
+    uni.$off('squareEnter')
   },
 }
 </script>
@@ -473,6 +479,8 @@ export default {
   &-item {
     width: 45%;
     max-height: 250rpx;
+    min-height: 150rpx;
+    flex: 0 1 auto; /* 禁止增长，允许收缩，高度由内容决定 */
     overflow: scroll;
     margin: 0 auto;
   }
