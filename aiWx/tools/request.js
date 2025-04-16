@@ -25,9 +25,12 @@ function postFile(url, data, contentType, token, responseType) {
 function request(url, params = {}, data = {}, method = "POST", contentType = "application/json", token = true, ...args) {
   return new Promise((resolve, reject) => {
     console.log(args.map(item => { console.log(...item) }));
-    uni.showLoading({
-      title: "加载中"
-    })
+	if(!url.includes("createSse")&&!url.includes("general-learning-plan")){
+		uni.showLoading({
+		  title: "加载中"
+		})
+	}
+    
     uni.request({
       url,
       method,
