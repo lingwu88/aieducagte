@@ -92,7 +92,7 @@ export default {
 
 						// 第二步：使用 code 作为 userid 保存对话
 						wx.request({
-							url: 'https://fugui.mynatapp.cc/api/get-conversations/analyze',
+							url: 'http://120.24.243.227:13100/api/conversation/analyze',
 							method: 'POST',
 							data: {
 								userCode: code,
