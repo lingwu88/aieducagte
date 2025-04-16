@@ -5,8 +5,7 @@
 			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
 		-->
-    <scroll-view class="chat-content" scroll-y scroll-top="scrollTop" :scroll-into-view="lastMessageId"
-      @scrolltoupper="loadMoreHistory">
+    <scroll-view class="chat-content" :scroll-y="true"  :scroll-top="scrollInstance" >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
         <text>加载中...</text>
@@ -51,7 +50,7 @@ export default {
   data() {
     return {
       scrollTop: 0,
-      lastMessageId: '',
+      // lastMessageId: '',
       isLoading: false,
       isPlaying: false,
       currentVoice: '',
@@ -60,17 +59,43 @@ export default {
       isRecording: false,
       page: 1,
       isAiTyping: false,
-      requestbody: {}
+      requestbody: {},
+      initHeight:0,
+      currentHeight:0,
+      // scrollInstance:0
     }
   },
   created() {
     this.initRecorder(),
-      this.initAudioContext()
+    this.initAudioContext()
+    //得到初始化高度
+    const query = uni.createSelectorQuery().in(this);
+    query
+      .select(".chat-container")
+      .boundingClientRect((data) => {
+        this.initHeight = data.height
+        // console.log(data);
+        console.log('初始化高度',this.initHeight);
+        
+        
+      })
+      .exec();
   },
   onShow() {
     this.initRequest()
   },
   methods: {
+    queryTextHeight() {
+      const query = uni.createSelectorQuery().in(this);
+      query
+        .select(".word")
+        .boundingClientRect((data) => {
+          // console.log("节点离页面顶部的距离为" + data.top);
+          // console.log('当前滚动距离',JSON.stringify(data));
+          this.currentHeight = data.height
+        })
+        .exec();
+    },
     initRequest() {
       let body = uni.getStorageSync('aiSetting')
       this.requestbody = {
@@ -128,48 +153,48 @@ export default {
     handleBlur() {
       this.isVoiceMode = false
     },
-    async handleSend() {
-      if (!this.canSend) return
+    // async handleSend() {
+    //   if (!this.canSend) return
 
-      const userMessage = {
-        type: 'user',
-        contentType: 'text',
-        content: this.inputText,
-        status: 'sending'
-      }
-      this.$emit('push', userMessage)
-      // this.messageList.push(userMessage)
-      this.scrollToBottom()
+    //   const userMessage = {
+    //     type: 'user',
+    //     contentType: 'text',
+    //     content: this.inputText,
+    //     status: 'sending'
+    //   }
+    //   this.$emit('push', userMessage)
+    //   // this.messageList.push(userMessage)
+    //   this.scrollToBottom()
 
-      this.inputText = ''
+    //   this.inputText = ''
 
-      // 显示AI输入状态
-      try {
-        this.isAiTyping = true
-        const response = await this.sendToAI(userMessage.content)
-        userMessage.status = 'sent'
-        this.$emit('push', {
-          type: 'ai',
-          contentType: 'text',
-          content: response
-        })
-        // this.messageList.push()
+    //   // 显示AI输入状态
+    //   try {
+    //     this.isAiTyping = true
+    //     const response = await this.sendToAI(userMessage.content)
+    //     userMessage.status = 'sent'
+    //     this.$emit('push', {
+    //       type: 'ai',
+    //       contentType: 'text',
+    //       content: response
+    //     })
+    //     // this.messageList.push()
 
-        //ai应答后跳转
-        // uni.navigateTo({
-        //   url:"/pages/classManagement/searchResult"
-        // })
-      } catch (error) {
-        userMessage.status = 'failed'
-        uni.showToast({
-          title: '发送失败',
-          icon: 'none'
-        })
-      } finally {
-        this.isAiTyping = false
-        this.scrollToBottom()
-      }
-    },
+    //     //ai应答后跳转
+    //     // uni.navigateTo({
+    //     //   url:"/pages/classManagement/searchResult"
+    //     // })
+    //   } catch (error) {
+    //     userMessage.status = 'failed'
+    //     uni.showToast({
+    //       title: '发送失败',
+    //       icon: 'none'
+    //     })
+    //   } finally {
+    //     this.isAiTyping = false
+    //     this.scrollToBottom()
+    //   }
+    // },
     handleCamera() {
       uni.chooseImage({
         count: 1,
@@ -236,11 +261,7 @@ export default {
       })
     },
     scrollToBottom() {
-      console.log(this.messageList.length);
-
-      this.$nextTick(() => {
-        this.lastMessageId = 'msg-' + (this.messageList.length - 1)
-      })
+      
     },
     sendToAI(content) {
       // let body = uni.getStorageSync('aiSetting')
@@ -275,6 +296,11 @@ export default {
   computed: {
     canSend() {
       return this.inputText.trim().length > 0
+    },
+    scrollInstance(){
+      console.log('当前scrollTop',this.currentHeight-this.initHeight);
+      
+      return this.currentHeight>this.initHeight?this.currentHeight-this.initHeight:0
     }
   }
 }
@@ -283,15 +309,17 @@ export default {
 <style lang="scss" s scoped>
 .chat-container {
   width: inherit;
-  min-height: 100vh;
+  height: calc(100vh - 240rpx);
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
-  overflow: scroll;
+  // overflow: scroll;
 
   .chat-content {
     flex: 1;
+    height: 100%;
     padding: 20rpx;
+    box-sizing: border-box;
 
     .loading-more {
       padding: 20rpx;
