@@ -57,11 +57,6 @@ function postFile(url, data, contentType, token, responseType) {
 
 function request(url, params = {}, data = {}, method = "POST", contentType = "application/json", token, ...args) {
   return new Promise((resolve, reject) => {
-    uni.showLoading({
-      title: "加载中"
-    })
-
-    const requestConfig = {
       url,
       method,
       data,
