@@ -2,13 +2,13 @@
 	<view>
 		<view class="result-box">
 			<!-- 背景装饰元素 -->
-			<view class="background-elements">
+			<!-- <view class="background-elements">
 				<view class="bg-circle circle-1"></view>
 				<view class="bg-circle circle-2"></view>
 				<view class="bg-circle circle-3"></view>
 				<view class="bg-pattern pattern-1"></view>
 				<view class="bg-pattern pattern-2"></view>
-			</view>
+			</view> -->
 			
 			<!-- <ChatSession v-show="showNavigator" class="menu-navigator" @changeSession="toggleSession"></ChatSession>
 			<view class="control" :class="{'control-selected':showNavigator}">
@@ -375,7 +375,7 @@ export default{
 <style scoped lang="scss">
 .result-box{
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -383,14 +383,14 @@ export default{
   align-items: center;
   background: linear-gradient(135deg, #f8f9fd 0%, #f0f2ff 100%);
   position: relative;
-  overflow: hidden;
+  overflow: scroll;
   
   .background-elements {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
     pointer-events: none;
     z-index: 0;
     

@@ -124,19 +124,26 @@ export default {
           //   })
           //   return
           // }
-          console.log(res);
+          // wx.shareFileMessage({
+          //   filePath: res.tempFilePaths[0],
+          //   success() {
+          //     console.log('分享成功');
 
-          this.$set(this, 'label', {
-            ...this.label,
-            avatar: res.tempFilePaths[0]
-          })
-          console.log(this.label);
+          //   },
+          //   fail: console.error,
+          // })
+          // console.log(res.tempFilePaths[0])
+          const file = res.tempFilePaths[0]
 
           //更新头像
           this.$api.personal.uploadAvatar({
             userId: this.userId,
-            file: this.label.avatar
+            file: file
           }).then(res => {
+            this.$set(this, 'label', {
+              ...this.label,
+              avatar: file
+            })
             console.log(res);
           })
             .catch(err => {

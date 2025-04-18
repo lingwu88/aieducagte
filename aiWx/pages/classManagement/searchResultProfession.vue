@@ -22,7 +22,7 @@
       <!-- <image src="/static/classroom/classManagement/control.png" class="control-icon" @click="showNavigator=!showNavigator"></image> -->
     </view>
     <view class="connection-container">
-      <aiConnection :content="result" class="connection" :messageList="list" @push="handlePush" :userAvatar="img"></aiConnection>
+      <aiConnection :content="result" ref="aiResult" class="connection" :messageList="list" @push="handlePush" :userAvatar="img"></aiConnection>
     </view>
   </view>
 </template>
@@ -86,7 +86,7 @@ export default{
     },
     closeSSE(){
       // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
-        console.log(res);
+        // console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.result)
         this.$set(this,'result',word)
@@ -104,6 +104,9 @@ export default{
        const data = regexSSE(res)
        if(data){
         this.result +=data
+        this.$nextTick(()=>{
+          this.$refs.aiResult.queryTextHeight()
+        })
        }
             // this.result.word += data; // 将提取的数据添加到 result.word
     },
@@ -250,7 +253,8 @@ export default{
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    max-height: 80vh;
+    // max-height: 80vh;
+    // overflow:scroll
   }
   
   .control{
@@ -269,14 +273,14 @@ export default{
 
 .connection{
   flex: 1;
-  min-height: 70vh;
-  max-height: 75vh;
+  // min-height: 70vh;
+  // max-height: 75vh;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(91, 106, 240, 0.1);
-  overflow: hidden;
+  // overflow: hidden;
   margin-bottom: 30rpx;
 }
 

@@ -5,141 +5,18 @@
 			scroll-into-view 滚动到指定位置 ——似乎不生效
 			scroll-top 竖直滚动条的位置
 		-->
-    <scroll-view 
-      class="chat-content"
-      scroll-y
-      scroll-top="scrollTop" 
-      :scroll-into-view="lastMessageId"
-      @scrolltoupper="loadMoreHistory"
-      >
+    <scroll-view class="chat-content" :scroll-y="true"  :scroll-top="scrollInstance" >
       <!-- 加载更多 -->
       <view class="loading-more" v-if="isLoading">
         <text>加载中...</text>
       </view>
 
       <view class="content">
-      <!-- <view class="content-title">{{ result.title }}</view> -->
-      <!-- <view class="second">
-        <view class="base">基于{{ result.base }}篇参考资料</view>
-        <view class="select">
-          <uni-data-select
-            v-model="value"
-            :localdata="range"
-            @change="change"
-          ></uni-data-select>
+        <view class="word">
+          <mp-html :content="content" />
         </view>
-      </view> -->
-      <view class="word">
-        <mp-html :content="content"/>
       </view>
-    </view>
-      <!-- 消息列表 -->
-      <!-- <view class="message-list">
-        <view
-          v-for="(item, index) in messageList"
-          :key="index"
-          :id="'msg-' + index"
-          class="message-item"
-          :class="item.type"
-        > -->
-          <!-- 头像 -->
-          <!-- <image 
-            :src="item.type === 'user' ? userAvatar : aiAvatar" 
-            class="avatar" 
-          /> -->
-          <!-- 消息内容 -->
-          <!-- <view class="message-content"> -->
-            <!-- 文本消息 -->
-            <!-- <view v-if="item.contentType === 'text'" class="text-content">
-              {{ item.content }}
-            </view> -->
-
-            <!-- 图片消息 -->
-             <!-- <image 
-              v-else-if="item.contentType === 'image'"
-              class="image-content"
-              :src="item.content"
-              mode="widthFix"
-              @tap="previewImage(item.content)"
-            /> -->
-
-            <!-- 语音消息 -->
-            <!-- <view 
-              v-else-if="item.contentType === 'voice'"
-              class="voice-content"
-              @tap="playVoice(item.content)"
-            >
-              <uni-icons :type="isPlaying && currentVoice === item.content ? 'sound-filled' : 'sound'" size="20"></uni-icons>
-              <text>{{ item.duration }}″</text>
-            </view>
-          </view> -->
-
-        <!-- 消息状态 -->
-          <!-- <view class="message-status" v-if="item.type === 'user'">
-            <text v-if="item.status === 'sending'">发送中...</text>
-            <text v-else-if="item.status === 'failed'" class="error">发送失败</text>
-          </view>
-        </view> -->
-
-        <!-- AI 输入中状态 -->
-        <!-- <view class="ai-typing" v-if="isAiTyping">
-          <image class="avatar" :src="aiAvatar"/>
-          <view class="typing-indicator">
-            <view class="dot"></view>
-            <view class="dot"></view>
-            <view class="dot"></view>
-          </view>
-        </view> -->
-      <!-- </view> -->
     </scroll-view>
-
-
-    <!-- <view class="navigate-box" @click="handleToProfession">
-      <image src="/static/classroom/classManagement/professional.png"></image>
-      <view>专业模式</view>
-    </view> -->
-
-    <!-- <view class="input-area">
-      <view class="input">
-        <view class="mode-swtich" @tap="switchMode">
-          <uni-icons :type="isVoiceMode ? 'chat' : 'mic'" size="24"></uni-icons>
-        </view>
-        <view class="input-box" v-if="!isVoiceMode">
-          <textarea
-            v-model="inputText"
-            :adjust-position="false"
-            :cursor-spacing="20"
-            auto-height
-            :show-confirm-bar="false"
-            placeholder="请输入内容..."
-            :maxlength="-1"
-            @focus="handleFocus"
-            @blur="handleBlur"
-            class="input-textarea"
-          />
-          <uni-icons type="camera" size="28" @click="handleCamera"></uni-icons>
-        </view>
-        
-        <view 
-          v-else
-          class="voice-input"
-          :class="{ recording: isRecording }"
-          @touchstart="startRecording"
-          @touchend="stopRecording"
-          @touchcancel="cancelRecording"
-        >
-          {{ isRecording ? '松开发送' : '按住说话' }}
-        </view>
-      </view>
-      <view 
-          class="send-btn"
-          :class="{ active: canSend }"
-          @tap="handleSend"
-          v-if="!isVoiceMode"
-        >
-          发送
-        </view>
-    </view> -->
   </view>
 
 </template>
@@ -150,7 +27,7 @@ const recorderManager = uni.getRecorderManager()
 //innerAudioContext 音频播放器 ，用来播放音频
 const innerAudioContext = uni.createInnerAudioContext()
 export default {
-  name:"aiConnection",
+  name: "aiConnection",
   props: {
     userAvatar: {
       type: String,
@@ -160,20 +37,20 @@ export default {
       type: String,
       default: 'http://120.26.132.46:8091/my/avatar.png'
     },
-    messageList:{
-      type:Array,
-      default:[]
+    messageList: {
+      type: Array,
+      default: []
     },
-    content:{
-      type:String,
-      default:"",
-      required:true
+    content: {
+      type: String,
+      default: "",
+      required: true
     }
   },
   data() {
     return {
       scrollTop: 0,
-      lastMessageId: '',
+      // lastMessageId: '',
       isLoading: false,
       isPlaying: false,
       currentVoice: '',
@@ -182,39 +59,65 @@ export default {
       isRecording: false,
       page: 1,
       isAiTyping: false,
-      requestbody:{}
+      requestbody: {},
+      initHeight:0,
+      currentHeight:0,
+      // scrollInstance:0
     }
   },
   created() {
     this.initRecorder(),
     this.initAudioContext()
+    //得到初始化高度
+    const query = uni.createSelectorQuery().in(this);
+    query
+      .select(".chat-container")
+      .boundingClientRect((data) => {
+        this.initHeight = data.height
+        // console.log(data);
+        console.log('初始化高度',this.initHeight);
+        
+        
+      })
+      .exec();
   },
-  onShow(){
+  onShow() {
     this.initRequest()
   },
   methods: {
-    initRequest(){
+    queryTextHeight() {
+      const query = uni.createSelectorQuery().in(this);
+      query
+        .select(".word")
+        .boundingClientRect((data) => {
+          // console.log("节点离页面顶部的距离为" + data.top);
+          // console.log('当前滚动距离',JSON.stringify(data));
+          this.currentHeight = data.height
+        })
+        .exec();
+    },
+    initRequest() {
       let body = uni.getStorageSync('aiSetting')
       this.requestbody = {
         ...body,
-        userId:uni.getStorageSync('userId'),
-        courses:body.courses.map(item=>(
+        userId: uni.getStorageSync('userId'),
+        courses: body.courses.map(item => (
           item.desc
         ))
-        
+
       }
       console.log(this.requestbody);
     },
     initRecorder() {
       recorderManager.onStart(() => {
         console.log('onStart');
-        
+
         this.isRecording = true
       })
 
       recorderManager.onStop((res) => {
         console.log('onStop', res);
-        
+
         this.isRecording = false
         this.sendVoiceMessage(res.tempFilePath, res.duration)
       })
@@ -231,7 +134,7 @@ export default {
     },
     loadMoreHistory() {
       if (this.isLoading) return
-      
+
       this.isLoading = true
       // 模拟加载更多消息
       setTimeout(() => {
@@ -239,9 +142,9 @@ export default {
         this.isLoading = false
       }, 1000)
     },
-    handleToProfession(){
+    handleToProfession() {
       uni.navigateTo({
-        url:"/pages/classManagement/aiChatProfession"
+        url: "/pages/classManagement/aiChatProfession"
       })
     },
     handleFocus() {
@@ -250,49 +153,49 @@ export default {
     handleBlur() {
       this.isVoiceMode = false
     },
-    async handleSend() {
-      if(!this.canSend) return
+    // async handleSend() {
+    //   if (!this.canSend) return
 
-      const userMessage = {
-        type: 'user',
-        contentType: 'text',
-        content: this.inputText,
-        status: 'sending'
-      }
-      this.$emit('push',userMessage)
-      // this.messageList.push(userMessage)
-      this.scrollToBottom()
+    //   const userMessage = {
+    //     type: 'user',
+    //     contentType: 'text',
+    //     content: this.inputText,
+    //     status: 'sending'
+    //   }
+    //   this.$emit('push', userMessage)
+    //   // this.messageList.push(userMessage)
+    //   this.scrollToBottom()
 
-      this.inputText = ''
-      
-      // 显示AI输入状态
-      try{
-        this.isAiTyping = true
-        const response = await this.sendToAI(userMessage.content)
-        userMessage.status = 'sent'
-        this.$emit('push',{
-          type: 'ai',
-          contentType: 'text',
-          content: response
-        })
-        // this.messageList.push()
-        
-        //ai应答后跳转
-        // uni.navigateTo({
-        //   url:"/pages/classManagement/searchResult"
-        // })
-      } catch (error) {
-        userMessage.status = 'failed'
-        uni.showToast({
-          title: '发送失败',
-          icon: 'none'
-        })
-      } finally {
-        this.isAiTyping = false
-        this.scrollToBottom()
-      }
-    },
-    handleCamera(){
+    //   this.inputText = ''
+
+    //   // 显示AI输入状态
+    //   try {
+    //     this.isAiTyping = true
+    //     const response = await this.sendToAI(userMessage.content)
+    //     userMessage.status = 'sent'
+    //     this.$emit('push', {
+    //       type: 'ai',
+    //       contentType: 'text',
+    //       content: response
+    //     })
+    //     // this.messageList.push()
+
+    //     //ai应答后跳转
+    //     // uni.navigateTo({
+    //     //   url:"/pages/classManagement/searchResult"
+    //     // })
+    //   } catch (error) {
+    //     userMessage.status = 'failed'
+    //     uni.showToast({
+    //       title: '发送失败',
+    //       icon: 'none'
+    //     })
+    //   } finally {
+    //     this.isAiTyping = false
+    //     this.scrollToBottom()
+    //   }
+    // },
+    handleCamera() {
       uni.chooseImage({
         count: 1,
         sizeType: ['original', 'compressed'],
@@ -303,7 +206,7 @@ export default {
       })
     },
     playVoice(filePath) {
-      if(this.isPlaying && this.currentVoice === filePath) {
+      if (this.isPlaying && this.currentVoice === filePath) {
         innerAudioContext.stop()
         this.isPlaying = false
         this.currentVoice = ''
@@ -338,7 +241,7 @@ export default {
 
     sendVoiceMessage(tempFilePath, duration) {
       console.log('sendVoiceMessage', tempFilePath, duration)
-      this.$emit('push',{
+      this.$emit('push', {
         type: 'user',
         contentType: 'voice',
         content: tempFilePath,
@@ -351,18 +254,14 @@ export default {
       //   duration: Math.round(duration / 1000)
       // })
       this.scrollToBottom()
-      
+
       //发送完语音后
       uni.navigateTo({
-        url:"/pages/classManagement/searchResult"
+        url: "/pages/classManagement/searchResult"
       })
     },
     scrollToBottom() {
-      console.log(this.messageList.length);
       
-      this.$nextTick(() => {
-        this.lastMessageId = 'msg-' + (this.messageList.length - 1)
-      })
     },
     sendToAI(content) {
       // let body = uni.getStorageSync('aiSetting')
@@ -372,9 +271,9 @@ export default {
       //   courses:body.courses.map(item=>(
       //     item.desc
       //   ))
-        
+
       // }
-      return new Promise((resolve,reject)=>{
+      return new Promise((resolve, reject) => {
 
         // this.$api.classManagement.learnSchedule(this.form).then(res=>{
         //   console.log(res);
@@ -385,103 +284,111 @@ export default {
         //   reject(err)
         // })
       })
-        // TODO: 实现实际的AI服务调用
+      // TODO: 实现实际的AI服务调用
       //   return new Promise((resolve) => {
       //   setTimeout(() => {
       //     resolve('这是AI的回复消息...')
       //   }, 1000)
       // })
     }
-    
+
   },
   computed: {
     canSend() {
       return this.inputText.trim().length > 0
+    },
+    scrollInstance(){
+      console.log('当前scrollTop',this.currentHeight-this.initHeight);
+      
+      return this.currentHeight>this.initHeight?this.currentHeight-this.initHeight:0
     }
   }
 }
 </script>
 
-<style lang="scss"s scoped>
+<style lang="scss" s scoped>
 .chat-container {
-  width:inherit;
-  min-height: 100vh;
+  width: inherit;
+  height: calc(100vh - 240rpx);
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
+  // overflow: scroll;
 
   .chat-content {
     flex: 1;
+    height: 100%;
     padding: 20rpx;
+    box-sizing: border-box;
 
-    .loading-more{
+    .loading-more {
       padding: 20rpx;
       text-align: center;
     }
 
-    .message-list{
-      .message-item{
+    .message-list {
+      .message-item {
         display: flex;
         margin-bottom: 30rpx;
-        
-        &.user{
+
+        &.user {
           flex-direction: row-reverse;
           margin-right: 40rpx;
-            
 
-          .message-content{
+
+          .message-content {
             margin-right: 20rpx;
             margin-left: 60rpx;
             background-color: #007AFF;
             color: #fff;
-            
+
             //用来制作对话框的那个小角
-            &::after{
+            &::after {
               right: -16rpx;
               border-left-color: #007AFF;
             }
           }
         }
 
-        &.ai{
-          .message-content{
+        &.ai {
+          .message-content {
             margin-left: 20rpx;
             margin-right: 60rpx;
             background-color: #fff;
             margin-left: 40rpx;
-            
-            &::after{
+
+            &::after {
               left: -16rpx;
               border-right-color: #fff;
             }
           }
         }
 
-        .avatar{
+        .avatar {
           width: 80rpx;
           height: 80rpx;
           border-radius: 50%;
         }
 
-        .message-content{
+        .message-content {
           position: relative;
           padding: 20rpx;
           border-radius: 10rpx;
           max-width: 60%;
-          
-          &::after{
+
+          &::after {
             content: '';
             position: absolute;
             top: 20rpx;
             border: 8rpx solid transparent;
           }
 
-          .text-content{
+          .text-content {
             word-break: break-all;
             line-height: 1.5;
           }
 
-          .image-content{ 
+          .image-content {
             max-width: 100%;
             border-radius: 8rpx;
           }
@@ -490,26 +397,28 @@ export default {
             display: flex;
             align-items: center;
             padding: 10rpx 20rpx;
-            
+
             text {
               margin-left: 10rpx;
               color: #999;
             }
           }
-          
+
         }
       }
     }
+
     .ai-typing {
       display: flex;
       align-items: flex-start;
       margin-bottom: 30rpx;
-      .avatar{
-          width: 80rpx;
-          height: 80rpx;
-          border-radius: 50%;
-        }
-      
+
+      .avatar {
+        width: 80rpx;
+        height: 80rpx;
+        border-radius: 50%;
+      }
+
       .typing-indicator {
         display: flex;
         align-items: center;
@@ -517,7 +426,7 @@ export default {
         padding: 20rpx;
         border-radius: 10rpx;
         margin-left: 20rpx;
-        
+
         .dot {
           width: 8rpx;
           height: 8rpx;
@@ -525,11 +434,11 @@ export default {
           background-color: #999;
           margin: 0 4rpx;
           animation: typing 1s infinite;
-          
+
           &:nth-child(2) {
             animation-delay: 0.2s;
           }
-          
+
           &:nth-child(3) {
             animation-delay: 0.4s;
           }
@@ -550,8 +459,8 @@ export default {
     background-color: #fff;
     border-top: 1rpx solid #eee;
 
-    .input{
-      flex:1;
+    .input {
+      flex: 1;
       display: flex;
       align-items: flex-end;
       background-color: #f5f5f5;
@@ -559,21 +468,21 @@ export default {
       margin: 0 20rpx;
     }
 
-    .mode-swtich{
-      padding:10rpx;
+    .mode-swtich {
+      padding: 10rpx;
     }
 
-    .input-box{
-      padding:0 20rpx 0 0;
+    .input-box {
+      padding: 0 20rpx 0 0;
       display: flex;
       flex-direction: row;
       align-items: flex-end;
       flex: 1;
 
 
-      .input-textarea{
+      .input-textarea {
         width: 100%;
-        padding:20rpx;
+        padding: 20rpx;
         max-height: 200rpx;
         font-size: 28rpx;
         line-height: 1.5;
@@ -581,22 +490,22 @@ export default {
       }
     }
 
-    .voice-input{
-      flex:1;
-      padding:20rpx;
+    .voice-input {
+      flex: 1;
+      padding: 20rpx;
       background-color: #f5f5f5;
       border-radius: 10rpx;
       margin: 0 20rpx;
       text-align: center;
 
-      &.recording{
+      &.recording {
         background-color: #e6e6e6;
       }
     }
 
-    .send-btn{
-      width:120rpx;
-      height:80rpx;
+    .send-btn {
+      width: 120rpx;
+      height: 80rpx;
       line-height: 80rpx;
       text-align: center;
       background-color: #007AFF;
@@ -604,32 +513,38 @@ export default {
       border-radius: 10rpx;
       opacity: 0.5;
 
-      &.active{
+      &.active {
         opacity: 1;
       }
     }
   }
-  .navigate-box{
+
+  .navigate-box {
     position: relative;
-    margin:0 0 20rpx 0;
+    margin: 0 0 20rpx 0;
     left: 50%;
-    transform: translate(-50%,-20%);
+    transform: translate(-50%, -20%);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     width: 30vw;
     height: auto;
-    image{
-      width:30rpx;
+
+    image {
+      width: 30rpx;
       height: 30rpx;
     }
   }
 }
+
 @keyframes typing {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-6rpx);
   }

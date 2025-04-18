@@ -47,36 +47,7 @@ export function getUserInfo(userId) {
 }
 
 export function uploadAvatar(data) {
-  // return request.post(
-  //   '/api/user/avatar',
-  //   data
-  // )
-  console.log(data);
-
-  return new Promise((resolve, reject) => {
-    // uni.showLoading({
-    //   title:'加载中'
-    // })
-    uni.uploadFile({
-      url: request.baseUrl + '/api/user/avatar', //仅为示例，非真实的接口地址
-      filePath: data.file,
-      name: 'file',
-      formData: {
-        'userId': data.userId
-      },
-      header: {
-        Authorization: request.access_token
-      },
-      success: (uploadFileRes) => {
-        console.log(uploadFileRes.data);
-        resolve(uploadFileRes)
-      },
-      fail(err) {
-        console.log(err);
-
-      }
-    });
-  })
+  return request.requestUploadAvatar(data)
 }
 
 //修改信息
@@ -97,7 +68,9 @@ export function getUserAvatar(userId) {
 export function logout(data) {
   return request.post(
     '/api/user/logout',
-    data
+    data,
+    undefined,        //contentType
+    false            //token
   )
 }
 

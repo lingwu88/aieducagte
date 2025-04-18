@@ -5,7 +5,6 @@
 			<view class="navigation-icon" @click="back"></view>
 			<view class="title">课程规划与建议</view>
 		</view>
-
 		<!-- Chat List -->
 		<scroll-view id="chatScrollView" class="chat-list" scroll-y="true" :scroll-top="programmaticScrollTop"
 			:scroll-with-animation="true" @scroll="handleScroll" @scrolltoupper="handleScrollToUpper" >
@@ -779,7 +778,6 @@ export default {
 	height: 100vh;
 	background-color: #f5f5f5;
 }
-
 // --- Header ---
 .header {
 	display: flex;

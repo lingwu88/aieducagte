@@ -15,33 +15,18 @@
 					class="input-textarea"
 				/>
 				</view> -->
-				<view class="box">
-					<view class="form">
-						<u--form
-							labelPosition="top"
-							:model="form"
-							ref="uForm"
-							labelWidth="150"
-					>
-						<u-form-item
-								label="标题"
-								prop="title"
-								borderBottom
-								ref="item1"
-						>
+			<view class="box">
+				<view class="form">
+					<u--form labelPosition="top" :model="form" ref="uForm" labelWidth="150">
+						<u-form-item label="标题" prop="title" borderBottom ref="item1">
 							<input v-model="form.title" placeholder="请输入标题"></input>
 						</u-form-item>
-						<u-form-item
-								label="内容"
-								prop="content"
-								borderBottom
-								ref="item1"
-						>
+						<u-form-item label="内容" prop="content" borderBottom ref="item1">
 							<u-textarea v-model="form.content" count maxlength="400" height="200" placeholder="这里可以输入内容"></u-textarea>
 						</u-form-item>
 					</u--form>
 					<view class="box-tag">
-						<view class="box-tag-item" v-for="(item,index) in selectedTag" :key="item.id">#{{ item.name }}</view>
+						<view class="box-tag-item" v-for="(item, index) in selectedTag" :key="item.id">#{{ item.name }}</view>
 					</view>
 					<view class="preview">
 						<view class="image-container">
@@ -54,60 +39,51 @@
 				</view>
 				<view class="options-list">
 					<!-- <view class="icon-list"> -->
-						<!-- <u-icon name="photo-fill" @click="uploadImage" size="30"></u-icon> -->
-						<!-- <uni-icons type="paperclip" size="30"  color="#000000"></uni-icons> -->
+					<!-- <u-icon name="photo-fill" @click="uploadImage" size="30"></u-icon> -->
+					<!-- <uni-icons type="paperclip" size="30"  color="#000000"></uni-icons> -->
 					<!-- </view> -->
 					<view class="publish-btn" @click="handlePublish">
 						<text>发表</text>
 					</view>
 				</view>
-			<!-- <view class="clear-btn" @click="clearText">
+				<!-- <view class="clear-btn" @click="clearText">
 				<text>清空文本</text>
 			</view> -->
-			<!-- <view class="upload-btn">
+				<!-- <view class="upload-btn">
 				<text>上传图片</text>
 			</view> -->
-		</view>	
+			</view>
 			<view class="type-box">
 				<view class="type-header">
 					类别选择
 				</view>
 				<view class="type-content">
-					<view class="type-item" :class="{'itemSelected':typeIndex == 1}" @click="toggleSwtich(1)">资料分享</view>
-					<view class="type-item" :class="{'itemSelected':typeIndex == 2}" @click="toggleSwtich(2)">日常记录</view>
-					<view class="type-item" :class="{'itemSelected':typeIndex == 3}" @click="toggleSwtich(3)">技术交流</view>
+					<view class="type-item" :class="{ 'itemSelected': typeIndex == 1 }" @click="toggleSwtich(1)">资料分享</view>
+					<view class="type-item" :class="{ 'itemSelected': typeIndex == 2 }" @click="toggleSwtich(2)">日常记录</view>
+					<view class="type-item" :class="{ 'itemSelected': typeIndex == 3 }" @click="toggleSwtich(3)">技术交流</view>
 				</view>
 			</view>
 			<view class="tag">
 				<view class="tag-header">推荐话题</view>
 				<view class="tag-list">
-					<view :class="['tag-item', { 'active': selectedTag.some(tag=>tag.id === item.id) }]" v-for="(item,index) in tagList" :key="item.id" @click="toggleTag(item)">#{{ item.name }}</view>
+					<view :class="['tag-item', { 'active': selectedTag.some(tag => tag.id === item.id) }]"
+						v-for="(item, index) in tagList" :key="item.id" @click="toggleTag(item)">#{{ item.name }}</view>
 				</view>
 			</view>
 			<view class="footer" @click="showPopup">+ 添加标签</view>
 		</view>
-		<u-popup 
-			:show="show" 
-			@close="close"  
-			mode="center" 
-			:round="20"
-			:customStyle="{
-				backgroundColor:'#ffffff',
-				width:'600rpx',
-				height:'250rpx'
-			}"
-			>
+		<u-popup :show="show" @close="close" mode="center" :round="20" :customStyle="{
+			backgroundColor: '#ffffff',
+			width: '600rpx',
+			height: '250rpx'
+		}">
 			<view class="popup">
-					<view class="popup-header">添加新标签</view>
-					<u--input
-						placeholder="请输入内容"
-						border="surround"
-						v-model="newTag"
-					></u--input>
-					<view class="popup-footer">
-						<view @click.stop="handleCancel">取消</view>		
-						<view @click.stop="addTag">确认</view>
-					</view>
+				<view class="popup-header">添加新标签</view>
+				<u--input placeholder="请输入内容" border="surround" v-model="newTag"></u--input>
+				<view class="popup-footer">
+					<view @click.stop="handleCancel">取消</view>
+					<view @click.stop="addTag">确认</view>
+				</view>
 			</view>
 		</u-popup>
 	</view>
@@ -115,90 +91,90 @@
 
 <script>
 import pageTime from '../../mixins/pageTime'
-	export default {
-		mixins:[pageTime],
-		data() {
-			return {
-				inputText: '',
-				images: [],
-				typeIndex:1,
-				form:{
-					userId:'',
-					title:"",
-					content:"",
-					type:1,
-					tags:[]
+export default {
+	mixins: [pageTime],
+	data() {
+		return {
+			inputText: '',
+			images: [],
+			typeIndex: 1,
+			form: {
+				userId: '',
+				title: "",
+				content: "",
+				type: 1,
+				tags: []
+			},
+			tagList: [
+				{
+					name: '计科开发者学习',
+					id: '1',
 				},
-				tagList:[
-					{
-						name:'计科开发者学习',
-						id:'1',
-					},
-					{
-						name:'有趣内容分享',
-						id:'2'
-					},
-					{
-						name:'打卡挑战',
-						id:'3',
-					},
-					{
-						name:'人工智能学习的思考',
-						id:'4'
-					},
-					{
-						name:'零基础',
-						id:'5'
-					}
-					// {
-					// 	name:'前端',
-					// 	id:'1'
-					// },
-					// {
-					// 	name:'后端',
-					// 	id:'2'
-					// },
-					// {
-					// 	name:'一个实习生的自救之旅',
-					// 	id:'3'
-					// },
-					// {
-					// 	name:'面经',
-					// 	id:'4'
-					// },
-					// {
-					// 	name:'牛马的日常生活',
-					// 	id:'5'
-					// }
-				],
-				selectedTag:[],
-				show:false,
-				newTag:""	,
-				nowList:[]
-    }
-  },
-	mounted(){
-			this.checkUserId()
-			this.setType(3)
-		},
-  onLoad() {
-		if(uni.getStorageSync('tags'))
+				{
+					name: '有趣内容分享',
+					id: '2'
+				},
+				{
+					name: '打卡挑战',
+					id: '3',
+				},
+				{
+					name: '人工智能学习的思考',
+					id: '4'
+				},
+				{
+					name: '零基础',
+					id: '5'
+				}
+				// {
+				// 	name:'前端',
+				// 	id:'1'
+				// },
+				// {
+				// 	name:'后端',
+				// 	id:'2'
+				// },
+				// {
+				// 	name:'一个实习生的自救之旅',
+				// 	id:'3'
+				// },
+				// {
+				// 	name:'面经',
+				// 	id:'4'
+				// },
+				// {
+				// 	name:'牛马的日常生活',
+				// 	id:'5'
+				// }
+			],
+			selectedTag: [],
+			show: false,
+			newTag: "",
+			nowList: []
+		}
+	},
+	mounted() {
+		this.checkUserId()
+		this.setType(3)
+	},
+	onLoad() {
+		if (uni.getStorageSync('tags'))
 			this.nowList = uni.getStorageSync('tags')
 
-		if(this.nowList.length!==0){
-			this.nowList.forEach((item=>{
+		if (this.nowList.length !== 0) {
+			this.nowList.forEach((item => {
 				this.tagList.push({
-					name:item,
-					id:this.tagList.length+1
+					name: item,
+					id: this.tagList.length + 1
 				})
 			}))
 		}
 	},
-	onUnload(){
-		uni.setStorageSync('tags',this.nowList)
+	onUnload() {
+		uni.setStorageSync('tags', this.nowList)
 	},
 	methods: {
-		handleCancel(){
+		handleCancel() {
 			this.newTag = ""
 			this.show = false
 		},
@@ -211,13 +187,13 @@ import pageTime from '../../mixins/pageTime'
 				}
 			});
 		},
-		toggleSwtich(index){
+		toggleSwtich(index) {
 			this.typeIndex = index
 			this.form.type = index
 		},
 		clearText() {
 			this.form.title = '';
-			this.form.content=''
+			this.form.content = ''
 		},
 		deleteImage(index) {
 			this.images.splice(index, 1);
@@ -230,75 +206,90 @@ import pageTime from '../../mixins/pageTime'
 		},
 		handleFocus() {
 			// 处理焦点事件
-			},
+		},
 		handleBlur() {
-				// 处理失去焦点事件
-		},	
-		showPopup(){
+			// 处理失去焦点事件
+		},
+		showPopup() {
 			this.show = true
 		},
-		addTag(){
+		addTag() {
 			//推入数组
-			this.tagList.push({name:this.newTag,id:(this.tagList.length+1).toString()})
+			this.tagList.push({ name: this.newTag, id: (this.tagList.length + 1).toString() })
 			this.nowList.push(this.newTag)
-			if(this.nowList.length>3){
+			if (this.nowList.length > 3) {
 				this.nowList.shift()
 			}
 			console.log(this.show);
-			
+
 			this.show = false
 			this.newTag = ""
 		},
 		//关闭弹窗，清空数据
-		close(){
+		close() {
 			this.show = false
 			this.newTag = ""
 		},
-		toggleTag(item){
+		toggleTag(item) {
 			//查看是否在已选中找到
-			const index = this.selectedTag.findIndex(data=>data.id === item.id)
-			if(index === -1){
+			const index = this.selectedTag.findIndex(data => data.id === item.id)
+			if (index === -1) {
 				this.selectedTag.push(item)
 				this.form.tags.push(item.name)
 			}
-			else{
-				this.selectedTag.splice(index,1)
-				this.form.tags.splice(index,1)
+			else {
+				this.selectedTag.splice(index, 1)
+				this.form.tags.splice(index, 1)
 			}
 		},
-		handlePublish(){
-			if(this.form.title.trim()!='' && this.form.content.trim()!=''){
-				this.$api.square.pushlishArticle({
-					...this.form,
-					userId:uni.getStorageSync('userId')
-				}).then(res=>{
+		handlePublish() {
+			if (this.form.title.trim() != '' && this.form.content.trim() != '') {
+				// const formData = new FormData();
+				// formData.append('userId', uni.getStorageSync('userId'));
+				// formData.append('title', this.form.title);
+				// formData.append('content', this.form.content);
+				// formData.append('type', this.form.type);
+				// // Convert tags array to string before appending
+				// formData.append('tags', JSON.stringify(this.form.tags));
+
+				const formData = {
+					userId: uni.getStorageSync('userId'),
+					title: this.form.title,
+					content: this.form.content,
+					type: this.form.type,
+					tags: this.form.tags
+				}
+				// console.log(formData.getData());
+
+
+				this.$api.square.pushlishArticle(formData).then(res => {
 					console.log(res);
 					uni.showToast({
-						title:'发表成功'
+						title: '发表成功'
 					})
 					uni.navigateBack({
-						delta:1,
-						fail(){
+						delta: 1,
+						fail() {
 							uni.navigateTo({
-								url:"/pages/square/check"
+								url: "/pages/square/check"
 							})
 						}
 					})
 				})
-				.catch(err=>{
-					console.log(err);
-					
-				})
+					.catch(err => {
+						console.log(err);
+
+					})
 			}
-			else{
+			else {
 				uni.showToast({
-					title:"标题或内容不能为空!",
-					icon:'none'
+					title: "标题或内容不能为空!",
+					icon: 'none'
 				})
 			}
 		}
 	}
-	}
+}
 </script>
 
 <style lang="scss" scoped>
@@ -308,23 +299,23 @@ import pageTime from '../../mixins/pageTime'
 	padding: 20rpx;
 	background-color: #ffffff;
 
-	.popup{
-		&-header{
+	.popup {
+		&-header {
 			height: 100rpx;
 			line-height: 100rpx;
 			font-size: 30rpx;
 			text-align: center;
 		}
 
-		/deep/.u-border{
-			border:none
+		/deep/.u-border {
+			border: none
 		}
 
-		/deep/.u-input__content__field-wrapper__field{
-			text-align: center!important;
+		/deep/.u-input__content__field-wrapper__field {
+			text-align: center !important;
 		}
 
-		&-footer{
+		&-footer {
 			width: 100%;
 			height: 70rpx;
 			display: flex;
@@ -342,15 +333,15 @@ import pageTime from '../../mixins/pageTime'
 	margin-bottom: 20rpx;
 	min-height: 100vh;
 
-	.tag{
-		flex:0.9;
+	.tag {
+		flex: 0.9;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: flex-start;
-		
 
-		&-list{
+
+		&-list {
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
@@ -358,7 +349,7 @@ import pageTime from '../../mixins/pageTime'
 			align-items: flex-start;
 		}
 
-		&-item{
+		&-item {
 			padding: 10rpx;
 			font-size: 28rpx;
 			box-sizing: border-box;
@@ -369,55 +360,58 @@ import pageTime from '../../mixins/pageTime'
 			background-color: #64C88C;
 			color: white;
 		}
-		.active{
-			color:#000000;
+
+		.active {
+			color: #000000;
 			background-color: #eaeaea;
 		}
 
 	}
-	.footer{
+
+	.footer {
 		text-align: center;
 		width: 100%;
 		margin-bottom: 30rpx;
 		color: #024dbe;
 	}
 
-	.type{
+	.type {
 
-		&-box{
+		&-box {
 			display: flex;
-			flex-direction:column;
+			flex-direction: column;
 			justify-content: center;
 			align-items: flex-start;
 			margin: 0 0 20rpx 0;
 		}
 
-		&-header{
+		&-header {
 			margin-bottom: 20rpx;
 			font-size: 36rpx;
 		}
 
-		&-content{
+		&-content {
 			display: flex;
 			flex-direction: row;
 			justify-content: space-evenly;
 			align-items: center;
-			.itemSelected{
+
+			.itemSelected {
 				background-color: #ef8282d9;
-				color:#ffffff;
-				border:none
+				color: #ffffff;
+				border: none
 			}
 		}
 
-		&-item{
-			margin:10rpx;
+		&-item {
+			margin: 10rpx;
 			font-size: 30rpx;
 			// border: 1px solid black;
 			color: #000000;
-			border:1px solid #000000;
+			border: 1px solid #000000;
 			border-radius: 5rpx;
 			background-color: #ffffff;
-			padding:5rpx;
+			padding: 5rpx;
 		}
 
 	}
@@ -438,7 +432,7 @@ import pageTime from '../../mixins/pageTime'
 	height: 50vh;
 }
 
-.options-list{
+.options-list {
 	width: 100%;
 	min-height: 100rpx;
 	margin: 0 0 20rpx 0;
@@ -449,12 +443,12 @@ import pageTime from '../../mixins/pageTime'
 	align-items: center;
 	border-bottom: 1px solid #e2e2e2;
 
-	.icon-list{
+	.icon-list {
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
 		width: 30%;
-		padding:0 0 0 20rpx;
+		padding: 0 0 0 20rpx;
 	}
 }
 
@@ -473,7 +467,7 @@ import pageTime from '../../mixins/pageTime'
 
 .preview {
 	margin-top: 20rpx;
-	
+
 }
 
 .image-container {
@@ -497,7 +491,7 @@ import pageTime from '../../mixins/pageTime'
 	top: 0;
 	right: 0;
 	// background-color: rgba(255, 0, 0, 0.7);
-  border-bottom: 1px solid #000000;
+	border-bottom: 1px solid #000000;
 	// color: white;
 	padding: 2rpx 5rpx;
 	border-radius: 3rpx;
@@ -518,7 +512,8 @@ import pageTime from '../../mixins/pageTime'
 	border-radius: 60rpx;
 	line-height: 60rpx;
 }
-.publish-btn{
+
+.publish-btn {
 	width: 200rpx;
 	max-height: 50rpx;
 	background-color: #7884F0;
@@ -532,53 +527,55 @@ import pageTime from '../../mixins/pageTime'
 	// line-height: 60rpx;
 	// margin-top:20rpx;
 }
-.box{
 
-  .form{
-    min-height: 40vh;
+.box {
 
-    /deep/.u-textarea.data-v-81cd9d32 {
-        border-radius: 4px;
-        // background-color: #f9f9f9;
-				background-color: #ffffff;
-        border: none;
-        width: 90vw;
-        margin: auto;
-    }
-  }
+	.form {
+		min-height: 40vh;
 
-  .navigate-box{
-    position: relative;
-    margin:0 0 20rpx 0;
-    left: 50%;
-    transform: translate(-50%,-20%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 30vw;
-    height: auto;
-    image{
-      width:30rpx;
-      height: 30rpx;
-    }
-  }
+		/deep/.u-textarea.data-v-81cd9d32 {
+			border-radius: 4px;
+			// background-color: #f9f9f9;
+			background-color: #ffffff;
+			border: none;
+			width: 90vw;
+			margin: auto;
+		}
+	}
 
-	&-tag{
-		padding:10rpx;
+	.navigate-box {
+		position: relative;
+		margin: 0 0 20rpx 0;
+		left: 50%;
+		transform: translate(-50%, -20%);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		width: 30vw;
+		height: auto;
+
+		image {
+			width: 30rpx;
+			height: 30rpx;
+		}
+	}
+
+	&-tag {
+		padding: 10rpx;
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
 		flex-wrap: wrap;
 		align-items: flex-start;
 
-		&-item{
-			margin:10rpx;
+		&-item {
+			margin: 10rpx;
 			border-radius: 3rpx;
-			padding:10rpx;
+			padding: 10rpx;
 			min-height: 30rpx;
 			background-color: #a38bd2;
-			color:white
+			color: white
 		}
 	}
 }

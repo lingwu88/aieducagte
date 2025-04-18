@@ -32,6 +32,10 @@ export default {
         return true
       } catch (error) {
         // console.error('上传失败，尝试本地存储:', error)
+        uni.showToast({
+          title: '时间上传失败',
+          icon: 'none'
+        })
         // this.saveDataToLocal(payload)
         return false
       }
@@ -72,14 +76,6 @@ export default {
 
     // 尝试立即上传
     this.sendTimeDataToServer(payload)
-
-    // 处理本地暂存数据
-    // const pendingData = JSON.parse(localStorage.getItem('PENDING_PAGE_DATA') || '[]')
-    // if (pendingData.length > 0) {
-    //   Promise.all(pendingData.map(data => this.sendTimeDataToServer(data)))
-    //     .then(() => localStorage.removeItem('PENDING_PAGE_DATA'))
-    // }
-    // }
   },
 
   // 小程序生命周期适配

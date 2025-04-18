@@ -86,7 +86,7 @@
         </u-form-item>
       </u--form>
     </view>
-    <view class="btn" @click="handleProduce" v-if="!type">生成</view>
+    <view class="btn" @click="handleProduce" v-if="!btnType">生成</view>
     <view class="save-btn" @click="handleSave" v-else>保存</view>
   </view>
 </template>
@@ -110,7 +110,7 @@ export default {
 				courses: [],
 				strength: 0
 			},
-			type: '',
+			btnType: '',
 			keyword: '',
 			content: ''
 		};
@@ -118,7 +118,7 @@ export default {
 	onLoad(options) {
 		this.userId = uni.getStorageSync('userId');
 		if (options.type == 'setting') {
-			this.type = true;
+			this.btnType = true;
 		}
 	},
 	mounted() {
@@ -189,33 +189,34 @@ export default {
 					const arr = res.data.map((item) => {
 						const data = JSON.parse(item);
 
-						return {
-							id: data.aid,
-							desc: data.title,
-							isSelect: false
-						};
-					});
-					this.$set(this, 'list', arr);
-					this.currentIndex = 0;
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		},
-		handleSave() {
-			console.log(this.form);
+          return {
+            id: data.aid,
+            desc: data.title,
+            isSelect: false
+          }
+        })
+        this.$set(this, 'list', arr)
+        this.currentIndex = 0
+      })
+        .catch(err => {
+          console.log(err);
 
-			uni.setStorageSync('aiSetting', this.form);
-			uni.navigateBack({
-				delta: 1
-			});
-		}
-	}
-};
+        })
+    },
+    handleSave() {
+      console.log(this.form);
+
+      uni.setStorageSync('aiSetting', this.form)
+      uni.navigateBack({
+        delta: 1
+      })
+    }
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-.box{
+.box {
   min-height: 100vh;
   width: 100vw;
   background: linear-gradient(to bottom, #f8f9fd, #f0f2ff);
@@ -327,7 +328,7 @@ export default {
     border: 1px solid rgba(91, 106, 240, 0.2);
     box-shadow: 0 4rpx 12rpx rgba(91, 106, 240, 0.1);
     transition: all 0.3s ease;
-    
+
     &:active {
       transform: scale(0.96);
       box-shadow: 0 2rpx 6rpx rgba(91, 106, 240, 0.1);

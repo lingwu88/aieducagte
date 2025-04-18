@@ -1,42 +1,34 @@
 <template>
-  <view class="time">
-    <view class="header">
-        <u-tabs
-        :scrollable="false"
-        :list="list4"
-        lineWidth="30"
-        lineColor="#E483AA"
-        :activeStyle="{
-            color: '#303133',
-            fontWeight: 'bold',
-            transform: 'scale(1.05)'
-        }"
-        :inactiveStyle="{
-            color: '#606266',
-            transform: 'scale(1)'
-        }"
-        itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
-        >
-        </u-tabs>
+    <view class="time">
+        <view class="header">
+            <u-tabs :scrollable="false" :list="list4" lineWidth="30" lineColor="#E483AA" :activeStyle="{
+                color: '#303133',
+                fontWeight: 'bold',
+                transform: 'scale(1.05)'
+            }" :inactiveStyle="{
+                color: '#606266',
+                transform: 'scale(1)'
+            }" itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;">
+            </u-tabs>
+        </view>
+
+        <view class="loading-container" v-if="loading">
+            <view class="loading-spinner">
+                <view class="spinner"></view>
+            </view>
+            <view class="loading-text">数据加载中...</view>
+        </view>
+
+        <view v-else>
+            <view class="chart-container">
+                <l-echart ref="chartRef" @finished="setChart"></l-echart>
+            </view>
+            <view class="chart-container">
+                <l-echart ref="chartRef2" @finished="setChart2"></l-echart>
+            </view>
+        </view>
+
     </view>
-    
-    <view class="loading-container" v-if="loading">
-      <view class="loading-spinner">
-        <view class="spinner"></view>
-      </view>
-      <view class="loading-text">数据加载中...</view>
-    </view>
-    
-    <view v-else>
-      <view class="chart-container">
-        <l-echart ref="chartRef" @finished="setChart"></l-echart>
-      </view>
-      <view class="chart-container">
-        <l-echart ref="chartRef2" @finished="setChart2"></l-echart>
-      </view>
-    </view>
-      
-  </view>
 </template>
 
 <script>
@@ -46,16 +38,15 @@ export default {
     data() {
         return {
             loading: true,
-            dataList:[],
+            dataList: [],
             list4: [
                 {
                     name: '每天'
-                }, 
+                },
                 // {
                 //     name: '近三日',
                 // }
             ],
-            // option: {
             //     tooltip: {
             //         trigger: 'axis',
             //         axisPointer: {
@@ -214,7 +205,7 @@ export default {
             //     }
             // ]
             // },
-            option2:{
+            option2: {
                 title: {
                     text: 'World Population'
                 },
@@ -226,7 +217,7 @@ export default {
                 },
                 legend: {},
                 grid: {
-                    width:'80%',
+                    width: '80%',
                     left: '3%',
                     right: '4%',
                     bottom: '3%',
@@ -235,47 +226,47 @@ export default {
                 },
                 xAxis: {
                     type: 'value',
-                    show:true,
-                    axisLine:{
-                        show:true
+                    show: true,
+                    axisLine: {
+                        show: true
                     },
                     // axisTick: {
                     //     show: true, // 显示刻度线
                     // },
-                    name:'完成率',
-                    nameLocation:"end",
-                    data:[0,25,50,75,100],
+                    name: '完成率',
+                    nameLocation: "end",
+                    data: [0, 25, 50, 75, 100],
                     // boundaryGap: [0, 0.01],
-                    axisLabel:{
-                        formatter:'{value}%'
+                    axisLabel: {
+                        formatter: '{value}%'
                     }
                 },
                 yAxis: {
                     type: 'category',
-                    name:"任务编号",
+                    name: "任务编号",
                     data: [`课程1`, `课程2`, `课程3`, `课程4`, `课程5`, `课程6`]
                 },
                 series: [
                     {
-                    name: '课程',
-                    type: 'bar',
-                    data: [12, 27, 88, 100, 99, 64]
+                        name: '课程',
+                        type: 'bar',
+                        data: [12, 27, 88, 100, 99, 64]
                     }
                 ]
             }
         };
     },
-    mounted(){
+    mounted() {
         this.checkUserId()
     },
-    onLoad(){
+    onLoad() {
         this.userId = uni.getStorageSync('userId')
-       
+
     },
-    onShow(){
+    onShow() {
         // 添加延迟加载
         this.loading = true;
-        
+
         // 使用setTimeout模拟加载过程
         setTimeout(() => {
             this.getData();
@@ -283,12 +274,12 @@ export default {
     },
     // 组件能被调用必须是组件的节点已经被渲染到页面上
     methods: {
-        getData(){
-            this.$api.progressFeedBack.getEvalution(this.userId).then(res=>{
+        getData() {
+            this.$api.progressFeedBack.getEvalution(this.userId).then(res => {
                 console.log(res);
-               this.dataList = Object.keys(res.data).map(key=>res.data[key])
+                this.dataList = Object.keys(res.data).map(key => res.data[key])
                 console.log(this.dataList);
-                
+
                 // 数据加载完成后，设置loading为false
                 this.loading = false;
             }).catch(err => {
@@ -300,94 +291,115 @@ export default {
         async setChart(customOption) {
             // 如果数据还在加载中，不初始化图表
             if (this.loading) return;
-            
+
             // chart 图表实例不能存在data里
-           const chart = await this.$refs.chartRef.init(echarts);
-           let defaultoption={
-                    // title: {
-                    //     text: 'Basic Radar Chart'
-                    // },
-                    legend: {
-                        data: ['Allocated Budget']
-                    },
-                    radar: {
-                        // shape: 'circle',
-                        indicator: [
-                        { name: '专业度', max: 400 },
-                        { name: '多样性', max: 400 },
-                        { name: '拓展度', max: 400 },
-                        { name: '复习积极性', max: 400 },
-                        { name: '交流活跃度', max: 400 },
-                        ]
-                    },
-                    series: [
-                        {
+            const chart = await this.$refs.chartRef.init(echarts);
+            let index = -1
+            let defaultoption = {
+                // title: {
+                //     text: 'Basic Radar Chart'
+                // },
+                legend: {
+                    data: ['Allocated Budget']
+                },
+                radar: {
+                    // shape: 'circle',
+                    indicator: [
+                        { name: '专业度', max: 120 },
+                        { name: '多样性', max: 120 },
+                        { name: '拓展度', max: 120 },
+                        { name: '复习积极性', max: 120 },
+                        { name: '交流活跃度', max: 120 },
+                    ],
+                    name: {
+                        rich: {
+                            a: {
+                                color: '#000000',
+                            },
+                            b: {
+                                color: '#black',
+                                align: 'center',
+                                padding: 2,
+                                borderRadius: 4
+                            }
+                        },
+                        formatter: (a, b) => {
+                            index++
+                            return `{a|${a}} \n {b|${this.dataList[index]}}`
+                        }
+                    }
+                },
+                series: [
+                    {
                         name: 'Budget',
                         type: 'radar',
                         data: [
                             {
-                            value: this.dataList,
-                            // name: 'Allocated Budget'
+                                value: this.dataList,
+                                // label: {
+                                //     show: true,
+                                //     formatter: function (params) {
+                                //         return params.value;
+                                //     }
+                                // }
                             }
                         ]
-                        }
-                    ]
-                }
-           let finalOption = {...defaultoption,...customOption}
+                    }
+                ]
+            }
+            let finalOption = { ...defaultoption, ...customOption }
             chart.setOption(finalOption)
-            // chart.setOption({
-            //   series:[
-            //     {
-            //       data:[{value:66,name:'交互问答时长'},{value:22,name:'查阅资料时长'},{value:12,name:"创作文章时长"}]
-            //     }
-            //   ]
-            // })
-            // chart2.setOption(this.option2)
+            this.$refs.chartRef.resize({ width: 300, height: 300 })
+            console.log(this.dataList);
         },
-        async setChart2(customOption){
+        async setChart2(customOption) {
             // 如果数据还在加载中，不初始化图表
             if (this.loading) return;
-            
+
             const chart = await this.$refs.chartRef2.init(echarts);
-            const nameList = ['专业度','多样性','拓展度','复习积极性','交流活跃度']
-            const arr = this.dataList.map((item,index)=>({
-                value:item,
-                name:nameList[index]
+            const nameList = ['专业度', '多样性', '拓展度', '复习积极性', '交流活跃度']
+            const arr = this.dataList.map((item, index) => ({
+                value: item,
+                name: nameList[index]
             }))
             let defaultoption = {
-                    legend: {
-                        top:'bottom',
-                    },
-                    series: [
-                        {
-                            label:{
-                                show:false
-                            },
-                            labelLine:{
-                                show:false
-                            },
-                            name: 'Nightingale Chart',
-                            type: 'pie',
-                            center: ['50%', '50%'],
+                legend: {
+                    top: 'bottom',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c}min ({d}%)'
+                },
+                series: [
+                    {
+                        label: {
+                            show: false
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        name: 'Nightingale Chart',
+                        type: 'pie',
+                        center: ['50%', '50%'],
+                        itemStyle: {
+                            borderRadius: 8
+                        },
+                        data: arr,
+                        emphasis: {
                             itemStyle: {
-                                borderRadius: 8
-                            },
-                            data: arr,
-                            emphasis: {
-                                itemStyle: {
                                 shadowBlur: 10,
                                 shadowOffsetX: 0,
                                 shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                }
                             }
                         }
-                    ]
-                };
-           let finalOption = {...defaultoption,...customOption}
+                    }
+                ]
+            };
+            let finalOption = { ...defaultoption, ...customOption }
             chart.setOption(finalOption)
-           const data = this.$refs.chartRef2.resize({width:400,height:300})
-        //    console.log(data);
-           
+            const data = this.$refs.chartRef2.resize({ height: 300 })
+            //    console.log(data);
+
             // chart.setOption({
             //   series:[
             //     {
@@ -397,64 +409,65 @@ export default {
             // })
             // chart2.setOption(this.option2)
         },
-        async init() {
-            // chart 图表实例不能存在data里
-            const chart = await this.$refs.chartRef.init(echarts);
-            const chart2 = await this.$refs.chartRef2.init(echarts)
-            chart.setOption(this.option1)
-            chart2.setOption(this.option2)
-        }
+        // async init() {
+        //     // chart 图表实例不能存在data里
+        //     const chart = await this.$refs.chartRef.init(echarts);
+        //     const chart2 = await this.$refs.chartRef2.init(echarts)
+        //     chart.setOption(this.option1)
+        //     chart2.setOption(this.option2)
+        // }
     }
 }
 </script>
 
 <style scoped lang="scss">
-.content{
+.content {
     border: #000000;
 }
-.header{
-    margin:0 0 20rpx 0;
+
+.header {
+    margin: 0 0 20rpx 0;
 }
 
 .loading-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 400rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 400rpx;
 }
 
 .loading-spinner {
-  width: 80rpx;
-  height: 80rpx;
-  margin-bottom: 20rpx;
+    width: 80rpx;
+    height: 80rpx;
+    margin-bottom: 20rpx;
 }
 
 .spinner {
-  width: 100%;
-  height: 100%;
-  border: 6rpx solid rgba(218, 106, 154, 0.2);
-  border-top-color: #DA6A9A;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+    width: 100%;
+    height: 100%;
+    border: 6rpx solid rgba(218, 106, 154, 0.2);
+    border-top-color: #DA6A9A;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-text {
-  font-size: 28rpx;
-  color: #666;
+    font-size: 28rpx;
+    color: #666;
 }
 
 .chart-container {
-  margin: 20rpx 0;
-  padding: 20rpx;
-  background-color: #ffffff;
-  border-radius: 12rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+    margin: 20rpx 0;
+    padding: 20rpx;
+    background-color: #ffffff;
+    border-radius: 12rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 </style>

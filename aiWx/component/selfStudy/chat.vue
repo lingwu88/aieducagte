@@ -176,10 +176,18 @@ export default {
       scrollHeight: 0 // 添加滚动高度记录
     }
   },
-  created() {
+  async created() {
     // this.initRecorder(),
     // this.initAudioContext()
-    this.getSession()
+    console.log('执行获取会话');
+    
+    let res = await this.getSession()
+    if (!res) {
+      uni.showToast({
+        title: "获取会话id失败",
+        icon: "none"
+      })
+    }
   },
   onShow(){
     this.initRequest()
@@ -196,19 +204,34 @@ export default {
   },
   methods: {
     getSession(){
-			if(this.sessionId!=""){
-				return
-			}
-			this.$api.classManagement
-				.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
-				.then((res) => {
-					console.log(res);
-					this.sessionId = res.data;
-					console.log(this.sessionId);
-				})
-				.catch((err) => {
-					console.log(err);
-				});
+      return new Promise((resolve, reject) => {
+        if (this.sessionId != '') {
+          resolve(true)
+        }
+        this.$api.classManagement.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+          .then(res => {
+            console.log(res);
+            this.sessionId = res.data
+            resolve(true)
+          })
+          .catch(err => {
+            console.log(err);
+            reject(false)
+          })
+      })
+			// if(this.sessionId!=""){
+			// 	return
+			// }
+			// this.$api.classManagement
+			// 	.getSessionId({ userId: uni.getStorageSync('userId'), type: 1 })
+			// 	.then((res) => {
+			// 		console.log(res);
+			// 		this.sessionId = res.data;
+			// 		console.log(this.sessionId);
+			// 	})
+			// 	.catch((err) => {
+			// 		console.log(err);
+			// 	});
 		},
     toggleShow(){
       this.$emit('controlSetting')
@@ -458,7 +481,7 @@ export default {
     },
     closeSSE(){
       // this.$api.classManagement.endSSE(uni.getStorageSync('userId')).then(res=>{
-        console.log(res);
+        // console.log(res);
         console.log('关闭');
         const word = convertMarkdown(this.messageList[this.messageList.length-1].content)
         console.log(this.messageList);
@@ -501,12 +524,12 @@ export default {
 }
 .chat-container {
   width: 100%;
-  height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #f8f9fd;
   position: relative;
-  padding-bottom: 0; /* 移除底部内边距，由输入区域自身控制 */
+  overflow: scroll;
   
   .background-decoration {
     position: absolute;
