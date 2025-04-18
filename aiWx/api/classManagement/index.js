@@ -10,7 +10,7 @@ export function generalAi(data) {
 }
 
 //通用ai结果收藏
-export function saveGeneral(data){
+export function saveGeneral(data) {
   return request.post(
     '/api/ai/save-plan',
     data
@@ -18,7 +18,7 @@ export function saveGeneral(data){
 }
 
 //取消收藏
-export function cancelSave(data){
+export function cancelSave(data) {
   return request.post(
     '/api/ai/cancel-plan',
     data
@@ -26,7 +26,7 @@ export function cancelSave(data){
 }
 
 //获取会话id
-export function getSessionId({userId,type}) {
+export function getSessionId({ userId, type }) {
   return request.get(
     `/api/ai/get-conversaion-id?userId=${userId}&type=${type}`
   )
@@ -50,11 +50,11 @@ function decode(data) {
 }
 
 //创建sse会话
-export function createSSE(url, onData, onError = null, onComplete = null) {
+export function createSSE(url, data, onData, onError = null, onComplete = null) {
   //维护的定时器id
   let timeoutId = null
   //五秒
-  const TIMEOUT_DURATION = 100000
+  const TIMEOUT_DURATION = 1000
 
   // console.log(onComplete);
 
@@ -73,7 +73,7 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
   // 在 complete 回调中清理定时器
   function handleComplete() {
     console.log('结束了');
-    
+
     if (timeoutId) clearTimeout(timeoutId);
     if (onComplete) onComplete();
   }
@@ -90,7 +90,8 @@ export function createSSE(url, onData, onError = null, onComplete = null) {
 
   const requestTask = uni.request({
     url: request.baseUrl + url,
-    method: 'GET',
+    method: 'POST',
+    data: data,
     header: {
       Accept: 'text/event-stream', // 确保服务器知道我们期望的是流式响应
       Authorization: uni.getStorageSync('accessToken'),

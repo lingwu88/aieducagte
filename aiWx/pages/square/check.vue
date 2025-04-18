@@ -473,7 +473,7 @@ export default {
 	position: absolute;
 	bottom: 100rpx;
 	left: 80%;
-	// background-color: #007AFF;
+	background-color: inherit;
 }
 
 .content {

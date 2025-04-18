@@ -212,18 +212,22 @@ export default {
       });
 
       //开启sse
-      this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`, this.logData, undefined, this.closeSSE)
-      this.$api.classManagement.generalAi({
+      // this.$api.classManagement.createSSE(`/api/ai/createSse?userId=${this.form.userId}`, this.logData, undefined, this.closeSSE)
+      this.$api.classManagement.createSSE('/api/ai/general-learning-plan', {
         ...this.form,
         query: text
-      }).then(res => {
-        console.log(res);
-        this.inputText = ''
-      })
-        .catch(err => {
-          console.log(err);
+      }, this.logData, undefined, this.closeSSE)
+      // this.$api.classManagement.generalAi({
+      //   ...this.form,
+      //   query: text
+      // }).then(res => {
+      //   console.log(res);
+      //   this.inputText = ''
+      // })
+      //   .catch(err => {
+      //     console.log(err);
 
-        })
+      //   })
     },
     //SSE结束回调
     closeSSE(id) {
